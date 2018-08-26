@@ -1,0 +1,28 @@
+{
+  "name": "molen",
+  "version": "0.1.0",
+  "description": "molen",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard",
+    "test": "npm run lint && mocha --reporter spec"
+  },
+  "standard": {
+    "env": [ "mocha" ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fgimenez/molen.git"
+  },
+  "author": "Federico Gimenez <federico.gimenez@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fgimenez/molen/issues"
+  },
+  "homepage": "https://github.com/fgimenez/molen#readme",
+  "devDependencies": {
+    "mocha": "^5.2.0",
+    "nock": "^9.6.1",
+    "standard": "^11.0.1"
+  }
+}
