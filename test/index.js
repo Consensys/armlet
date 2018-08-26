@@ -3,22 +3,32 @@ const assert = require('assert')
 
 describe('main module', () => {
   describe('#getAnalisys', () => {
-    it('is a function', () => {
-      assert.ok(typeof main.getAnalysis === 'function')
+    describe('interface', () => {
+      it('is a function', () => {
+        assert.ok(typeof main.getAnalysis === 'function')
+      })
+
+      it('returns a thenable', () => {
+        const result = main.getAnalysis({bytecode: 'my-bytecode'})
+
+        assert.ok(typeof result.then === 'function')
+      })
+
+      it('requires options', () => {
+        main.getAnalysis().catch((err) => {
+          assert.ok(err)
+        })
+      })
+
+      it('requires a bytecode option', () => {
+        main.getAnalysis({}).catch((err) => {
+          assert.ok(err)
+        })
+      })
     })
 
-    it('requires options', () => {
-      assert.throws(() => main.getAnalysis())
-    })
+    describe('functionality', () => {
 
-    it('requires a bytecode option', () => {
-      assert.throws(() => main.getAnalysis({}))
-    })
-
-    it('returns a thenable', () => {
-      const result = main.getAnalysis({bytecode: 'my-bytecode'})
-
-      assert.ok(typeof result.then === 'function')
     })
   })
 })
