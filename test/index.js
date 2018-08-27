@@ -1,29 +1,31 @@
 const main = require('../index')
-const assert = require('assert')
+require('chai')
+  .use(require('chai-as-promised'))
+  .should()
 
 describe('main module', () => {
   describe('#getAnalisys', () => {
     describe('interface', () => {
       it('is a function', () => {
-        assert.ok(typeof main.getAnalysis === 'function')
+        main.getAnalysis.should.be.a('function')
       })
 
       it('returns a thenable', () => {
         const result = main.getAnalysis({bytecode: 'my-bytecode'})
 
-        assert.ok(typeof result.then === 'function')
+        result.then.should.be.a('function')
       })
 
-      it('requires options', () => {
-        main.getAnalysis().catch((err) => {
-          assert.ok(err)
-        })
+      it('requires options', async () => {
+        await main.getAnalysis().should.be.rejectedWith(TypeError)
       })
 
-      it('requires a bytecode option', () => {
-        main.getAnalysis({}).catch((err) => {
-          assert.ok(err)
-        })
+      it('requires a bytecode option', async () => {
+        await main.getAnalysis({}).should.be.rejectedWith(TypeError)
+      })
+
+      it('requires a valid api URL if given', async () => {
+        await main.getAnalysis({bytecode: 'my-bytecode'}, 'not-a-real-url').should.be.rejectedWith(TypeError)
       })
     })
 
