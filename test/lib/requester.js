@@ -30,7 +30,7 @@ describe('requester', () => {
           uuid: uuid
         })
 
-      await requester.do({bytecode: bytecode}, httpApiUrl, validApiKey).should.eventually.equal(uuid)
+      await requester.do({bytecode: bytecode}, validApiKey, httpApiUrl).should.eventually.equal(uuid)
     })
 
     it('requests analysis for https API', async () => {
@@ -48,13 +48,33 @@ describe('requester', () => {
           uuid: uuid
         })
 
-      await requester.do({bytecode: bytecode}, httpsApiUrl, validApiKey).should.eventually.equal(uuid)
+      await requester.do({bytecode: bytecode}, validApiKey, httpsApiUrl).should.eventually.equal(uuid)
+    })
+
+    it('defaults to official API endpoint', async () => {
+      const defaultApiUrl = 'https://api.mythril.ai'
+
+      nock(`${defaultApiUrl}`, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .post(basePath, {
+          type: 'bytecode',
+          contract: bytecode
+        })
+        .reply(200, {
+          result: 'Queued',
+          uuid: uuid
+        })
+
+      await requester.do({bytecode: bytecode}, validApiKey).should.eventually.equal(uuid)
     })
 
     it('rejects on api server connection failure', async () => {
       const invalidApiHostname = url.parse('http://hostname')
 
-      await requester.do({bytecode: bytecode}, invalidApiHostname, validApiKey).should.be.rejectedWith(Error)
+      await requester.do({bytecode: bytecode}, validApiKey, invalidApiHostname).should.be.rejectedWith(Error)
     })
 
     it('rejects on api server 500', async () => {
@@ -69,7 +89,7 @@ describe('requester', () => {
         })
         .reply(500)
 
-      await requester.do({bytecode: bytecode}, httpApiUrl, validApiKey).should.be.rejectedWith(Error)
+      await requester.do({bytecode: bytecode}, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
     })
 
     it('rejects on request limit errors', async () => {
@@ -87,7 +107,7 @@ describe('requester', () => {
           error: expectedErrorMsg
         })
 
-      await requester.do({bytecode: bytecode}, httpApiUrl, validApiKey).should.be.rejectedWith(Error)
+      await requester.do({bytecode: bytecode}, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
     })
 
     it('rejects on validation errors', async () => {
@@ -105,7 +125,7 @@ describe('requester', () => {
           error: expectedErrorMsg
         })
 
-      await requester.do({bytecode: bytecode}, httpApiUrl, validApiKey).should.be.rejectedWith(Error)
+      await requester.do({bytecode: bytecode}, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
     })
 
     it('rejects on authentication errors', async () => {
@@ -122,7 +142,7 @@ describe('requester', () => {
         })
         .reply(401, 'Unauthorized')
 
-      await requester.do({bytecode: bytecode}, httpApiUrl, inValidApiKey).should.be.rejectedWith(Error)
+      await requester.do({bytecode: bytecode}, inValidApiKey, httpApiUrl).should.be.rejectedWith(Error)
     })
   })
 })
