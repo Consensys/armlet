@@ -16,7 +16,7 @@ describe('requester', () => {
     const basePath = '/mythril/v1/analysis'
 
     it('requests analysis for http API', async () => {
-      nock(`${httpApiUrl.href}`, {
+      nock(httpApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
         }
@@ -34,7 +34,7 @@ describe('requester', () => {
     })
 
     it('requests analysis for https API', async () => {
-      nock(`${httpsApiUrl.href}`, {
+      nock(httpsApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
         }
@@ -54,7 +54,7 @@ describe('requester', () => {
     it('defaults to official API endpoint', async () => {
       const defaultApiUrl = 'https://api.mythril.ai'
 
-      nock(`${defaultApiUrl}`, {
+      nock(defaultApiUrl, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
         }
@@ -78,7 +78,7 @@ describe('requester', () => {
     })
 
     it('rejects on api server 500', async () => {
-      nock(`${httpApiUrl.href}`, {
+      nock(httpApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
         }
@@ -94,7 +94,7 @@ describe('requester', () => {
 
     it('rejects on request limit errors', async () => {
       const expectedErrorMsg = 'request limit exceeded'
-      nock(`${httpApiUrl.href}`, {
+      nock(httpApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
         }
@@ -112,7 +112,7 @@ describe('requester', () => {
 
     it('rejects on validation errors', async () => {
       const expectedErrorMsg = 'validation failed'
-      nock(`${httpApiUrl.href}`, {
+      nock(httpApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
         }
@@ -131,7 +131,7 @@ describe('requester', () => {
     it('rejects on authentication errors', async () => {
       const inValidApiKey = 'my-invalid-api--key-sigh'
 
-      nock(`${httpApiUrl.href}`, {
+      nock(httpApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${inValidApiKey}`
         }
