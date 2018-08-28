@@ -8,6 +8,7 @@ const requester = require('../../lib/requester')
 
 describe('requester', () => {
   describe('#do', () => {
+    const defaultApiUrl = 'https://api.mythril.ai'
     const httpApiUrl = url.parse('http://localhost:3100')
     const httpsApiUrl = url.parse('https://localhost:3100')
     const validApiKey = 'valid-api-key'
@@ -15,7 +16,7 @@ describe('requester', () => {
     const uuid = 'my-uuid'
     const basePath = '/mythril/v1/analysis'
 
-    it('requests analysis for http API', async () => {
+    it('should request analysis for http API', async () => {
       nock(httpApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
@@ -33,7 +34,7 @@ describe('requester', () => {
       await requester.do({bytecode: bytecode}, validApiKey, httpApiUrl).should.eventually.equal(uuid)
     })
 
-    it('requests analysis for https API', async () => {
+    it('should request analysis for https API', async () => {
       nock(httpsApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
@@ -51,9 +52,7 @@ describe('requester', () => {
       await requester.do({bytecode: bytecode}, validApiKey, httpsApiUrl).should.eventually.equal(uuid)
     })
 
-    it('defaults to official API endpoint', async () => {
-      const defaultApiUrl = 'https://api.mythril.ai'
-
+    it('should default to official API endpoint', async () => {
       nock(defaultApiUrl, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
@@ -71,13 +70,13 @@ describe('requester', () => {
       await requester.do({bytecode: bytecode}, validApiKey).should.eventually.equal(uuid)
     })
 
-    it('rejects on api server connection failure', async () => {
+    it('should reject on api server connection failure', async () => {
       const invalidApiHostname = url.parse('http://hostname')
 
       await requester.do({bytecode: bytecode}, validApiKey, invalidApiHostname).should.be.rejectedWith(Error)
     })
 
-    it('rejects on api server 500', async () => {
+    it('should reject on api server 500', async () => {
       nock(httpApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
@@ -92,7 +91,7 @@ describe('requester', () => {
       await requester.do({bytecode: bytecode}, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
     })
 
-    it('rejects on request limit errors', async () => {
+    it('should reject on request limit errors', async () => {
       const expectedErrorMsg = 'request limit exceeded'
       nock(httpApiUrl.href, {
         reqheaders: {
@@ -110,7 +109,7 @@ describe('requester', () => {
       await requester.do({bytecode: bytecode}, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
     })
 
-    it('rejects on validation errors', async () => {
+    it('should reject on validation errors', async () => {
       const expectedErrorMsg = 'validation failed'
       nock(httpApiUrl.href, {
         reqheaders: {
@@ -128,7 +127,7 @@ describe('requester', () => {
       await requester.do({bytecode: bytecode}, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
     })
 
-    it('rejects on authentication errors', async () => {
+    it('should reject on authentication errors', async () => {
       const inValidApiKey = 'my-invalid-api--key-sigh'
 
       nock(httpApiUrl.href, {
@@ -143,6 +142,21 @@ describe('requester', () => {
         .reply(401, 'Unauthorized')
 
       await requester.do({bytecode: bytecode}, inValidApiKey, httpApiUrl).should.be.rejectedWith(Error)
+    })
+
+    it('should reject on non-JSON data', async () => {
+      nock(defaultApiUrl, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .post(basePath, {
+          type: 'bytecode',
+          contract: bytecode
+        })
+        .reply(200, 'non-json-response')
+
+      await requester.do({bytecode: bytecode}, validApiKey).should.be.rejectedWith(SyntaxError)
     })
   })
 })
