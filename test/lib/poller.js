@@ -9,7 +9,7 @@ const poller = require('../../lib/poller')
 describe('poller', () => {
   describe('#do', () => {
     const defaultApiUrl = url.parse('https://api.mythril.ai')
-    // const httpApiUrl = url.parse('http://localhost:3100')
+    const httpApiUrl = url.parse('http://localhost:3100')
     const validApiKey = 'valid-api-key'
     const uuid = 'my-uuid'
     const basePath = `/mythril/v1/analysis/${uuid}/issues`
@@ -73,12 +73,11 @@ describe('poller', () => {
 
       await poller.do(uuid, validApiKey, undefined, 10).should.eventually.deep.equal(expectedIssues)
     })
-    /*
-      it('should be able to query http API', async () => {
+    it('should be able to query http API', async () => {
       nock(`${httpApiUrl.href}`, {
-      reqheaders: {
-        authorization: `Bearer ${validApiKey}`
-      }
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
       })
         .get(basePath)
         .times(3)
@@ -87,7 +86,7 @@ describe('poller', () => {
           error: 'Result is not Finished',
           stack: 'BadRequestError: Result is not Finished\n    at getIssues (/home/fgimenez/workspace/mythril-api/src/services/AnalysisService.js:129:11)\n    at <anonymous>'
         })
-      nock(`${apiUrl.href}`, {
+      nock(`${httpApiUrl.href}`, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
         }
@@ -95,9 +94,7 @@ describe('poller', () => {
         .get(basePath)
         .reply(200, expectedIssues)
 
-      await poller.do(uuid, validApiKey, httpApiUrl).should.eventually.deepEqual(expectedIssues)
-
+      await poller.do(uuid, validApiKey, httpApiUrl, 10).should.eventually.deep.equal(expectedIssues)
     })
-    */
   })
 })
