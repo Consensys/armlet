@@ -31,7 +31,7 @@ describe('requester', () => {
           uuid: uuid
         })
 
-      await requester.do({bytecode: bytecode}, validApiKey, httpApiUrl).should.eventually.equal(uuid)
+      await requester.do(bytecode, validApiKey, httpApiUrl).should.eventually.equal(uuid)
     })
 
     it('should request analysis for https API', async () => {
@@ -49,7 +49,7 @@ describe('requester', () => {
           uuid: uuid
         })
 
-      await requester.do({bytecode: bytecode}, validApiKey, httpsApiUrl).should.eventually.equal(uuid)
+      await requester.do(bytecode, validApiKey, httpsApiUrl).should.eventually.equal(uuid)
     })
 
     it('should default to official API endpoint', async () => {
@@ -67,13 +67,13 @@ describe('requester', () => {
           uuid: uuid
         })
 
-      await requester.do({bytecode: bytecode}, validApiKey).should.eventually.equal(uuid)
+      await requester.do(bytecode, validApiKey).should.eventually.equal(uuid)
     })
 
     it('should reject on api server connection failure', async () => {
       const invalidApiHostname = url.parse('http://hostname')
 
-      await requester.do({bytecode: bytecode}, validApiKey, invalidApiHostname).should.be.rejectedWith(Error)
+      await requester.do(bytecode, validApiKey, invalidApiHostname).should.be.rejectedWith(Error)
     })
 
     it('should reject on api server 500', async () => {
@@ -88,7 +88,7 @@ describe('requester', () => {
         })
         .reply(500)
 
-      await requester.do({bytecode: bytecode}, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
+      await requester.do(bytecode, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
     })
 
     it('should reject on request limit errors', async () => {
@@ -106,7 +106,7 @@ describe('requester', () => {
           error: expectedErrorMsg
         })
 
-      await requester.do({bytecode: bytecode}, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
+      await requester.do(bytecode, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
     })
 
     it('should reject on validation errors', async () => {
@@ -124,7 +124,7 @@ describe('requester', () => {
           error: expectedErrorMsg
         })
 
-      await requester.do({bytecode: bytecode}, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
+      await requester.do(bytecode, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
     })
 
     it('should reject on authentication errors', async () => {
@@ -141,7 +141,7 @@ describe('requester', () => {
         })
         .reply(401, 'Unauthorized')
 
-      await requester.do({bytecode: bytecode}, inValidApiKey, httpApiUrl).should.be.rejectedWith(Error)
+      await requester.do(bytecode, inValidApiKey, httpApiUrl).should.be.rejectedWith(Error)
     })
 
     it('should reject on non-JSON data', async () => {
@@ -156,7 +156,7 @@ describe('requester', () => {
         })
         .reply(200, 'non-json-response')
 
-      await requester.do({bytecode: bytecode}, validApiKey).should.be.rejectedWith(SyntaxError)
+      await requester.do(bytecode, validApiKey).should.be.rejectedWith(SyntaxError)
     })
   })
 })
