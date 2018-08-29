@@ -1,4 +1,4 @@
-# Molen
+# Molen, a Mythril API client
 
 Molen is a Node.js client for the Mythril Platform API. According to
 [Final Fantasy Wiki][1], the Molen is an "Extremely rare golem with a body
