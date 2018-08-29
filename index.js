@@ -2,10 +2,14 @@ const url = require('url')
 
 const defaultApiUrl = 'https://api.mythril.ai'
 
-module.exports = (options, apiKey, inputApiUrl = defaultApiUrl) => {
+module.exports = (bytecode, apiKey, inputApiUrl = defaultApiUrl) => {
   return new Promise((resolve, reject) => {
-    if (!options || !options.bytecode) {
-      throw new TypeError('Please provide an options param with a bytecode member.')
+    if (bytecode === undefined) {
+      throw new TypeError('Please provide a bytecode param.')
+    }
+
+    if (apiKey === undefined) {
+      throw new TypeError('Please provide an apiKey param.')
     }
 
     const apiUrl = url.parse(inputApiUrl)

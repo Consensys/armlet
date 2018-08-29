@@ -11,21 +11,21 @@ describe('main module', () => {
       })
 
       it('should return a thenable', () => {
-        const result = analyze({bytecode: 'my-bytecode'})
+        const result = analyze('my-bytecode', 'apiKey')
 
         result.then.should.be.a('function')
       })
 
-      it('should require options', async () => {
-        await analyze().should.be.rejectedWith(TypeError)
+      it('should require a bytecode param', async () => {
+        await analyze(undefined, 'apiKey').should.be.rejectedWith(TypeError)
       })
 
-      it('should require a bytecode option', async () => {
-        await analyze({}).should.be.rejectedWith(TypeError)
+      it('should require an apiKey param', async () => {
+        await analyze('bytecode').should.be.rejectedWith(TypeError)
       })
 
       it('should require a valid api URL if given', async () => {
-        await analyze({bytecode: 'my-bytecode'}, 'my-api-key', 'not-a-real-url').should.be.rejectedWith(TypeError)
+        await analyze('my-bytecode', 'my-api-key', 'not-a-real-url').should.be.rejectedWith(TypeError)
       })
     })
 
