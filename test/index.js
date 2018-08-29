@@ -1,4 +1,4 @@
-const { analyze } = require('../index')
+const analyze = require('../index')
 require('chai')
   .use(require('chai-as-promised'))
   .should()
