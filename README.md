@@ -21,7 +21,7 @@ const analyze = require('molen')
 ...
 let issues = null
 
-analyze({bytecode: myBytecode}, apiKey)
+analyze(myBytecode, myApiKey)
   .then((data) => {
     issues = data
   }).catch((err) => {
