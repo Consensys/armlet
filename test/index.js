@@ -25,7 +25,7 @@ describe('main module', () => {
       })
 
       it('should require a valid api URL if given', async () => {
-        await analyze({bytecode: 'my-bytecode'}, 'not-a-real-url').should.be.rejectedWith(TypeError)
+        await analyze({bytecode: 'my-bytecode'}, 'my-api-key', 'not-a-real-url').should.be.rejectedWith(TypeError)
       })
     })
 
