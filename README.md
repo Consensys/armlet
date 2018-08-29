@@ -16,8 +16,15 @@ $ npm -i molen
 Then get the Mythril Platform analysis results with the promise returned by
 the `analyze` function:
 ```javascript
-const molen = require('molen')
+const { analyze } = require('molen')
 
 ...
-const issues = await molen.analyze({bytecode: myBytecode}, apiKey)
+let issues = null
+
+analyze({bytecode: myBytecode}, apiKey)
+  .then((data) => {
+    issues = data
+  }).catch((err) => {
+    console.log(err)
+  })
 ```
