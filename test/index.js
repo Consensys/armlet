@@ -6,26 +6,26 @@ require('chai')
 describe('main module', () => {
   describe('#getAnalisys', () => {
     describe('interface', () => {
-      it('is a function', () => {
-        main.getAnalysis.should.be.a('function')
+      it('should be a function', () => {
+        main.analyze.should.be.a('function')
       })
 
-      it('returns a thenable', () => {
-        const result = main.getAnalysis({bytecode: 'my-bytecode'})
+      it('should return a thenable', () => {
+        const result = main.analyze({bytecode: 'my-bytecode'})
 
         result.then.should.be.a('function')
       })
 
-      it('requires options', async () => {
-        await main.getAnalysis().should.be.rejectedWith(TypeError)
+      it('should require options', async () => {
+        await main.analyze().should.be.rejectedWith(TypeError)
       })
 
-      it('requires a bytecode option', async () => {
-        await main.getAnalysis({}).should.be.rejectedWith(TypeError)
+      it('should require a bytecode option', async () => {
+        await main.analyze({}).should.be.rejectedWith(TypeError)
       })
 
-      it('requires a valid api URL if given', async () => {
-        await main.getAnalysis({bytecode: 'my-bytecode'}, 'not-a-real-url').should.be.rejectedWith(TypeError)
+      it('should require a valid api URL if given', async () => {
+        await main.analyze({bytecode: 'my-bytecode'}, 'not-a-real-url').should.be.rejectedWith(TypeError)
       })
     })
 
