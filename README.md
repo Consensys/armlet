@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/fgimenez/armlet.svg?style=svg&circle-token=3794de647a820eabf62e091c80d761a722b17b0c)](https://circleci.com/gh/fgimenez/armlet)
+
 # Armlet, a Mythril API client
 
 Armlet is a Node.js client for the Mythril Platform API.
