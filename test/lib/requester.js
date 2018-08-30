@@ -71,7 +71,7 @@ describe('requester', () => {
     })
 
     it('should reject on api server connection failure', async () => {
-      const invalidApiHostname = url.parse('http://hostname')
+      const invalidApiHostname = url.parse('http://not-a-valid-hostname')
 
       await requester.do(bytecode, validApiKey, invalidApiHostname).should.be.rejectedWith(Error)
     })
