@@ -10,7 +10,7 @@ fashioned entirely of the purest mythril".
 
 Install with:
 ```
-$ npm -i molen
+$ npm i molen
 ```
 
 Then get the Mythril Platform analysis results with the promise returned by
@@ -19,11 +19,10 @@ the `analyze` function:
 const analyze = require('molen')
 
 ...
-let issues = null
 
 analyze(myBytecode, myApiKey)
-  .then((data) => {
-    issues = data
+  .then((issues) => {
+    console.log(issues)
   }).catch((err) => {
     console.log(err)
   })
