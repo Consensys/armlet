@@ -25,6 +25,8 @@ module.exports = (bytecode, apiKey, inputApiUrl = defaultApiUrl) => {
         return poller.do(uuid, apiKey, apiUrl)
       }).then((issues) => {
         resolve(issues)
+      }).catch((err) => {
+        reject(err)
       })
   })
 }

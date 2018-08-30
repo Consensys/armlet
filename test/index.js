@@ -69,6 +69,38 @@ describe('main module', () => {
 
         await analyze(bytecode, apiKey, apiUrl).should.eventually.equal(issues)
       })
+
+      it('should reject with requester failures', async () => {
+        const errorMsg = 'Booom! from requester'
+        sinon.stub(requester, 'do')
+          .withArgs(bytecode, apiKey, parsedApiUrl)
+          .returns(new Promise((resolve, reject) => {
+            reject(new Error(errorMsg))
+          }))
+        sinon.stub(poller, 'do')
+          .withArgs(uuid, apiKey, parsedApiUrl)
+          .returns(new Promise((resolve, reject) => {
+            resolve(issues)
+          }))
+
+        await analyze(bytecode, apiKey, apiUrl).should.be.rejectedWith(Error, errorMsg)
+      })
+
+      it('should reject with poller failures', async () => {
+        const errorMsg = 'Booom! from poller'
+        sinon.stub(requester, 'do')
+          .withArgs(bytecode, apiKey, parsedApiUrl)
+          .returns(new Promise((resolve, reject) => {
+            resolve(uuid)
+          }))
+        sinon.stub(poller, 'do')
+          .withArgs(uuid, apiKey, parsedApiUrl)
+          .returns(new Promise((resolve, reject) => {
+            reject(new Error(errorMsg))
+          }))
+
+        await analyze(bytecode, apiKey, apiUrl).should.be.rejectedWith(Error, errorMsg)
+      })
     })
   })
 })
