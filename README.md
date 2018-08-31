@@ -12,7 +12,7 @@ $ npm i armlet
 ```
 
 Then get the Mythril Platform analysis results with the promise returned by
-the `analyze` function:
+the exposed function:
 ```javascript
 const analyze = require('armlet')
 
