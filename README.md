@@ -25,3 +25,4 @@ analyze(myBytecode, myApiKey)
     console.log(err)
   })
 ```
+For more info join the Mythril community at [Discord](https://discord.gg/kktn8Wt).

@@ -1,7 +1,7 @@
 {
   "name": "armlet",
   "version": "0.1.1",
-  "description": "armlet",
+  "description": "A Mythril Platform API client.",
   "main": "index.js",
   "scripts": {
     "lint": "standard",
@@ -17,7 +17,7 @@
     "url": "git+https://github.com/fgimenez/armlet.git"
   },
   "author": "Federico Gimenez <federico.gimenez@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/fgimenez/armlet/issues"
   },
