@@ -19,9 +19,9 @@ const analyze = require('armlet')
 ...
 
 analyze(myBytecode, myApiKey)
-  .then((issues) => {
+  .then(issues => {
     console.log(issues)
-  }).catch((err) => {
+  }).catch(err => {
     console.log(err)
   })
 ```

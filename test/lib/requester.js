@@ -8,7 +8,7 @@ const requester = require('../../lib/requester')
 
 describe('requester', () => {
   describe('#do', () => {
-    const defaultApiUrl = 'https://api.mythril.ai'
+    const defaultApiUrl = url.parse('https://api.mythril.ai')
     const httpApiUrl = url.parse('http://localhost:3100')
     const httpsApiUrl = url.parse('https://localhost:3100')
     const validApiKey = 'valid-api-key'
@@ -53,7 +53,7 @@ describe('requester', () => {
     })
 
     it('should default to official API endpoint', async () => {
-      nock(defaultApiUrl, {
+      nock(defaultApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
         }
@@ -67,7 +67,7 @@ describe('requester', () => {
           uuid: uuid
         })
 
-      await requester.do(bytecode, validApiKey).should.eventually.equal(uuid)
+      await requester.do(bytecode, validApiKey, defaultApiUrl).should.eventually.equal(uuid)
     })
 
     it('should reject on api server connection failure', async () => {
@@ -145,7 +145,7 @@ describe('requester', () => {
     })
 
     it('should reject on non-JSON data', async () => {
-      nock(defaultApiUrl, {
+      nock(defaultApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
         }
@@ -156,7 +156,7 @@ describe('requester', () => {
         })
         .reply(200, 'non-json-response')
 
-      await requester.do(bytecode, validApiKey).should.be.rejectedWith(SyntaxError)
+      await requester.do(bytecode, validApiKey, defaultApiUrl).should.be.rejectedWith(SyntaxError)
     })
   })
 })

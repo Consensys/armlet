@@ -47,7 +47,7 @@ describe('poller', () => {
         .get(basePath)
         .reply(200, emptyResult)
 
-      await poller.do(uuid, validApiKey, undefined, 10).should.eventually.deep.equal(emptyResult)
+      await poller.do(uuid, validApiKey, defaultApiUrl, 10).should.eventually.deep.equal(emptyResult)
     })
 
     it('should poll issues with non-empty results', async () => {
@@ -71,7 +71,7 @@ describe('poller', () => {
         .get(basePath)
         .reply(200, expectedIssues)
 
-      await poller.do(uuid, validApiKey, undefined, 10).should.eventually.deep.equal(expectedIssues)
+      await poller.do(uuid, validApiKey, defaultApiUrl, 10).should.eventually.deep.equal(expectedIssues)
     })
 
     it('should be able to query http API', async () => {
@@ -107,7 +107,7 @@ describe('poller', () => {
         .get(basePath)
         .reply(500)
 
-      await poller.do(uuid, validApiKey, undefined, 10).should.be.rejectedWith(Error)
+      await poller.do(uuid, validApiKey, defaultApiUrl, 10).should.be.rejectedWith(Error)
     })
 
     it('should reject on authentication error', async () => {
@@ -121,7 +121,7 @@ describe('poller', () => {
         .get(basePath)
         .reply(401, 'Unauthorized')
 
-      await poller.do(uuid, inValidApiKey, undefined, 10).should.be.rejectedWith(Error)
+      await poller.do(uuid, inValidApiKey, defaultApiUrl, 10).should.be.rejectedWith(Error)
     })
 
     it('should reject on non-JSON data', async () => {
@@ -145,7 +145,7 @@ describe('poller', () => {
         .get(basePath)
         .reply(200, 'non-json-data')
 
-      await poller.do(uuid, validApiKey, undefined, 10).should.be.rejectedWith(SyntaxError)
+      await poller.do(uuid, validApiKey, defaultApiUrl, 10).should.be.rejectedWith(SyntaxError)
     })
   })
 })

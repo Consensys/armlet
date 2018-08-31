@@ -21,11 +21,11 @@ module.exports = (bytecode, apiKey, inputApiUrl = defaultApiUrl) => {
     }
 
     requester.do(bytecode, apiKey, apiUrl)
-      .then((uuid) => {
+      .then(uuid => {
         return poller.do(uuid, apiKey, apiUrl)
-      }).then((issues) => {
+      }).then(issues => {
         resolve(issues)
-      }).catch((err) => {
+      }).catch(err => {
         reject(err)
       })
   })
