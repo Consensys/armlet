@@ -5,7 +5,7 @@ const poller = require('./lib/poller')
 
 const defaultApiUrl = 'https://api.mythril.ai'
 
-module.exports = (bytecode, apiKey, inputApiUrl = defaultApiUrl) => {
+const analyze = (bytecode, apiKey, inputApiUrl = defaultApiUrl) => {
   return new Promise((resolve, reject) => {
     if (bytecode === undefined) {
       throw new TypeError('Please provide a bytecode param.')
@@ -30,3 +30,6 @@ module.exports = (bytecode, apiKey, inputApiUrl = defaultApiUrl) => {
       })
   })
 }
+
+module.exports = analyze
+module.exports.analyze = analyze
