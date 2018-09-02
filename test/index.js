@@ -1,5 +1,4 @@
-const armlet = require('../index')
-const { analyze } = require('../index')
+const analyze = require('../index')
 const sinon = require('sinon')
 const url = require('url')
 require('chai')
@@ -28,49 +27,25 @@ describe('main module', () => {
       })
 
       it('should be a function', () => {
-        armlet.should.be.a('function')
+        analyze.should.be.a('function')
       })
 
       it('should return a thenable', () => {
-        const result = armlet(bytecode, apiKey)
+        const result = analyze(bytecode, apiKey)
 
         result.then.should.be.a('function')
       })
 
       it('should require a bytecode param', async () => {
-        await armlet(undefined, apiKey).should.be.rejectedWith(TypeError)
+        await analyze(undefined, apiKey).should.be.rejectedWith(TypeError)
       })
 
       it('should require an apiKey param', async () => {
-        await armlet(bytecode).should.be.rejectedWith(TypeError)
+        await analyze(bytecode).should.be.rejectedWith(TypeError)
       })
 
       it('should require a valid api URL if given', async () => {
-        await armlet(bytecode, apiKey, 'not-a-real-url').should.be.rejectedWith(TypeError)
-      })
-
-      describe('#analyze', () => {
-        it('should be function', () => {
-          analyze.should.be.a('function')
-        })
-
-        it('should return a thenable', () => {
-          const result = analyze(bytecode, apiKey)
-
-          result.then.should.be.a('function')
-        })
-
-        it('should require a bytecode param', async () => {
-          await analyze(undefined, apiKey).should.be.rejectedWith(TypeError)
-        })
-
-        it('should require an apiKey param', async () => {
-          await analyze(bytecode).should.be.rejectedWith(TypeError)
-        })
-
-        it('should require a valid api URL if given', async () => {
-          await analyze(bytecode, apiKey, 'not-a-real-url').should.be.rejectedWith(TypeError)
-        })
+        await analyze(bytecode, apiKey, 'not-a-real-url').should.be.rejectedWith(TypeError)
       })
     })
 
