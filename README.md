@@ -14,11 +14,13 @@ $ npm i armlet
 Then get the Mythril Platform analysis results with the promise returned by
 the exposed function:
 ```javascript
-const analyze = require('armlet')
+const { Client } = require('armlet')
 
 ...
 
-analyze(myBytecode, myApiKey)
+const client = new Client({apiKey: myApiKey})
+
+client.analyze(myBytecode)
   .then(issues => {
     console.log(issues)
   }).catch(err => {

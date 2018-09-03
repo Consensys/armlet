@@ -30,3 +30,39 @@ module.exports = (bytecode, apiKey, inputApiUrl = defaultApiUrl) => {
       })
   })
 }
+
+class Client {
+  constructor (auth, inputApiUrl = defaultApiUrl) {
+    if (auth === undefined || auth.apiKey === undefined) {
+      throw new TypeError('Please provide an apiKey auth option.')
+    }
+
+    const apiUrl = url.parse(inputApiUrl)
+    if (apiUrl.hostname === null) {
+      throw new TypeError(`${inputApiUrl} is not a valid URL`)
+    }
+
+    this.apiKey = auth.apiKey
+    this.apiUrl = apiUrl
+  }
+
+  analyze (options) {
+    return new Promise((resolve, reject) => {
+      if (options === undefined || options.bytecode === undefined) {
+        throw new TypeError('Please provide a bytecode option.')
+      }
+
+      requester.do(options.bytecode, this.apiKey, this.apiUrl)
+        .then(uuid => {
+          return poller.do(uuid, this.apiKey, this.apiUrl)
+        }).then(issues => {
+          resolve(issues)
+        }).catch(err => {
+          reject(err)
+        })
+    })
+  }
+}
+
+module.exports.Client = Client
+module.exports.defaultApiUrl = url.parse(defaultApiUrl)

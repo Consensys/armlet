@@ -1,4 +1,5 @@
 const analyze = require('../index')
+const Client = require('../index').Client
 const sinon = require('sinon')
 const url = require('url')
 require('chai')
@@ -26,26 +27,70 @@ describe('main module', () => {
           .returns(new Promise((resolve, reject) => resolve(true)))
       })
 
-      it('should be a function', () => {
-        analyze.should.be.a('function')
+      describe('default', () => {
+        it('should be a function', () => {
+          analyze.should.be.a('function')
+        })
+
+        it('should return a thenable', () => {
+          const result = analyze(bytecode, apiKey)
+
+          result.then.should.be.a('function')
+        })
+
+        it('should require a bytecode param', async () => {
+          await analyze(undefined, apiKey).should.be.rejectedWith(TypeError)
+        })
+
+        it('should require an apiKey param', async () => {
+          await analyze(bytecode).should.be.rejectedWith(TypeError)
+        })
+
+        it('should require a valid api URL if given', async () => {
+          await analyze(bytecode, apiKey, 'not-a-real-url').should.be.rejectedWith(TypeError)
+        })
       })
 
-      it('should return a thenable', () => {
-        const result = analyze(bytecode, apiKey)
+      describe('Client', () => {
+        it('should be a function', () => {
+          analyze.should.be.a('function')
+        })
 
-        result.then.should.be.a('function')
-      })
+        describe('should have a constructor which should', () => {
+          it('require an apiKey auth option', () => {
+            (() => new Client()).should.throw(TypeError)
+          })
 
-      it('should require a bytecode param', async () => {
-        await analyze(undefined, apiKey).should.be.rejectedWith(TypeError)
-      })
+          it('require a valid apiUrl if given', () => {
+            (() => new Client({apiKey: apiKey}, 'not-a-valid-url')).should.throw(TypeError)
+          })
 
-      it('should require an apiKey param', async () => {
-        await analyze(bytecode).should.be.rejectedWith(TypeError)
-      })
+          it('initialize apiUrl to a default value if not given', () => {
+            const instance = new Client({apiKey: apiKey})
 
-      it('should require a valid api URL if given', async () => {
-        await analyze(bytecode, apiKey, 'not-a-real-url').should.be.rejectedWith(TypeError)
+            instance.apiUrl.should.be.deep.equal(analyze.defaultApiUrl)
+          })
+        })
+
+        describe('instances should', () => {
+          beforeEach(() => {
+            this.instance = new Client({apiKey: apiKey})
+          })
+
+          it('be created with a constructor', () => {
+            this.instance.constructor.name.should.be.equal('Client')
+          })
+
+          describe('have an analyze method which', () => {
+            it('should be a function', () => {
+              this.instance.analyze.should.be.a('function')
+            })
+
+            it('should require a bytecode option', async () => {
+              await this.instance.analyze().should.be.rejectedWith(TypeError)
+            })
+          })
+        })
       })
     })
 
@@ -55,51 +100,106 @@ describe('main module', () => {
       const apiUrl = 'http://localhost:3100'
       const parsedApiUrl = url.parse(apiUrl)
 
-      it('should chain requester and poller', async () => {
-        sinon.stub(requester, 'do')
-          .withArgs(bytecode, apiKey, parsedApiUrl)
-          .returns(new Promise((resolve, reject) => {
-            resolve(uuid)
-          }))
-        sinon.stub(poller, 'do')
-          .withArgs(uuid, apiKey, parsedApiUrl)
-          .returns(new Promise((resolve, reject) => {
-            resolve(issues)
-          }))
+      describe('default', () => {
+        it('should chain requester and poller', async () => {
+          sinon.stub(requester, 'do')
+            .withArgs(bytecode, apiKey, parsedApiUrl)
+            .returns(new Promise((resolve, reject) => {
+              resolve(uuid)
+            }))
+          sinon.stub(poller, 'do')
+            .withArgs(uuid, apiKey, parsedApiUrl)
+            .returns(new Promise((resolve, reject) => {
+              resolve(issues)
+            }))
 
-        await analyze(bytecode, apiKey, apiUrl).should.eventually.equal(issues)
+          await analyze(bytecode, apiKey, apiUrl).should.eventually.equal(issues)
+        })
+
+        it('should reject with requester failures', async () => {
+          const errorMsg = 'Booom! from requester'
+          sinon.stub(requester, 'do')
+            .withArgs(bytecode, apiKey, parsedApiUrl)
+            .returns(new Promise((resolve, reject) => {
+              reject(new Error(errorMsg))
+            }))
+          sinon.stub(poller, 'do')
+            .withArgs(uuid, apiKey, parsedApiUrl)
+            .returns(new Promise((resolve, reject) => {
+              resolve(issues)
+            }))
+
+          await analyze(bytecode, apiKey, apiUrl).should.be.rejectedWith(Error, errorMsg)
+        })
+
+        it('should reject with poller failures', async () => {
+          const errorMsg = 'Booom! from poller'
+          sinon.stub(requester, 'do')
+            .withArgs(bytecode, apiKey, parsedApiUrl)
+            .returns(new Promise((resolve, reject) => {
+              resolve(uuid)
+            }))
+          sinon.stub(poller, 'do')
+            .withArgs(uuid, apiKey, parsedApiUrl)
+            .returns(new Promise((resolve, reject) => {
+              reject(new Error(errorMsg))
+            }))
+
+          await analyze(bytecode, apiKey, apiUrl).should.be.rejectedWith(Error, errorMsg)
+        })
       })
 
-      it('should reject with requester failures', async () => {
-        const errorMsg = 'Booom! from requester'
-        sinon.stub(requester, 'do')
-          .withArgs(bytecode, apiKey, parsedApiUrl)
-          .returns(new Promise((resolve, reject) => {
-            reject(new Error(errorMsg))
-          }))
-        sinon.stub(poller, 'do')
-          .withArgs(uuid, apiKey, parsedApiUrl)
-          .returns(new Promise((resolve, reject) => {
-            resolve(issues)
-          }))
+      describe('Client', () => {
+        beforeEach(() => {
+          this.instance = new Client({apiKey: apiKey}, apiUrl)
+        })
 
-        await analyze(bytecode, apiKey, apiUrl).should.be.rejectedWith(Error, errorMsg)
-      })
+        it('should chain requester and poller', async () => {
+          sinon.stub(requester, 'do')
+            .withArgs(bytecode, apiKey, parsedApiUrl)
+            .returns(new Promise(resolve => {
+              resolve(uuid)
+            }))
+          sinon.stub(poller, 'do')
+            .withArgs(uuid, apiKey, parsedApiUrl)
+            .returns(new Promise(resolve => {
+              resolve(issues)
+            }))
 
-      it('should reject with poller failures', async () => {
-        const errorMsg = 'Booom! from poller'
-        sinon.stub(requester, 'do')
-          .withArgs(bytecode, apiKey, parsedApiUrl)
-          .returns(new Promise((resolve, reject) => {
-            resolve(uuid)
-          }))
-        sinon.stub(poller, 'do')
-          .withArgs(uuid, apiKey, parsedApiUrl)
-          .returns(new Promise((resolve, reject) => {
-            reject(new Error(errorMsg))
-          }))
+          await this.instance.analyze({bytecode: bytecode}).should.eventually.equal(issues)
+        })
 
-        await analyze(bytecode, apiKey, apiUrl).should.be.rejectedWith(Error, errorMsg)
+        it('should reject with requester failures', async () => {
+          const errorMsg = 'Booom! from requester'
+          sinon.stub(requester, 'do')
+            .withArgs(bytecode, apiKey, parsedApiUrl)
+            .returns(new Promise((resolve, reject) => {
+              reject(new Error(errorMsg))
+            }))
+          sinon.stub(poller, 'do')
+            .withArgs(uuid, apiKey, parsedApiUrl)
+            .returns(new Promise(resolve => {
+              resolve(issues)
+            }))
+
+          await this.instance.analyze({bytecode: bytecode}).should.be.rejectedWith(Error, errorMsg)
+        })
+
+        it('should reject with poller failures', async () => {
+          const errorMsg = 'Booom! from poller'
+          sinon.stub(requester, 'do')
+            .withArgs(bytecode, apiKey, parsedApiUrl)
+            .returns(new Promise(resolve => {
+              resolve(uuid)
+            }))
+          sinon.stub(poller, 'do')
+            .withArgs(uuid, apiKey, parsedApiUrl)
+            .returns(new Promise((resolve, reject) => {
+              reject(new Error(errorMsg))
+            }))
+
+          await this.instance.analyze({bytecode: bytecode}).should.be.rejectedWith(Error, errorMsg)
+        })
       })
     })
   })
