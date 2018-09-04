@@ -12,7 +12,7 @@ describe('poller', () => {
     const httpApiUrl = url.parse('http://localhost:3100')
     const validApiKey = 'valid-api-key'
     const uuid = 'my-uuid'
-    const basePath = `/mythril/v1/analysis/${uuid}/issues`
+    const basePath = `/v1/analyses/${uuid}/issues`
     const expectedIssues = [
       {
         title: 'Unchecked SUICIDE',

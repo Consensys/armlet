@@ -14,7 +14,7 @@ describe('requester', () => {
     const validApiKey = 'valid-api-key'
     const bytecode = 'bytecode'
     const uuid = 'my-uuid'
-    const basePath = '/mythril/v1/analysis'
+    const basePath = '/v1/analyses'
 
     it('should request analysis for http API', async () => {
       nock(httpApiUrl.href, {
