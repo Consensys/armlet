@@ -33,8 +33,16 @@ module.exports = (bytecode, apiKey, inputApiUrl = defaultApiUrl) => {
 
 class Client {
   constructor (auth, inputApiUrl = defaultApiUrl) {
-    if (auth === undefined || auth.apiKey === undefined) {
+    if (auth === undefined) {
+      throw new TypeError('Please provide auth options.')
+    }
+
+    if (auth.apiKey === undefined) {
       throw new TypeError('Please provide an apiKey auth option.')
+    }
+
+    if (auth.userEmail === undefined) {
+      throw new TypeError('Please provide an userEmail auth option.')
     }
 
     const apiUrl = url.parse(inputApiUrl)
@@ -42,6 +50,7 @@ class Client {
       throw new TypeError(`${inputApiUrl} is not a valid URL`)
     }
 
+    this.userEmail = auth.userEmail
     this.apiKey = auth.apiKey
     this.apiUrl = apiUrl
   }

@@ -12,6 +12,7 @@ const poller = require('../lib/poller')
 describe('main module', () => {
   const bytecode = 'my-bitecode'
   const apiKey = 'my-apikey'
+  const userEmail = 'my-userEmail'
 
   describe('#armlet', () => {
     afterEach(() => {
@@ -58,15 +59,19 @@ describe('main module', () => {
 
         describe('should have a constructor which should', () => {
           it('require an apiKey auth option', () => {
-            (() => new Client()).should.throw(TypeError)
+            (() => new Client({userEmail: userEmail})).should.throw(TypeError)
+          })
+
+          it('require an userEmail auth option', () => {
+            (() => new Client({apiKey: apiKey})).should.throw(TypeError)
           })
 
           it('require a valid apiUrl if given', () => {
-            (() => new Client({apiKey: apiKey}, 'not-a-valid-url')).should.throw(TypeError)
+            (() => new Client({userEmail: userEmail, apiKey: apiKey}, 'not-a-valid-url')).should.throw(TypeError)
           })
 
           it('initialize apiUrl to a default value if not given', () => {
-            const instance = new Client({apiKey: apiKey})
+            const instance = new Client({userEmail: userEmail, apiKey: apiKey})
 
             instance.apiUrl.should.be.deep.equal(analyze.defaultApiUrl)
           })
@@ -74,7 +79,7 @@ describe('main module', () => {
 
         describe('instances should', () => {
           beforeEach(() => {
-            this.instance = new Client({apiKey: apiKey})
+            this.instance = new Client({userEmail: userEmail, apiKey: apiKey})
           })
 
           it('be created with a constructor', () => {
@@ -151,7 +156,7 @@ describe('main module', () => {
 
       describe('Client', () => {
         beforeEach(() => {
-          this.instance = new Client({apiKey: apiKey}, apiUrl)
+          this.instance = new Client({userEmail: userEmail, apiKey: apiKey}, apiUrl)
         })
 
         it('should chain requester and poller', async () => {
