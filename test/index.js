@@ -205,6 +205,23 @@ describe('main module', () => {
 
           await this.instance.analyze({bytecode: bytecode}).should.be.rejectedWith(Error, errorMsg)
         })
+
+        it('should pass timeout option to poller', async () => {
+          const timeout = 10
+
+          sinon.stub(requester, 'do')
+            .withArgs(bytecode, apiKey, parsedApiUrl)
+            .returns(new Promise(resolve => {
+              resolve(uuid)
+            }))
+          sinon.stub(poller, 'do')
+            .withArgs(uuid, apiKey, parsedApiUrl, undefined, timeout)
+            .returns(new Promise(resolve => {
+              resolve(issues)
+            }))
+
+          await this.instance.analyze({bytecode: bytecode, timeout: timeout}).should.eventually.equal(issues)
+        })
       })
     })
   })

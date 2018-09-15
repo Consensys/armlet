@@ -63,7 +63,7 @@ class Client {
 
       requester.do(options.bytecode, this.apiKey, this.apiUrl)
         .then(uuid => {
-          return poller.do(uuid, this.apiKey, this.apiUrl)
+          return poller.do(uuid, this.apiKey, this.apiUrl, undefined, options.timeout)
         }).then(issues => {
           resolve(issues)
         }).catch(err => {
