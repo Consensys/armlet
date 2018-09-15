@@ -37,7 +37,7 @@ jobs:
           at: ~/repo
       - run:
           name: Publish package
-          command: npm publish
+          command: npm publish --userconfig=.npmrc-auth
 
 workflows:
   version: 2
