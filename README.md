@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/fgimenez/armlet.svg?style=svg&circle-token=3794de647a820eabf62e091c80d761a722b17b0c)](https://circleci.com/gh/fgimenez/armlet)
+[![CircleCI](https://circleci.com/gh/ConsenSys/armlet.svg?style=svg)](https://circleci.com/gh/ConsenSys/armlet)
 
 # Armlet, a Mythril Platform API client
 
