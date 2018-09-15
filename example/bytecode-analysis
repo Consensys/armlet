@@ -1,0 +1,39 @@
+#!/usr/bin/env node
+
+"use strict"
+
+function usage() {
+    console.log(`usage: ${process.argv[1]} *bytecode*
+
+Run the Mythril Platform API analysis on *bytecode*.
+
+Set environment variables EMAIL and MYTHRIL_API_KEY before using.
+`)
+    process.exit(1)
+}
+
+if (process.argv.length < 3) {
+    console.log("Need to give bytecode")
+    usage()
+}
+require('./helper')
+
+const bytecode = process.argv.slice(2)[0]
+const armlet = require('../index')
+
+/* Example code starts here..... */
+
+// const armlet = require('armlet')
+const client = new armlet.Client(
+    {
+        apiKey: process.env.MYTHRIL_API_KEY,
+        userEmail: process.env.EMAIL
+    })
+
+console.log("bytecode", bytecode)
+client.analyze({ bytecode: bytecode })
+    .then(issues => {
+        console.log(issues)
+    }).catch(err => {
+        console.log(err)
+    })
