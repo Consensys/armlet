@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "standard",
+    "lint-fix": "standard --fix",
     "test": "npm run lint && mocha --reporter spec --recursive"
   },
   "standard": {
@@ -14,14 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fgimenez/armlet.git"
+    "url": "git+https://github.com/consensys/armlet.git"
   },
   "author": "Federico Gimenez <federico.gimenez@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/fgimenez/armlet/issues"
+    "url": "https://github.com/consensys/armlet/issues"
   },
-  "homepage": "https://github.com/fgimenez/armlet#readme",
+  "homepage": "https://github.com/consensys/armlet#readme",
   "devDependencies": {
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
