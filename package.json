@@ -19,7 +19,7 @@
   "author": "Federico Gimenez <federico.gimenez@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/consensys/issues"
+    "url": "https://github.com/consensys/armlet/issues"
   },
   "homepage": "https://github.com/consensys/armlet#readme",
   "devDependencies": {
