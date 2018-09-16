@@ -37,6 +37,17 @@ client.analyze({bytecode: '0xf6'})
     console.log(err)
   })
 ```
+You can also specify the timeout in milliseconds to wait for the analysis to be
+done (the default is 10 seconds). For instance, to wait up to 5 seconds:
+```javascript
+client.analyze({bytecode: <contract_bytecode>, timeout: 5000})
+  .then(issues => {
+    console.log(issues)
+  }).catch(err => {
+    console.log(err)
+  })
+```
+
 
 See the example directory for some simple but runnable examples of how
 to use the client.

@@ -13,6 +13,7 @@ describe('poller', () => {
     const validApiKey = 'valid-api-key'
     const uuid = 'my-uuid'
     const basePath = `/v1/analyses/${uuid}/issues`
+    const pollStep = 10
     const expectedIssues = [
       {
         title: 'Unchecked SUICIDE',
@@ -47,7 +48,7 @@ describe('poller', () => {
         .get(basePath)
         .reply(200, emptyResult)
 
-      await poller.do(uuid, validApiKey, defaultApiUrl, 10).should.eventually.deep.equal(emptyResult)
+      await poller.do(uuid, validApiKey, defaultApiUrl, pollStep).should.eventually.deep.equal(emptyResult)
     })
 
     it('should poll issues with non-empty results', async () => {
@@ -71,7 +72,7 @@ describe('poller', () => {
         .get(basePath)
         .reply(200, expectedIssues)
 
-      await poller.do(uuid, validApiKey, defaultApiUrl, 10).should.eventually.deep.equal(expectedIssues)
+      await poller.do(uuid, validApiKey, defaultApiUrl, pollStep).should.eventually.deep.equal(expectedIssues)
     })
 
     it('should be able to query http API', async () => {
@@ -95,7 +96,7 @@ describe('poller', () => {
         .get(basePath)
         .reply(200, expectedIssues)
 
-      await poller.do(uuid, validApiKey, httpApiUrl, 10).should.eventually.deep.equal(expectedIssues)
+      await poller.do(uuid, validApiKey, httpApiUrl, pollStep).should.eventually.deep.equal(expectedIssues)
     })
 
     it('should reject on server error', async () => {
@@ -107,7 +108,7 @@ describe('poller', () => {
         .get(basePath)
         .reply(500)
 
-      await poller.do(uuid, validApiKey, defaultApiUrl, 10).should.be.rejectedWith(Error)
+      await poller.do(uuid, validApiKey, defaultApiUrl, pollStep).should.be.rejectedWith(Error)
     })
 
     it('should reject on authentication error', async () => {
@@ -121,7 +122,7 @@ describe('poller', () => {
         .get(basePath)
         .reply(401, 'Unauthorized')
 
-      await poller.do(uuid, inValidApiKey, defaultApiUrl, 10).should.be.rejectedWith(Error)
+      await poller.do(uuid, inValidApiKey, defaultApiUrl, pollStep).should.be.rejectedWith(Error)
     })
 
     it('should reject on non-JSON data', async () => {
@@ -145,7 +146,22 @@ describe('poller', () => {
         .get(basePath)
         .reply(200, 'non-json-data')
 
-      await poller.do(uuid, validApiKey, defaultApiUrl, 10).should.be.rejectedWith(SyntaxError)
+      await poller.do(uuid, validApiKey, defaultApiUrl, pollStep).should.be.rejectedWith(SyntaxError)
+    })
+
+    it('should reject after a timeout', async () => {
+      const timeout = 15
+
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(basePath)
+        .delay(timeout + pollStep)
+        .reply(200, expectedIssues)
+
+      await poller.do(uuid, validApiKey, defaultApiUrl, pollStep, timeout).should.be.rejectedWith(Error, `Timed out in ${timeout} ms.`)
     })
   })
 })
