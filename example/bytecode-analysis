@@ -6,7 +6,7 @@ function usage() {
     console.log(`usage: ${process.argv[1]} *bytecode* [*timeout*]
 
 Run the Mythril Platform API analysis on *bytecode*. If a second
-argument, *timeout* is given it is the amount of time, in seconds, to
+argument, *timeout* is given it is the amount of time, in milliseconds, to
 wait for the analysis to complete.
 
 Set environment variables EMAIL and MYTHRIL_API_KEY before using.
