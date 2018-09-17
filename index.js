@@ -74,12 +74,11 @@ class Client {
   }
 }
 
-module.exports.ApiVersion =
-    function (url = `${defaultApiUrl}/${defaultApiVersion}/version`) {
-      return requester.SimpleRequest({url: url, json: true})
-    }
+module.exports.ApiVersion = (url = `${defaultApiUrl}/${defaultApiVersion}/version`) => {
+  return requester.SimpleRequest({url: url, json: true})
+}
 
-module.exports.OpenApiSpec = function (url = `${defaultApiUrl}/${defaultApiVersion}/openapi.yaml`) {
+module.exports.OpenApiSpec = (url = `${defaultApiUrl}/${defaultApiVersion}/openapi.yaml`) => {
   return requester.SimpleRequest({url: url, json: false})
 }
 
