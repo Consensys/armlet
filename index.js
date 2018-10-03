@@ -3,10 +3,10 @@ const url = require('url')
 const requester = require('./lib/requester')
 const poller = require('./lib/poller')
 
-const defaultApiUrl = 'https://api.mythril.ai'
+const defaultApiHost = 'https://api.mythril.ai'
 const defaultApiVersion = 'v1'
 
-module.exports = (bytecode, apiKey, inputApiUrl = defaultApiUrl) => {
+module.exports = (bytecode, apiKey, inputApiUrl = defaultApiHost) => {
   return new Promise((resolve, reject) => {
     if (bytecode === undefined) {
       throw new TypeError('Please provide a bytecode param.')
@@ -33,7 +33,7 @@ module.exports = (bytecode, apiKey, inputApiUrl = defaultApiUrl) => {
 }
 
 class Client {
-  constructor (auth, inputApiUrl = defaultApiUrl) {
+  constructor (auth, inputApiUrl = defaultApiHost) {
     if (auth === undefined) {
       throw new TypeError('Please provide auth options.')
     }
@@ -74,13 +74,15 @@ class Client {
   }
 }
 
-module.exports.ApiVersion = (url = `${defaultApiUrl}/${defaultApiVersion}/version`) => {
+module.exports.ApiVersion = (url = `${defaultApiHost}/${defaultApiVersion}/version`) => {
   return requester.SimpleRequest({url: url, json: true})
 }
 
-module.exports.OpenApiSpec = (url = `${defaultApiUrl}/${defaultApiVersion}/openapi.yaml`) => {
+module.exports.OpenApiSpec = (url = `${defaultApiHost}/${defaultApiVersion}/openapi.yaml`) => {
   return requester.SimpleRequest({url: url, json: false})
 }
 
 module.exports.Client = Client
-module.exports.defaultApiUrl = url.parse(defaultApiUrl)
+module.exports.defaultApiUrl = url.parse(defaultApiHost)
+module.exports.defaultApiHost = defaultApiHost
+module.exports.defaultApiVersion = defaultApiVersion

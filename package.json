@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "standard",
     "lint-fix": "standard --fix",
-    "test": "npm run lint && mocha --reporter spec --recursive"
+    "pretest": "npm run lint",
+    "test": "mocha --reporter spec --recursive"
   },
   "standard": {
     "env": [

@@ -6,4 +6,4 @@ const armlet = require('../index') //if armlet is not installed
 
 armlet.OpenApiSpec().then(
   result => console.log(result)
-})
+)
