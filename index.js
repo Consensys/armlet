@@ -75,12 +75,12 @@ class Client {
   }
 }
 
-module.exports.ApiVersion = (inputUrl = `${defaultApiUrl}/${defaultApiVersion}/version`) => {
-  return simpleRequester.do({url: inputUrl, json: true})
+module.exports.ApiVersion = (inputApiUrl = defaultApiUrl) => {
+  return simpleRequester.do({url: `${inputApiUrl}/${defaultApiVersion}/version`, json: true})
 }
 
-module.exports.OpenApiSpec = (inputUrl = `${defaultApiUrl}/${defaultApiVersion}/openapi.yaml`) => {
-  return simpleRequester.do({url: inputUrl})
+module.exports.OpenApiSpec = (inputApiUrl = defaultApiUrl) => {
+  return simpleRequester.do({url: `${inputApiUrl}/${defaultApiVersion}/openapi.yaml`})
 }
 
 module.exports.Client = Client
