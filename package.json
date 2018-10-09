@@ -7,7 +7,8 @@
     "lint": "standard",
     "lint-fix": "standard --fix",
     "pretest": "npm run lint",
-    "test": "mocha --reporter spec --recursive"
+    "test": "nyc mocha --reporter spec --recursive",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "standard": {
     "env": [
@@ -27,8 +28,10 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
+    "coveralls": "^3.0.2",
     "mocha": "^5.2.0",
     "nock": "^9.6.1",
+    "nyc": "^13.0.1",
     "sinon": "^6.1.5",
     "standard": "^11.0.1"
   },
