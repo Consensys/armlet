@@ -20,6 +20,16 @@ describe('simpleRequester', () => {
       await simpleRequester.do({url: url}).should.eventually.equal(textContent)
     })
 
+    it('should do JSON requests', async () => {
+      const jsonContent = {content: textContent}
+
+      nock(httpsApiUrl)
+        .get(basePath)
+        .reply(200, jsonContent)
+
+      await simpleRequester.do({url: url, json: true}).should.eventually.deep.equal(jsonContent)
+    })
+
     it('should reject on api server connection failure', async () => {
       const invalidApiHostname = 'http://not-a-valid-hostname'
 
