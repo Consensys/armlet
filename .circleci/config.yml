@@ -20,6 +20,9 @@ jobs:
       - run:
           name: Run tests
           command: npm test
+      - run:
+          name: Send coverage report
+          command: npm run coverage
 
       - save_cache:
           paths:
