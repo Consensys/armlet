@@ -1,12 +1,13 @@
 {
   "name": "armlet",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "A Mythril Platform API client.",
   "main": "index.js",
   "scripts": {
     "lint": "standard",
     "lint-fix": "standard --fix",
-    "test": "npm run lint && mocha --reporter spec --recursive"
+    "pretest": "npm run lint",
+    "test": "mocha --reporter spec --recursive"
   },
   "standard": {
     "env": [
@@ -30,5 +31,8 @@
     "nock": "^9.6.1",
     "sinon": "^6.1.5",
     "standard": "^11.0.1"
+  },
+  "dependencies": {
+    "request": "^2.88.0"
   }
 }

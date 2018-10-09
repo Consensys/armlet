@@ -7,24 +7,29 @@ require('chai')
   .should()
 
 const requester = require('../lib/requester')
+const simpleRequester = require('../lib/simpleRequester')
 const poller = require('../lib/poller')
 
 describe('main module', () => {
   const bytecode = 'my-bitecode'
   const apiKey = 'my-apikey'
   const userEmail = 'my-userEmail'
+  const apiUrl = 'http://localhost:3100'
 
   describe('#armlet', () => {
-    afterEach(() => {
-      requester.do.restore()
-      poller.do.restore()
-    })
-
     describe('interface', () => {
+      afterEach(() => {
+        requester.do.restore()
+        poller.do.restore()
+        simpleRequester.do.restore()
+      })
+
       beforeEach(() => {
         sinon.stub(requester, 'do')
           .returns(new Promise((resolve, reject) => resolve(true)))
         sinon.stub(poller, 'do')
+          .returns(new Promise((resolve, reject) => resolve(true)))
+        sinon.stub(simpleRequester, 'do')
           .returns(new Promise((resolve, reject) => resolve(true)))
       })
 
@@ -97,15 +102,43 @@ describe('main module', () => {
           })
         })
       })
+
+      describe('ApiVersion', () => {
+        it('should be a function', () => {
+          analyze.ApiVersion.should.be.a('function')
+        })
+
+        it('should return a thenable', () => {
+          const result = analyze.ApiVersion(apiUrl)
+
+          result.then.should.be.a('function')
+        })
+      })
+
+      describe('OpenApiSpec', () => {
+        it('should be a function', () => {
+          analyze.OpenApiSpec.should.be.a('function')
+        })
+
+        it('should return a thenable', () => {
+          const result = analyze.OpenApiSpec(apiUrl)
+
+          result.then.should.be.a('function')
+        })
+      })
     })
 
     describe('functionality', () => {
       const uuid = 'analysis-uuid'
       const issues = ['issue1', 'issue2']
-      const apiUrl = 'http://localhost:3100'
       const parsedApiUrl = url.parse(apiUrl)
 
       describe('default', () => {
+        afterEach(() => {
+          requester.do.restore()
+          poller.do.restore()
+        })
+
         it('should chain requester and poller', async () => {
           sinon.stub(requester, 'do')
             .withArgs(bytecode, apiKey, parsedApiUrl)
@@ -155,6 +188,11 @@ describe('main module', () => {
       })
 
       describe('Client', () => {
+        afterEach(() => {
+          requester.do.restore()
+          poller.do.restore()
+        })
+
         beforeEach(() => {
           this.instance = new Client({userEmail: userEmail, apiKey: apiKey}, apiUrl)
         })
@@ -221,6 +259,67 @@ describe('main module', () => {
             }))
 
           await this.instance.analyze({bytecode: bytecode, timeout: timeout}).should.eventually.equal(issues)
+        })
+      })
+
+      describe('ApiVersion', () => {
+        const url = `${apiUrl}/${analyze.defaultApiVersion}/version`
+        afterEach(() => {
+          simpleRequester.do.restore()
+        })
+
+        it('should use simpleRequester', async () => {
+          const result = {result: 'result'}
+
+          sinon.stub(simpleRequester, 'do')
+            .withArgs({url, json: true})
+            .returns(new Promise(resolve => {
+              resolve(result)
+            }))
+
+          await analyze.ApiVersion(apiUrl).should.eventually.equal(result)
+        })
+
+        it('should reject with simpleRequester failures', async () => {
+          const errorMsg = 'Booom!'
+          sinon.stub(simpleRequester, 'do')
+            .withArgs({url, json: true})
+            .returns(new Promise((resolve, reject) => {
+              reject(new Error(errorMsg))
+            }))
+
+          await analyze.ApiVersion(apiUrl).should.be.rejectedWith(Error, errorMsg)
+        })
+      })
+
+      describe('OpenApiSpec', () => {
+        const url = `${apiUrl}/${analyze.defaultApiVersion}/openapi.yaml`
+
+        afterEach(() => {
+          simpleRequester.do.restore()
+        })
+
+        it('should use simpleRequester', async () => {
+          const result = 'result'
+
+          sinon.stub(simpleRequester, 'do')
+            .withArgs({url})
+            .returns(new Promise(resolve => {
+              resolve(result)
+            }))
+
+          await analyze.OpenApiSpec(apiUrl).should.eventually.equal(result)
+        })
+
+        it('should reject with simpleRequester failures', async () => {
+          const errorMsg = 'Booom!'
+          sinon.stub(simpleRequester, 'do')
+            .withArgs({url})
+            .returns(new Promise((resolve, reject) => {
+              reject(new Error(errorMsg))
+            }))
+
+          await analyze.OpenApiSpec(apiUrl).should.be.rejectedWith(Error, errorMsg)
         })
       })
     })

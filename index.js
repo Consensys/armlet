@@ -1,9 +1,11 @@
 const url = require('url')
 
 const requester = require('./lib/requester')
+const simpleRequester = require('./lib/simpleRequester')
 const poller = require('./lib/poller')
 
 const defaultApiUrl = 'https://api.mythril.ai'
+const defaultApiVersion = 'v1'
 
 module.exports = (bytecode, apiKey, inputApiUrl = defaultApiUrl) => {
   return new Promise((resolve, reject) => {
@@ -73,5 +75,15 @@ class Client {
   }
 }
 
+module.exports.ApiVersion = (inputApiUrl = defaultApiUrl) => {
+  return simpleRequester.do({url: `${inputApiUrl}/${defaultApiVersion}/version`, json: true})
+}
+
+module.exports.OpenApiSpec = (inputApiUrl = defaultApiUrl) => {
+  return simpleRequester.do({url: `${inputApiUrl}/${defaultApiVersion}/openapi.yaml`})
+}
+
 module.exports.Client = Client
 module.exports.defaultApiUrl = url.parse(defaultApiUrl)
+module.exports.defaultApiHost = defaultApiUrl
+module.exports.defaultApiVersion = defaultApiVersion
