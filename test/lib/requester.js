@@ -12,9 +12,9 @@ describe('requester', () => {
     const httpApiUrl = url.parse('http://localhost:3100')
     const httpsApiUrl = url.parse('https://localhost:3100')
     const validApiKey = 'valid-api-key'
-    const bytecode = 'bytecode'
     const uuid = 'my-uuid'
     const basePath = '/v1/analyses'
+    const data = {bytecode: '00'}
 
     it('should request analysis for http API', async () => {
       nock(httpApiUrl.href, {
@@ -22,16 +22,13 @@ describe('requester', () => {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .post(basePath, {
-          type: 'bytecode',
-          contract: bytecode
-        })
+        .post(basePath, data)
         .reply(200, {
           result: 'Queued',
           uuid: uuid
         })
 
-      await requester.do(bytecode, validApiKey, httpApiUrl).should.eventually.equal(uuid)
+      await requester.do(data, validApiKey, httpApiUrl).should.eventually.equal(uuid)
     })
 
     it('should request analysis for https API', async () => {
@@ -40,16 +37,13 @@ describe('requester', () => {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .post(basePath, {
-          type: 'bytecode',
-          contract: bytecode
-        })
+        .post(basePath, data)
         .reply(200, {
           result: 'Queued',
           uuid: uuid
         })
 
-      await requester.do(bytecode, validApiKey, httpsApiUrl).should.eventually.equal(uuid)
+      await requester.do(data, validApiKey, httpsApiUrl).should.eventually.equal(uuid)
     })
 
     it('should default to official API endpoint', async () => {
@@ -58,22 +52,19 @@ describe('requester', () => {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .post(basePath, {
-          type: 'bytecode',
-          contract: bytecode
-        })
+        .post(basePath, data)
         .reply(200, {
           result: 'Queued',
           uuid: uuid
         })
 
-      await requester.do(bytecode, validApiKey, defaultApiUrl).should.eventually.equal(uuid)
+      await requester.do(data, validApiKey, defaultApiUrl).should.eventually.equal(uuid)
     })
 
     it('should reject on api server connection failure', async () => {
       const invalidApiHostname = url.parse('http://not-a-valid-hostname')
 
-      await requester.do(bytecode, validApiKey, invalidApiHostname).should.be.rejectedWith(Error)
+      await requester.do(data, validApiKey, invalidApiHostname).should.be.rejectedWith(Error)
     })
 
     it('should reject on api server 500', async () => {
@@ -82,13 +73,10 @@ describe('requester', () => {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .post(basePath, {
-          type: 'bytecode',
-          contract: bytecode
-        })
+        .post(basePath, data)
         .reply(500)
 
-      await requester.do(bytecode, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
+      await requester.do(data, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
     })
 
     it('should reject on request limit errors', async () => {
@@ -98,15 +86,12 @@ describe('requester', () => {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .post(basePath, {
-          type: 'bytecode',
-          contract: bytecode
-        })
+        .post(basePath, data)
         .reply(429, {
           error: expectedErrorMsg
         })
 
-      await requester.do(bytecode, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
+      await requester.do(data, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
     })
 
     it('should reject on validation errors', async () => {
@@ -116,15 +101,12 @@ describe('requester', () => {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .post(basePath, {
-          type: 'bytecode',
-          contract: bytecode
-        })
+        .post(basePath, data)
         .reply(400, {
           error: expectedErrorMsg
         })
 
-      await requester.do(bytecode, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
+      await requester.do(data, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
     })
 
     it('should reject on authentication errors', async () => {
@@ -135,13 +117,10 @@ describe('requester', () => {
           authorization: `Bearer ${inValidApiKey}`
         }
       })
-        .post(basePath, {
-          type: 'bytecode',
-          contract: bytecode
-        })
+        .post(basePath, data)
         .reply(401, 'Unauthorized')
 
-      await requester.do(bytecode, inValidApiKey, httpApiUrl).should.be.rejectedWith(Error)
+      await requester.do(data, inValidApiKey, httpApiUrl).should.be.rejectedWith(Error)
     })
 
     it('should reject on non-JSON data', async () => {
@@ -150,13 +129,10 @@ describe('requester', () => {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .post(basePath, {
-          type: 'bytecode',
-          contract: bytecode
-        })
+        .post(basePath, data)
         .reply(200, 'non-json-response')
 
-      await requester.do(bytecode, validApiKey, defaultApiUrl).should.be.rejectedWith(SyntaxError)
+      await requester.do(data, validApiKey, defaultApiUrl).should.be.rejectedWith(SyntaxError)
     })
   })
 })
