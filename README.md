@@ -21,6 +21,10 @@ $ export MYTHRIL_API_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 $ export EMAIL=me@example.com
 ```
 
+By default, the backed host URL used is `https://mythril.ai`. However
+you can change that by passing an explicit URL or by setting
+environment variable `MYTHRIL_API_URL`.
+
 Then get the Mythril Platform analysis results with the promise returned by
 the exposed function:
 ```javascript
@@ -86,6 +90,7 @@ client.analyze({data, timeout: 5000})
     console.log(err)
   })
 ```
+
 
 
 See the example directory for some simple but runnable examples of how

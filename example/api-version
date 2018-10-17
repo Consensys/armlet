@@ -4,6 +4,4 @@
 const armlet = require('../index') //if armlet is not installed
 // const armlet = require('armlet')  // if armlet is installed
 
-armlet.ApiVersion().then(
-  result => console.log(result)
-})
+armlet.ApiVersion().then(result => console.log(result))

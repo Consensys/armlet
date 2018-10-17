@@ -2,9 +2,10 @@ const url = require('url')
 
 const requester = require('./lib/requester')
 const simpleRequester = require('./lib/simpleRequester')
+const simpleAuthRequester = require('./lib/simpleAuthRequester')
 const poller = require('./lib/poller')
 
-const defaultApiUrl = 'https://api.mythril.ai'
+const defaultApiUrl = process.env['MYTHRIL_API_URL'] || 'https://api.mythril.ai'
 const defaultApiVersion = 'v1'
 
 class Client {
@@ -46,6 +47,16 @@ class Client {
           reject(err)
         })
     })
+  }
+
+  listAnalyses (queryString) {
+    let options = {
+      url: `${this.apiUrl.href}${defaultApiVersion}/analyses`,
+      json: true,
+      apiKey: this.apiKey,
+      qs: queryString
+    }
+    return simpleAuthRequester.do(options)
   }
 }
 

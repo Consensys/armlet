@@ -3,13 +3,9 @@
 "use strict"
 
 function usage() {
-    console.log(`usage: ${process.argv[1]} [*JSON-file* [*timeout*]]
+    console.log(`usage: ${process.argv[1]}
 
-Run the Mythril Platform API analysis JSON data found in *JSON-file*.
-See data/simple_dao.json for an example of such a data file
-
-If a second argument, *timeout* is given it is the amount of time, in
-milliseconds, to wait for the analysis to complete.
+Get list of prevous Mythril Platform API analyses run
 
 Set environment variables EMAIL and MYTHRIL_API_KEY before using.
 `)
@@ -18,16 +14,13 @@ Set environment variables EMAIL and MYTHRIL_API_KEY before using.
 
 require('./helper')
 
-const jsonFile = process.argv[2] || `${__dirname}/data/simple.json`
-const jsonData = JSON.parse(require('fs').readFileSync(jsonFile, 'utf8'));
-
 var options = {
     apiKey: process.env.MYTHRIL_API_KEY,
     userEmail: process.env.EMAIL
 }
 
 var timeout = undefined
-if (process.argv.length > 3) {
+if (process.argv.length > 2) {
     timeout = parseInt(process.argv[3])
 }
 
@@ -39,10 +32,9 @@ const armlet = require('../index') // if not installed
 // const armlet = require('armlet') // if installed
 
 const client = new armlet.Client(options)
-
-client.analyze({ data: jsonData, timeout: timeout }) // parameter "timeout" is optional
-    .then(issues => {
-        console.log(issues)
+client.listAnalyses()
+    .then(result => {
+        console.log(result)
     }).catch(err => {
         console.log(err)
     })
