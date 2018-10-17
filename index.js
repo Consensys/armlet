@@ -33,8 +33,8 @@ class Client {
 
   analyze (options) {
     return new Promise((resolve, reject) => {
-      if (options === undefined || options.data === undefined || options.data.bytecode === undefined) {
-        throw new TypeError('Please provide a bytecode option.')
+      if (options === undefined || options.data === undefined || options.data.deployedBytecode === undefined) {
+        throw new TypeError('Please provide a deployedBytecode option.')
       }
 
       requester.do(options, this.apiKey, this.apiUrl)

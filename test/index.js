@@ -11,7 +11,7 @@ const simpleRequester = require('../lib/simpleRequester')
 const poller = require('../lib/poller')
 
 describe('main module', () => {
-  const data = {bytecode: 'my-bitecode'}
+  const data = {deployedBytecode: 'my-bitecode'}
   const apiKey = 'my-apikey'
   const userEmail = 'my-userEmail'
   const apiUrl = 'http://localhost:3100'
@@ -76,7 +76,7 @@ describe('main module', () => {
               this.instance.analyze.should.be.a('function')
             })
 
-            it('should require a bytecode option', async () => {
+            it('should require a deployedBytecode option', async () => {
               await this.instance.analyze().should.be.rejectedWith(TypeError)
             })
           })
