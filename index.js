@@ -50,7 +50,7 @@ class Client {
   }
 
   listAnalyses (queryString) {
-    let options = {
+    const options = {
       url: `${this.apiUrl.href}${defaultApiVersion}/analyses`,
       json: true,
       apiKey: this.apiKey,
