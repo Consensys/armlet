@@ -31,7 +31,45 @@ const client = new armlet.Client(
       userEmail: process.env.EMAIL  // adjust this
   })
 
-client.analyze({bytecode: '0xf6'})
+const data = {
+  contractName: 'TestMe',
+  abi: [
+    {
+      constant: false,
+      inputs: [
+        {
+          name: 'first_input',
+          type: 'uint256',
+        },
+      ],
+      name: 'lol',
+      outputs: [
+        {
+          name: '',
+          type: 'uint256',
+        },
+      ],
+      payable: false,
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+  ],
+  bytecode: '0xf6...',
+  deployedBytecode: '0xf6...',
+  sourceMap: '25:78:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;25:78:1;;;;;;;',
+  deployedSourceMap: '25:78:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;25:78:1;;;;;;;',
+  sourceList: [
+    'basecontract.sol',
+    'maincontract.sol',
+  ],
+  sources: {
+    'basecontract.sol': '[... escaped source code ...]',
+    'maincontract.sol': '[... escaped source code ...]',
+  },
+  analysisMode: 'full',
+};
+
+client.analyze({data})
   .then(issues => {
     console.log(issues)
   }).catch(err => {
@@ -41,7 +79,7 @@ client.analyze({bytecode: '0xf6'})
 You can also specify the timeout in milliseconds to wait for the analysis to be
 done (the default is 10 seconds). For instance, to wait up to 5 seconds:
 ```javascript
-client.analyze({bytecode: <contract_bytecode>, timeout: 5000})
+client.analyze({data, timeout: 5000})
   .then(issues => {
     console.log(issues)
   }).catch(err => {

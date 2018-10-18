@@ -1,4 +1,4 @@
-const analyze = require('../index')
+const armlet = require('../index')
 const Client = require('../index').Client
 const sinon = require('sinon')
 const url = require('url')
@@ -11,7 +11,7 @@ const simpleRequester = require('../lib/simpleRequester')
 const poller = require('../lib/poller')
 
 describe('main module', () => {
-  const bytecode = 'my-bitecode'
+  const data = {deployedBytecode: 'my-bitecode'}
   const apiKey = 'my-apikey'
   const userEmail = 'my-userEmail'
   const apiUrl = 'http://localhost:3100'
@@ -33,36 +33,16 @@ describe('main module', () => {
           .returns(new Promise((resolve, reject) => resolve(true)))
       })
 
-      describe('default', () => {
-        it('should be a function', () => {
-          analyze.should.be.a('function')
-        })
-
-        it('should return a thenable', () => {
-          const result = analyze(bytecode, apiKey)
-
-          result.then.should.be.a('function')
-        })
-
-        it('should require a bytecode param', async () => {
-          await analyze(undefined, apiKey).should.be.rejectedWith(TypeError)
-        })
-
-        it('should require an apiKey param', async () => {
-          await analyze(bytecode).should.be.rejectedWith(TypeError)
-        })
-
-        it('should require a valid api URL if given', async () => {
-          await analyze(bytecode, apiKey, 'not-a-real-url').should.be.rejectedWith(TypeError)
-        })
-      })
-
       describe('Client', () => {
         it('should be a function', () => {
-          analyze.should.be.a('function')
+          armlet.Client.should.be.a('function')
         })
 
         describe('should have a constructor which should', () => {
+          it('require an auth option', () => {
+            (() => new Client()).should.throw(TypeError)
+          })
+
           it('require an apiKey auth option', () => {
             (() => new Client({userEmail: userEmail})).should.throw(TypeError)
           })
@@ -78,7 +58,7 @@ describe('main module', () => {
           it('initialize apiUrl to a default value if not given', () => {
             const instance = new Client({userEmail: userEmail, apiKey: apiKey})
 
-            instance.apiUrl.should.be.deep.equal(analyze.defaultApiUrl)
+            instance.apiUrl.should.be.deep.equal(armlet.defaultApiUrl)
           })
         })
 
@@ -96,7 +76,7 @@ describe('main module', () => {
               this.instance.analyze.should.be.a('function')
             })
 
-            it('should require a bytecode option', async () => {
+            it('should require a deployedBytecode option', async () => {
               await this.instance.analyze().should.be.rejectedWith(TypeError)
             })
           })
@@ -105,11 +85,11 @@ describe('main module', () => {
 
       describe('ApiVersion', () => {
         it('should be a function', () => {
-          analyze.ApiVersion.should.be.a('function')
+          armlet.ApiVersion.should.be.a('function')
         })
 
         it('should return a thenable', () => {
-          const result = analyze.ApiVersion(apiUrl)
+          const result = armlet.ApiVersion(apiUrl)
 
           result.then.should.be.a('function')
         })
@@ -117,11 +97,11 @@ describe('main module', () => {
 
       describe('OpenApiSpec', () => {
         it('should be a function', () => {
-          analyze.OpenApiSpec.should.be.a('function')
+          armlet.OpenApiSpec.should.be.a('function')
         })
 
         it('should return a thenable', () => {
-          const result = analyze.OpenApiSpec(apiUrl)
+          const result = armlet.OpenApiSpec(apiUrl)
 
           result.then.should.be.a('function')
         })
@@ -132,60 +112,6 @@ describe('main module', () => {
       const uuid = 'analysis-uuid'
       const issues = ['issue1', 'issue2']
       const parsedApiUrl = url.parse(apiUrl)
-
-      describe('default', () => {
-        afterEach(() => {
-          requester.do.restore()
-          poller.do.restore()
-        })
-
-        it('should chain requester and poller', async () => {
-          sinon.stub(requester, 'do')
-            .withArgs(bytecode, apiKey, parsedApiUrl)
-            .returns(new Promise((resolve, reject) => {
-              resolve(uuid)
-            }))
-          sinon.stub(poller, 'do')
-            .withArgs(uuid, apiKey, parsedApiUrl)
-            .returns(new Promise((resolve, reject) => {
-              resolve(issues)
-            }))
-
-          await analyze(bytecode, apiKey, apiUrl).should.eventually.equal(issues)
-        })
-
-        it('should reject with requester failures', async () => {
-          const errorMsg = 'Booom! from requester'
-          sinon.stub(requester, 'do')
-            .withArgs(bytecode, apiKey, parsedApiUrl)
-            .returns(new Promise((resolve, reject) => {
-              reject(new Error(errorMsg))
-            }))
-          sinon.stub(poller, 'do')
-            .withArgs(uuid, apiKey, parsedApiUrl)
-            .returns(new Promise((resolve, reject) => {
-              resolve(issues)
-            }))
-
-          await analyze(bytecode, apiKey, apiUrl).should.be.rejectedWith(Error, errorMsg)
-        })
-
-        it('should reject with poller failures', async () => {
-          const errorMsg = 'Booom! from poller'
-          sinon.stub(requester, 'do')
-            .withArgs(bytecode, apiKey, parsedApiUrl)
-            .returns(new Promise((resolve, reject) => {
-              resolve(uuid)
-            }))
-          sinon.stub(poller, 'do')
-            .withArgs(uuid, apiKey, parsedApiUrl)
-            .returns(new Promise((resolve, reject) => {
-              reject(new Error(errorMsg))
-            }))
-
-          await analyze(bytecode, apiKey, apiUrl).should.be.rejectedWith(Error, errorMsg)
-        })
-      })
 
       describe('Client', () => {
         afterEach(() => {
@@ -199,7 +125,7 @@ describe('main module', () => {
 
         it('should chain requester and poller', async () => {
           sinon.stub(requester, 'do')
-            .withArgs(bytecode, apiKey, parsedApiUrl)
+            .withArgs({data}, apiKey, parsedApiUrl)
             .returns(new Promise(resolve => {
               resolve(uuid)
             }))
@@ -209,13 +135,13 @@ describe('main module', () => {
               resolve(issues)
             }))
 
-          await this.instance.analyze({bytecode: bytecode}).should.eventually.equal(issues)
+          await this.instance.analyze({data}).should.eventually.equal(issues)
         })
 
         it('should reject with requester failures', async () => {
           const errorMsg = 'Booom! from requester'
           sinon.stub(requester, 'do')
-            .withArgs(bytecode, apiKey, parsedApiUrl)
+            .withArgs({data}, apiKey, parsedApiUrl)
             .returns(new Promise((resolve, reject) => {
               reject(new Error(errorMsg))
             }))
@@ -225,13 +151,13 @@ describe('main module', () => {
               resolve(issues)
             }))
 
-          await this.instance.analyze({bytecode: bytecode}).should.be.rejectedWith(Error, errorMsg)
+          await this.instance.analyze({data}).should.be.rejectedWith(Error, errorMsg)
         })
 
         it('should reject with poller failures', async () => {
           const errorMsg = 'Booom! from poller'
           sinon.stub(requester, 'do')
-            .withArgs(bytecode, apiKey, parsedApiUrl)
+            .withArgs({data}, apiKey, parsedApiUrl)
             .returns(new Promise(resolve => {
               resolve(uuid)
             }))
@@ -241,14 +167,14 @@ describe('main module', () => {
               reject(new Error(errorMsg))
             }))
 
-          await this.instance.analyze({bytecode: bytecode}).should.be.rejectedWith(Error, errorMsg)
+          await this.instance.analyze({data}).should.be.rejectedWith(Error, errorMsg)
         })
 
         it('should pass timeout option to poller', async () => {
           const timeout = 10
 
           sinon.stub(requester, 'do')
-            .withArgs(bytecode, apiKey, parsedApiUrl)
+            .withArgs({data, timeout}, apiKey, parsedApiUrl)
             .returns(new Promise(resolve => {
               resolve(uuid)
             }))
@@ -258,12 +184,12 @@ describe('main module', () => {
               resolve(issues)
             }))
 
-          await this.instance.analyze({bytecode: bytecode, timeout: timeout}).should.eventually.equal(issues)
+          await this.instance.analyze({data, timeout}).should.eventually.equal(issues)
         })
       })
 
       describe('ApiVersion', () => {
-        const url = `${apiUrl}/${analyze.defaultApiVersion}/version`
+        const url = `${apiUrl}/${armlet.defaultApiVersion}/version`
         afterEach(() => {
           simpleRequester.do.restore()
         })
@@ -277,7 +203,7 @@ describe('main module', () => {
               resolve(result)
             }))
 
-          await analyze.ApiVersion(apiUrl).should.eventually.equal(result)
+          await armlet.ApiVersion(apiUrl).should.eventually.equal(result)
         })
 
         it('should reject with simpleRequester failures', async () => {
@@ -288,12 +214,12 @@ describe('main module', () => {
               reject(new Error(errorMsg))
             }))
 
-          await analyze.ApiVersion(apiUrl).should.be.rejectedWith(Error, errorMsg)
+          await armlet.ApiVersion(apiUrl).should.be.rejectedWith(Error, errorMsg)
         })
       })
 
       describe('OpenApiSpec', () => {
-        const url = `${apiUrl}/${analyze.defaultApiVersion}/openapi.yaml`
+        const url = `${apiUrl}/${armlet.defaultApiVersion}/openapi.yaml`
 
         afterEach(() => {
           simpleRequester.do.restore()
@@ -308,7 +234,7 @@ describe('main module', () => {
               resolve(result)
             }))
 
-          await analyze.OpenApiSpec(apiUrl).should.eventually.equal(result)
+          await armlet.OpenApiSpec(apiUrl).should.eventually.equal(result)
         })
 
         it('should reject with simpleRequester failures', async () => {
@@ -319,7 +245,7 @@ describe('main module', () => {
               reject(new Error(errorMsg))
             }))
 
-          await analyze.OpenApiSpec(apiUrl).should.be.rejectedWith(Error, errorMsg)
+          await armlet.OpenApiSpec(apiUrl).should.be.rejectedWith(Error, errorMsg)
         })
       })
     })
