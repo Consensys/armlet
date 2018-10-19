@@ -4,7 +4,7 @@ const requester = require('./lib/requester')
 const simpleRequester = require('./lib/simpleRequester')
 const poller = require('./lib/poller')
 
-const defaultApiUrl = 'https://api.mythril.ai'
+const defaultApiUrl = process.env['MYTHRIL_API_URL'] || 'https://api.mythril.ai'
 const defaultApiVersion = 'v1'
 
 class Client {
