@@ -95,7 +95,8 @@ describe('requester', () => {
     })
 
     it('should reject on validation errors', async () => {
-      const expectedErrorMsg = 'validation failed'
+      const expectedErrorMsg1 = 'field x required'
+      const expectedErrorMsg2 = 'field y required'
       nock(httpApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
@@ -103,10 +104,16 @@ describe('requester', () => {
       })
         .post(basePath, data)
         .reply(400, {
-          error: expectedErrorMsg
+          details: [
+            {message: expectedErrorMsg1},
+            {message: expectedErrorMsg2}
+          ]
         })
 
-      await requester.do(data, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
+      await requester.do(
+        data,
+        validApiKey,
+        httpApiUrl).should.be.rejectedWith(Error, `Failed to get response, status code 400: ${expectedErrorMsg1}, ${expectedErrorMsg2}`)
     })
 
     it('should reject on authentication errors', async () => {
