@@ -1,0 +1,46 @@
+#!/usr/bin/env node
+
+"use strict"
+var fs = require('fs')
+
+function usage() {
+    console.log(`usage: ${process.argv[1]} [*mythril-api-json-path*]
+
+Run the Mythril Platform API analysis on *mythril-api-json-path*
+
+Set environment variables EMAIL and MYTHRIL_API_KEY before using.
+`)
+    process.exit(1)
+}
+
+require('./helper')
+
+if (process.argv.length === 3 &&
+    process.argv[2].match(/^[-]{0,2}h(?:elp)?$/)) {
+    usage()
+}
+
+const jsonPath = process.argv[2] || `${__dirname}/sample-json/PublicArray.json`
+
+/**********************************
+  Example code starts here.....
+***********************************/
+
+var options = {
+    apiKey: process.env.MYTHRIL_API_KEY,
+    userEmail: process.env.EMAIL,
+    data: JSON.parse(fs.readFileSync(jsonPath, 'utf8')),
+    platforms: []  // client chargeback
+}
+
+const armlet = require('../index') // if not installed
+// const armlet = require('armlet') // if installed
+
+const client = new armlet.Client(options)
+
+client.analyze(options) // parameter "timeout" is optional
+    .then(issues => {
+        console.log(issues)
+    }).catch(err => {
+        console.log(err)
+    })
