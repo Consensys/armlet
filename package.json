@@ -11,6 +11,9 @@
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "standard": {
+    "ignore": [
+      "/example/typescript"
+    ],
     "env": [
       "mocha"
     ]
