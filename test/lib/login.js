@@ -11,8 +11,9 @@ describe('login', () => {
     const apiUrl = 'https://localhost:3100'
     const parsedApiUrl = url.parse(apiUrl)
     const email = 'content'
+    const ethAddress = '0x74B904af705Eb2D5a6CDc174c08147bED478a60d'
     const password = 'password'
-    const auth = { email, password }
+    const auth = { email, ethAddress, password }
     const loginPath = '/v1/auth/login'
     const jsonTokens = { refreshToken: 'refresh', accessToken: 'access' }
 
@@ -21,7 +22,7 @@ describe('login', () => {
         .post(loginPath, auth)
         .reply(200, jsonTokens)
 
-      await login.do(email, password, parsedApiUrl).should.eventually.deep.equal(jsonTokens)
+      await login.do(email, ethAddress, password, parsedApiUrl).should.eventually.deep.equal(jsonTokens)
     })
 
     it('should reject on api server connection failure', async () => {
@@ -36,7 +37,7 @@ describe('login', () => {
         .post(loginPath, auth)
         .reply(500)
 
-      await login.do(email, password, parsedApiUrl).should.be.rejectedWith(Error, 'Invalid status code')
+      await login.do(email, ethAddress, password, parsedApiUrl).should.be.rejectedWith(Error, 'Invalid status code')
     })
 
     it('should reject on non-JSON data', async () => {
@@ -44,7 +45,7 @@ describe('login', () => {
         .post(loginPath, auth)
         .reply(200, 'jsonTextTokens')
 
-      await login.do(email, password, parsedApiUrl).should.be.rejectedWith(Error, 'JSON parse error')
+      await login.do(email, ethAddress, password, parsedApiUrl).should.be.rejectedWith(Error, 'JSON parse error')
     })
 
     it('should reject if refreshToken is not present', async () => {
@@ -52,7 +53,7 @@ describe('login', () => {
         .post(loginPath, auth)
         .reply(200, {accessToken: 'access'})
 
-      await login.do(email, password, parsedApiUrl).should.be.rejectedWith(Error, 'Refresh Token missing')
+      await login.do(email, ethAddress, password, parsedApiUrl).should.be.rejectedWith(Error, 'Refresh Token missing')
     })
 
     it('should reject if accessToken is not present', async () => {
@@ -60,7 +61,7 @@ describe('login', () => {
         .post(loginPath, auth)
         .reply(200, {refreshToken: 'refresh'})
 
-      await login.do(email, password, parsedApiUrl).should.be.rejectedWith(Error, 'Access Token missing')
+      await login.do(email, ethAddress, password, parsedApiUrl).should.be.rejectedWith(Error, 'Access Token missing')
     })
   })
 })

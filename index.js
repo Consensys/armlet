@@ -15,8 +15,8 @@ class Client {
       throw new TypeError('Please provide auth options.')
     }
 
-    if (auth.email === undefined) {
-      throw new TypeError('Please provide an email auth option.')
+    if (auth.email === undefined && auth.ethAddress === undefined) {
+      throw new TypeError('Please provide an user id auth option.')
     }
 
     if (auth.password === undefined) {
@@ -29,6 +29,7 @@ class Client {
     }
 
     this.email = auth.email
+    this.ethAddress = auth.ethAddress
     this.password = auth.password
     this.apiUrl = apiUrl
   }
@@ -39,7 +40,7 @@ class Client {
     }
 
     if (!this.accessToken) {
-      const tokens = await login.do(this.email, this.password, this.apiUrl)
+      const tokens = await login.do(this.email, this.ethAddress, this.password, this.apiUrl)
       this.accessToken = tokens.accessToken
       this.refreshToken = tokens.refreshToken
     }
