@@ -65,9 +65,15 @@ describe('main module', () => {
             instance.apiUrl.should.be.deep.equal(armlet.defaultApiUrl)
           })
 
+          it('initialize apiUrl to the given value', () => {
+            const instance = new Client({email, password}, apiUrl)
+
+            instance.apiUrl.should.be.deep.equal(url.parse(apiUrl))
+          })
+
           describe('instances should', () => {
             beforeEach(() => {
-              this.instance = new Client({email: email, password: password})
+              this.instance = new Client({email, password})
             })
 
             it('be created with a constructor', () => {
@@ -121,7 +127,7 @@ describe('main module', () => {
 
     describe('Client', () => {
       beforeEach(() => {
-        this.instance = new Client({email: email, password: password}, apiUrl)
+        this.instance = new Client({email, password}, apiUrl)
       })
 
       afterEach(() => {
