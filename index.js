@@ -15,11 +15,11 @@ class Client {
       throw new TypeError('Please provide auth options.')
     }
 
-    if (auth.email === undefined && auth.ethAddress === undefined) {
+    if (auth.email === undefined && auth.ethAddress === undefined && auth.apiKey === undefined) {
       throw new TypeError('Please provide an user id auth option.')
     }
 
-    if (auth.password === undefined) {
+    if ((auth.email !== undefined || auth.ethAddress !== undefined) && auth.password === undefined) {
       throw new TypeError('Please provide a password auth option.')
     }
 
@@ -31,6 +31,7 @@ class Client {
     this.email = auth.email
     this.ethAddress = auth.ethAddress
     this.password = auth.password
+    this.accessToken = auth.apiKey
     this.apiUrl = apiUrl
   }
 

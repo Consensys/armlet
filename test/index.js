@@ -76,6 +76,12 @@ describe('main module', () => {
             instance.apiUrl.should.be.deep.equal(url.parse(apiUrl))
           })
 
+          it('accept an apiKey auth and store it as accessToken', () => {
+            const instance = new Client({apiKey: 'my-apikey'})
+
+            instance.accessToken.should.be.equal('my-apikey')
+          })
+
           describe('instances should', () => {
             beforeEach(() => {
               this.instance = new Client({email, password})
