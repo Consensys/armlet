@@ -25,7 +25,7 @@ describe('refresh', () => {
     })
 
     it('should reject on api server connection failure', async () => {
-      const invalidApiHostname = 'http://not-a-valid-hostname'
+      const invalidApiHostname = 'not-an-url-object'
 
       await refresh.do(expiredRefreshToken, expiredAccessToken, invalidApiHostname).should.be.rejectedWith(Error)
     })

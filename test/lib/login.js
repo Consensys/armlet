@@ -28,10 +28,9 @@ describe('login', () => {
     })
 
     it('should reject on api server connection failure', async () => {
-      const invalidApiHostname = 'http://not-a-valid-hostname'
-      const parsedInvalidApiUrl = url.parse(invalidApiHostname)
+      const invalidUrlObject = 'not-an-url-object'
 
-      await login.do(email, password, parsedInvalidApiUrl).should.be.rejectedWith(Error)
+      await login.do(email, ethAddress, password, invalidUrlObject).should.be.rejectedWith(Error)
     })
 
     it('should reject on api server status code != 200', async () => {
