@@ -15,7 +15,9 @@ describe('login', () => {
     const password = 'password'
     const auth = { email, ethAddress, password }
     const loginPath = '/v1/auth/login'
-    const jsonTokens = { refreshToken: 'refresh', accessToken: 'access' }
+    const refresh = 'refresh-token'
+    const access = 'access-token'
+    const jsonTokens = { refresh, access }
 
     it('should return refresh and access tokens', async () => {
       nock(apiUrl)
@@ -51,7 +53,7 @@ describe('login', () => {
     it('should reject if refreshToken is not present', async () => {
       nock(apiUrl)
         .post(loginPath, auth)
-        .reply(200, {accessToken: 'access'})
+        .reply(200, {access})
 
       await login.do(email, ethAddress, password, parsedApiUrl).should.be.rejectedWith(Error, 'Refresh Token missing')
     })
@@ -59,7 +61,7 @@ describe('login', () => {
     it('should reject if accessToken is not present', async () => {
       nock(apiUrl)
         .post(loginPath, auth)
-        .reply(200, {refreshToken: 'refresh'})
+        .reply(200, {refresh})
 
       await login.do(email, ethAddress, password, parsedApiUrl).should.be.rejectedWith(Error, 'Access Token missing')
     })

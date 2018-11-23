@@ -41,8 +41,8 @@ class Client {
 
     if (!this.accessToken) {
       const tokens = await login.do(this.email, this.ethAddress, this.password, this.apiUrl)
-      this.accessToken = tokens.accessToken
-      this.refreshToken = tokens.refreshToken
+      this.accessToken = tokens.access
+      this.refreshToken = tokens.refresh
     }
 
     let uuid
@@ -53,8 +53,8 @@ class Client {
         throw e
       }
       const tokens = await refresh.do(this.accessToken, this.refreshToken, this.apiUrl)
-      this.accessToken = tokens.accessToken
-      this.refreshToken = tokens.refreshToken
+      this.accessToken = tokens.access
+      this.refreshToken = tokens.refresh
 
       uuid = await requester.do(options, this.accessToken, this.apiUrl)
     }
@@ -67,8 +67,8 @@ class Client {
         throw e
       }
       const tokens = await refresh.do(this.accessToken, this.refreshToken, this.apiUrl)
-      this.accessToken = tokens.accessToken
-      this.refreshToken = tokens.refreshToken
+      this.accessToken = tokens.access
+      this.refreshToken = tokens.refresh
 
       result = await poller.do(uuid, this.accessToken, this.apiUrl, undefined, options.timeout)
     }

@@ -127,8 +127,8 @@ describe('main module', () => {
     const uuid = 'analysis-uuid'
     const issues = ['issue1', 'issue2']
     const parsedApiUrl = url.parse(apiUrl)
-    const refreshToken = 'refresh'
-    const accessToken = 'access'
+    const refreshToken = 'refresh-token'
+    const accessToken = 'access-token'
 
     describe('Client', () => {
       beforeEach(() => {
@@ -148,7 +148,7 @@ describe('main module', () => {
           sinon.stub(login, 'do')
             .withArgs(email, ethAddress, password, parsedApiUrl)
             .returns(new Promise(resolve => {
-              resolve({accessToken, refreshToken})
+              resolve({access: accessToken, refresh: refreshToken})
             }))
           sinon.stub(requester, 'do')
             .withArgs({data}, accessToken, parsedApiUrl)
@@ -190,7 +190,7 @@ describe('main module', () => {
           sinon.stub(login, 'do')
             .withArgs(email, ethAddress, password, parsedApiUrl)
             .returns(new Promise(resolve => {
-              resolve({accessToken, refreshToken})
+              resolve({access: accessToken, refresh: refreshToken})
             }))
           sinon.stub(requester, 'do')
             .withArgs({data}, accessToken, parsedApiUrl)
@@ -211,7 +211,7 @@ describe('main module', () => {
           sinon.stub(login, 'do')
             .withArgs(email, ethAddress, password, parsedApiUrl)
             .returns(new Promise(resolve => {
-              resolve({accessToken, refreshToken})
+              resolve({access: accessToken, refresh: refreshToken})
             }))
           sinon.stub(requester, 'do')
             .withArgs({data}, accessToken, parsedApiUrl)
@@ -232,7 +232,7 @@ describe('main module', () => {
           sinon.stub(login, 'do')
             .withArgs(email, ethAddress, password, parsedApiUrl)
             .returns(new Promise(resolve => {
-              resolve({accessToken, refreshToken})
+              resolve({access: accessToken, refresh: refreshToken})
             }))
           sinon.stub(requester, 'do')
             .withArgs({data, timeout}, accessToken, parsedApiUrl)
@@ -295,7 +295,7 @@ describe('main module', () => {
           sinon.stub(refresh, 'do')
             .withArgs(accessToken, refreshToken, parsedApiUrl)
             .returns(new Promise(resolve => {
-              resolve({accessToken: newAccessToken, refreshToken: newRefreshToken})
+              resolve({access: newAccessToken, refresh: newRefreshToken})
             }))
 
           sinon.stub(poller, 'do')
@@ -327,7 +327,7 @@ describe('main module', () => {
           sinon.stub(refresh, 'do')
             .withArgs(accessToken, refreshToken, parsedApiUrl)
             .returns(new Promise(resolve => {
-              resolve({accessToken: newAccessToken, refreshToken: newRefreshToken})
+              resolve({access: newAccessToken, refresh: newRefreshToken})
             }))
 
           await this.instance.analyze({data}).should.eventually.equal(issues)
