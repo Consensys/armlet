@@ -6,9 +6,9 @@ import * as fs from 'fs';
 function usage() {
     console.log(`usage: ${process.argv[1]} [*mythril-api-json-path*] [*timeout-secs*]
 
-Run Mythril Platform analyses on *mythril-api-json-path*
+Run MythOS analyses on *mythril-api-json-path*
 
-Set environment variables EMAIL and MYTHRIL_API_KEY before using.
+Set environment variables MYTHRIL_ETH_ADDRESS and MYTHRIL_PASSWORD before using.
 `)
     process.exit(1);
 }
@@ -36,8 +36,8 @@ const jsonPath = process.argv[2] || `${__dirname}/../sample-json/PublicArray.jso
 
 // What we use in a new armlet.Client()
 interface ArmletOptions {
-    apiKey: string;
-    userEmail: string;
+    ethAddress: string;
+    password: string;
     platforms: Array<string>;
 };
 
@@ -47,16 +47,16 @@ interface AnalyzeOptions {
     timeout: number;
 };
 
-const options = {
-    apiKey: process.env.MYTHRIL_API_KEY,
-    userEmail: process.env.EMAIL,
+const armletOptions = {
+    ethAddress: process.env.MYTHRIL_ETH_ADDRESS,
+    password: process.env.MYTHRIL_PASSWORD,
     platforms: []  // client chargeback
 };
 
 const armlet = require('../../index'); // if not installed
 // import * as armlet from 'armlet' // if installed
 
-const client = new armlet.Client(options)
+const client = new armlet.Client(armletOptions)
 
 const analyzeOptions = {
     data: JSON.parse(fs.readFileSync(jsonPath, 'utf8')),

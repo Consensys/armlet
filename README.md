@@ -19,8 +19,9 @@ used during registration and the password you created:
 
 ```console
 $ export MYTHRIL_PASSWORD=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-$ export ETH_ADDRESS=0x.............
+$ # Only one of two below is needed:
 $ export EMAIL=me@example.com
+$ export MYTHRIL_ETH_ADDRESS=0x.............
 ```
 
 Then get the Mythril Platform analysis results with the promise returned by
@@ -29,9 +30,11 @@ the exposed function:
 const armlet = require('armlet')
 const client = new armlet.Client(
   {
-      ethAddress: process.env.ETH_ADRRESS
-      email: process.env.EMAIL  // adjust this
-      password: process.env.MYTHRIL_API_KEY,
+      password: process.env.MYTHRIL_PASSWORD,  // adjust this
+
+      // Use one of the two options below
+      ethAddress: process.env.MYTHRIL_ETH_ADRRESS,
+      email: process.env.MYTHRIL_PASSWORD  // adjust this
   })
 
 const data = {
@@ -66,8 +69,8 @@ const data = {
     'maincontract.sol',
   ],
   sources: {
-    'basecontract.sol': '[... escaped source code ...]',
-    'maincontract.sol': '[... escaped source code ...]',
+    'basecontract.sol': '[... source code ...]',
+    'maincontract.sol': '[... source code ...]',
   },
   analysisMode: 'full',
 };
@@ -91,7 +94,8 @@ client.analyze({data, timeout: 5000})
 ```
 
 
-See the example directory for some simple but runnable examples of how
-to use the client.
+See the [example
+directory](https://github.com/ConsenSys/armlet/tree/jwt-auth/example)
+for some simple but runnable examples of how to use the client.
 
 For more info join the Mythril community at [Discord](https://discord.gg/kktn8Wt).
