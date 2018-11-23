@@ -8,7 +8,12 @@ function usage() {
 
 Run MythOS analyses on *mythril-api-json-path*
 
-Set environment variables MYTHRIL_ETH_ADDRESS and MYTHRIL_PASSWORD before using.
+Set environment MYTHRIL_PASSWORD and one of the following:
+
+* MYTHRIL_ETH_ADDRESS or
+* EMAIL_ADDRESS
+
+before using.
 `)
     process.exit(1);
 }
@@ -34,24 +39,22 @@ const jsonPath = process.argv[2] || `${__dirname}/../sample-json/PublicArray.jso
   Example code starts here ...
 ***********************************/
 
-// What we use in a new armlet.Client()
-interface ArmletOptions {
-    ethAddress: string;
-    password: string;
-    platforms: Array<string>;
-};
-
 // What we use in a new armlet analyze call
 interface AnalyzeOptions {
     data: any;  // Actually a JSON dictionary
     timeout: number;
 };
 
-const armletOptions = {
-    ethAddress: process.env.MYTHRIL_ETH_ADDRESS,
-    password: process.env.MYTHRIL_PASSWORD,
-    platforms: []  // client chargeback
-};
+let armletOptions = {
+    password:  process.env.MYTHRIL_PASSWORD,
+    platforms: [],
+}
+
+if (process.env.MYTHRIL_ETH_ADDRESS) {
+    armletOptions["ethAddress"] = process.env.MYTHRIL_ETH_ADDRESS
+} else if (process.env.EMAIL) {
+    armletOptions["email"] = process.env.EMAIL
+}
 
 const armlet = require('../../index'); // if not installed
 // import * as armlet from 'armlet' // if installed

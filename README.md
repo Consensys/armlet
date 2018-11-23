@@ -95,7 +95,7 @@ client.analyze({data, timeout: 5000})
 
 
 See the [example
-directory](https://github.com/ConsenSys/armlet/tree/jwt-auth/example)
+directory](https://github.com/ConsenSys/armlet/tree/master/example)
 for some simple but runnable examples of how to use the client.
 
 For more info join the Mythril community at [Discord](https://discord.gg/kktn8Wt).
