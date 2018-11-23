@@ -3,6 +3,8 @@ const url = require('url')
 const requester = require('./lib/requester')
 const simpleRequester = require('./lib/simpleRequester')
 const poller = require('./lib/poller')
+const login = require('./lib/login')
+const refresh = require('./lib/refresh')
 
 const defaultApiUrl = process.env['MYTHRIL_API_URL'] || 'https://api.mythril.ai'
 const defaultApiVersion = 'v1'
@@ -13,12 +15,12 @@ class Client {
       throw new TypeError('Please provide auth options.')
     }
 
-    if (auth.apiKey === undefined) {
-      throw new TypeError('Please provide an apiKey auth option.')
+    if (auth.email === undefined && auth.ethAddress === undefined && auth.apiKey === undefined) {
+      throw new TypeError('Please provide an user id auth option.')
     }
 
-    if (auth.userEmail === undefined) {
-      throw new TypeError('Please provide an userEmail auth option.')
+    if ((auth.email !== undefined || auth.ethAddress !== undefined) && auth.password === undefined) {
+      throw new TypeError('Please provide a password auth option.')
     }
 
     const apiUrl = url.parse(inputApiUrl)
@@ -26,26 +28,52 @@ class Client {
       throw new TypeError(`${inputApiUrl} is not a valid URL`)
     }
 
-    this.userEmail = auth.userEmail
-    this.apiKey = auth.apiKey
+    this.email = auth.email
+    this.ethAddress = auth.ethAddress
+    this.password = auth.password
+    this.accessToken = auth.apiKey
     this.apiUrl = apiUrl
   }
 
-  analyze (options) {
-    return new Promise((resolve, reject) => {
-      if (options === undefined || options.data === undefined || options.data.deployedBytecode === undefined) {
-        throw new TypeError('Please provide a deployedBytecode option.')
-      }
+  async analyze (options) {
+    if (options === undefined || options.data === undefined || options.data.deployedBytecode === undefined) {
+      throw new TypeError('Please provide a deployedBytecode option.')
+    }
 
-      requester.do(options, this.apiKey, this.apiUrl)
-        .then(uuid => {
-          return poller.do(uuid, this.apiKey, this.apiUrl, undefined, options.timeout)
-        }).then(issues => {
-          resolve(issues)
-        }).catch(err => {
-          reject(err)
-        })
-    })
+    if (!this.accessToken) {
+      const tokens = await login.do(this.email, this.ethAddress, this.password, this.apiUrl)
+      this.accessToken = tokens.access
+      this.refreshToken = tokens.refresh
+    }
+
+    let uuid
+    try {
+      uuid = await requester.do(options, this.accessToken, this.apiUrl)
+    } catch (e) {
+      if (e.statusCode !== 401) {
+        throw e
+      }
+      const tokens = await refresh.do(this.accessToken, this.refreshToken, this.apiUrl)
+      this.accessToken = tokens.access
+      this.refreshToken = tokens.refresh
+
+      uuid = await requester.do(options, this.accessToken, this.apiUrl)
+    }
+
+    let result
+    try {
+      result = await poller.do(uuid, this.accessToken, this.apiUrl, undefined, options.timeout)
+    } catch (e) {
+      if (e.statusCode !== 401) {
+        throw e
+      }
+      const tokens = await refresh.do(this.accessToken, this.refreshToken, this.apiUrl)
+      this.accessToken = tokens.access
+      this.refreshToken = tokens.refresh
+
+      result = await poller.do(uuid, this.accessToken, this.apiUrl, undefined, options.timeout)
+    }
+    return result
   }
 }
 
