@@ -13,11 +13,13 @@ $ npm i armlet
 ```
 
 Here is a small example of how you might use this client. For
-demonstration purposes, we'll set an Mythril Platform API key and
-EMAIL as environment variables:
+demonstration purposes, we'll set the credentials created on the
+Mythril Platform, you can use either the Ethereum address or email
+used during registration and the password you created:
 
 ```console
-$ export MYTHRIL_API_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+$ export MYTHRIL_PASSWORD=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+$ export ETH_ADDRESS=0x.............
 $ export EMAIL=me@example.com
 ```
 
@@ -27,8 +29,9 @@ the exposed function:
 const armlet = require('armlet')
 const client = new armlet.Client(
   {
-      apiKey: process.env.MYTHRIL_API_KEY,
-      userEmail: process.env.EMAIL  // adjust this
+      ethAddress: process.env.ETH_ADRRESS
+      email: process.env.EMAIL  // adjust this
+      password: process.env.MYTHRIL_API_KEY,
   })
 
 const data = {
