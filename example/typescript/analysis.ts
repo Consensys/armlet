@@ -6,9 +6,14 @@ import * as fs from 'fs';
 function usage() {
     console.log(`usage: ${process.argv[1]} [*mythril-api-json-path*] [*timeout-secs*]
 
-Run Mythril Platform analyses on *mythril-api-json-path*
+Run MythOS analyses on *mythril-api-json-path*
 
-Set environment variables EMAIL and MYTHRIL_API_KEY before using.
+Set environment MYTHRIL_PASSWORD and one of the following:
+
+* MYTHRIL_ETH_ADDRESS or
+* EMAIL_ADDRESS
+
+before using.
 `)
     process.exit(1);
 }
@@ -34,29 +39,27 @@ const jsonPath = process.argv[2] || `${__dirname}/../sample-json/PublicArray.jso
   Example code starts here ...
 ***********************************/
 
-// What we use in a new armlet.Client()
-interface ArmletOptions {
-    apiKey: string;
-    userEmail: string;
-    platforms: Array<string>;
-};
-
 // What we use in a new armlet analyze call
 interface AnalyzeOptions {
     data: any;  // Actually a JSON dictionary
     timeout: number;
 };
 
-const options = {
-    apiKey: process.env.MYTHRIL_API_KEY,
-    userEmail: process.env.EMAIL,
-    platforms: []  // client chargeback
-};
+let armletOptions = {
+    password:  process.env.MYTHRIL_PASSWORD,
+    platforms: [],
+}
+
+if (process.env.MYTHRIL_ETH_ADDRESS) {
+    armletOptions["ethAddress"] = process.env.MYTHRIL_ETH_ADDRESS
+} else if (process.env.EMAIL) {
+    armletOptions["email"] = process.env.EMAIL
+}
 
 const armlet = require('../../index'); // if not installed
 // import * as armlet from 'armlet' // if installed
 
-const client = new armlet.Client(options)
+const client = new armlet.Client(armletOptions)
 
 const analyzeOptions = {
     data: JSON.parse(fs.readFileSync(jsonPath, 'utf8')),
