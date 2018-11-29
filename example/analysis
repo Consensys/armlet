@@ -8,12 +8,7 @@ function usage() {
 
 Run  MythOS analyses on *mythril-api-json-path*
 
-Set environment MYTHRIL_PASSWORD and one of the following:
-
-* MYTHRIL_ETH_ADDRESS or
-* EMAIL_ADDRESS
-
-before using.
+Set environment MYTHRIL_PASSWORD and MYTHRIL_ETH_ADDRESS before using.
 `)
     process.exit(1)
 }

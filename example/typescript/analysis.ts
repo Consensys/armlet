@@ -6,14 +6,9 @@ import * as fs from 'fs';
 function usage() {
     console.log(`usage: ${process.argv[1]} [*mythril-api-json-path*] [*timeout-secs*]
 
-Run MythOS analyses on *mythril-api-json-path*
+Run MythX analyses on *mythril-api-json-path*
 
-Set environment MYTHRIL_PASSWORD and one of the following:
-
-* MYTHRIL_ETH_ADDRESS or
-* EMAIL_ADDRESS
-
-before using.
+Set environment MYTHRIL_PASSWORD and MYTHRIL_ETH_ADDRESS or before using.
 `)
     process.exit(1);
 }
@@ -52,8 +47,6 @@ let armletOptions = {
 
 if (process.env.MYTHRIL_ETH_ADDRESS) {
     armletOptions["ethAddress"] = process.env.MYTHRIL_ETH_ADDRESS
-} else if (process.env.EMAIL) {
-    armletOptions["email"] = process.env.EMAIL
 }
 
 const armlet = require('../../index'); // if not installed
