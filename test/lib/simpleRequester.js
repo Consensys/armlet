@@ -12,6 +12,29 @@ describe('simpleRequester', () => {
     const basePath = '/somepath'
     const url = `${httpsApiUrl}${basePath}`
 
+    describe('auth', () => {
+      it('should not include auth header without access token', async () => {
+        nock(httpsApiUrl, {
+          badheaders: ['authorization']
+        })
+          .get(basePath)
+          .reply(200, textContent)
+
+        await simpleRequester.do({url: url}).should.eventually.equal(textContent)
+      })
+      it('should include auth header with access token', async () => {
+        nock(httpsApiUrl, {
+          reqheaders: {
+            'authorization': 'Bearer accessToken'
+          }
+        })
+          .get(basePath)
+          .reply(200, textContent)
+
+        await simpleRequester.do({url: url, accessToken: 'accessToken'}).should.eventually.equal(textContent)
+      })
+    })
+
     it('should do non-JSON requests', async () => {
       nock(httpsApiUrl)
         .get(basePath)
