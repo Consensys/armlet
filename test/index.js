@@ -99,6 +99,16 @@ describe('main module', () => {
                 await this.instance.analyze().should.be.rejectedWith(TypeError)
               })
             })
+            describe('have an analyses method which', () => {
+              it('should be a function', () => {
+                this.instance.analyses.should.be.a('function')
+              })
+
+              it('should require a dataFrom option', async () => {
+                const options = { dataTo: '2018-12-04', offset: 15 }
+                await this.instance.analyses(options).should.be.rejectedWith(TypeError)
+              })
+            })
           })
         })
       })
@@ -141,136 +151,138 @@ describe('main module', () => {
         this.instance = new Client({email, ethAddress, password}, apiUrl)
       })
 
-      afterEach(() => {
-        requester.do.restore()
-        poller.do.restore()
-      })
-
-      describe('when the client logs in for the first time', () => {
+      describe('analyze', () => {
         afterEach(() => {
-          login.do.restore()
-        })
-        it('should login and chain requester and poller', async () => {
-          sinon.stub(login, 'do')
-            .withArgs(email, ethAddress, password, parsedApiUrl)
-            .returns(new Promise(resolve => {
-              resolve({access: accessToken, refresh: refreshToken})
-            }))
-          sinon.stub(requester, 'do')
-            .withArgs({data}, accessToken, parsedApiUrl)
-            .returns(new Promise(resolve => {
-              resolve(uuid)
-            }))
-          sinon.stub(poller, 'do')
-            .withArgs(uuid, accessToken, parsedApiUrl)
-            .returns(new Promise(resolve => {
-              resolve(issues)
-            }))
-
-          await this.instance.analyze({data}).should.eventually.equal(issues)
+          requester.do.restore()
+          poller.do.restore()
         })
 
-        it('should reject with login failures', async () => {
-          const errorMsg = 'Booom! from login'
-          sinon.stub(login, 'do')
-            .withArgs(email, ethAddress, password, parsedApiUrl)
-            .returns(new Promise((resolve, reject) => {
-              reject(new Error(errorMsg))
-            }))
-          sinon.stub(requester, 'do')
-            .withArgs({data}, accessToken, parsedApiUrl)
-            .returns(new Promise(resolve => {
-              resolve(uuid)
-            }))
-          sinon.stub(poller, 'do')
-            .withArgs(uuid, accessToken, parsedApiUrl)
-            .returns(new Promise(resolve => {
-              resolve(issues)
-            }))
+        describe('when the client logs in for the first time', () => {
+          afterEach(() => {
+            login.do.restore()
+          })
+          it('should login and chain requester and poller', async () => {
+            sinon.stub(login, 'do')
+              .withArgs(email, ethAddress, password, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve({access: accessToken, refresh: refreshToken})
+              }))
+            sinon.stub(requester, 'do')
+              .withArgs({data}, accessToken, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve(uuid)
+              }))
+            sinon.stub(poller, 'do')
+              .withArgs(uuid, accessToken, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve(issues)
+              }))
 
-          await this.instance.analyze({data}).should.be.rejectedWith(Error, errorMsg)
+            await this.instance.analyze({data}).should.eventually.equal(issues)
+          })
+
+          it('should reject with login failures', async () => {
+            const errorMsg = 'Booom! from login'
+            sinon.stub(login, 'do')
+              .withArgs(email, ethAddress, password, parsedApiUrl)
+              .returns(new Promise((resolve, reject) => {
+                reject(new Error(errorMsg))
+              }))
+            sinon.stub(requester, 'do')
+              .withArgs({data}, accessToken, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve(uuid)
+              }))
+            sinon.stub(poller, 'do')
+              .withArgs(uuid, accessToken, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve(issues)
+              }))
+
+            await this.instance.analyze({data}).should.be.rejectedWith(Error, errorMsg)
+          })
+
+          it('should reject with requester failures', async () => {
+            const errorMsg = 'Booom! from requester'
+            sinon.stub(login, 'do')
+              .withArgs(email, ethAddress, password, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve({access: accessToken, refresh: refreshToken})
+              }))
+            sinon.stub(requester, 'do')
+              .withArgs({data}, accessToken, parsedApiUrl)
+              .returns(new Promise((resolve, reject) => {
+                reject(new Error(errorMsg))
+              }))
+            sinon.stub(poller, 'do')
+              .withArgs(uuid, accessToken, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve(issues)
+              }))
+
+            await this.instance.analyze({data}).should.be.rejectedWith(Error, errorMsg)
+          })
+
+          it('should reject with poller failures', async () => {
+            const errorMsg = 'Booom! from poller'
+            sinon.stub(login, 'do')
+              .withArgs(email, ethAddress, password, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve({access: accessToken, refresh: refreshToken})
+              }))
+            sinon.stub(requester, 'do')
+              .withArgs({data}, accessToken, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve(uuid)
+              }))
+            sinon.stub(poller, 'do')
+              .withArgs(uuid, accessToken, parsedApiUrl)
+              .returns(new Promise((resolve, reject) => {
+                reject(new Error(errorMsg))
+              }))
+
+            await this.instance.analyze({data}).should.be.rejectedWith(Error, errorMsg)
+          })
+
+          it('should pass timeout option to poller', async () => {
+            const timeout = 10
+            sinon.stub(login, 'do')
+              .withArgs(email, ethAddress, password, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve({access: accessToken, refresh: refreshToken})
+              }))
+            sinon.stub(requester, 'do')
+              .withArgs({data, timeout}, accessToken, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve(uuid)
+              }))
+            sinon.stub(poller, 'do')
+              .withArgs(uuid, accessToken, parsedApiUrl, undefined, timeout)
+              .returns(new Promise(resolve => {
+                resolve(issues)
+              }))
+
+            await this.instance.analyze({data, timeout}).should.eventually.equal(issues)
+          })
         })
 
-        it('should reject with requester failures', async () => {
-          const errorMsg = 'Booom! from requester'
-          sinon.stub(login, 'do')
-            .withArgs(email, ethAddress, password, parsedApiUrl)
-            .returns(new Promise(resolve => {
-              resolve({access: accessToken, refresh: refreshToken})
-            }))
-          sinon.stub(requester, 'do')
-            .withArgs({data}, accessToken, parsedApiUrl)
-            .returns(new Promise((resolve, reject) => {
-              reject(new Error(errorMsg))
-            }))
-          sinon.stub(poller, 'do')
-            .withArgs(uuid, accessToken, parsedApiUrl)
-            .returns(new Promise(resolve => {
-              resolve(issues)
-            }))
+        describe('when the client is already logged in', () => {
+          it('should not call login again', async () => {
+            this.instance.accessToken = accessToken
 
-          await this.instance.analyze({data}).should.be.rejectedWith(Error, errorMsg)
-        })
+            sinon.stub(requester, 'do')
+              .withArgs({data}, accessToken, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve(uuid)
+              }))
+            sinon.stub(poller, 'do')
+              .withArgs(uuid, accessToken, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve(issues)
+              }))
 
-        it('should reject with poller failures', async () => {
-          const errorMsg = 'Booom! from poller'
-          sinon.stub(login, 'do')
-            .withArgs(email, ethAddress, password, parsedApiUrl)
-            .returns(new Promise(resolve => {
-              resolve({access: accessToken, refresh: refreshToken})
-            }))
-          sinon.stub(requester, 'do')
-            .withArgs({data}, accessToken, parsedApiUrl)
-            .returns(new Promise(resolve => {
-              resolve(uuid)
-            }))
-          sinon.stub(poller, 'do')
-            .withArgs(uuid, accessToken, parsedApiUrl)
-            .returns(new Promise((resolve, reject) => {
-              reject(new Error(errorMsg))
-            }))
-
-          await this.instance.analyze({data}).should.be.rejectedWith(Error, errorMsg)
-        })
-
-        it('should pass timeout option to poller', async () => {
-          const timeout = 10
-          sinon.stub(login, 'do')
-            .withArgs(email, ethAddress, password, parsedApiUrl)
-            .returns(new Promise(resolve => {
-              resolve({access: accessToken, refresh: refreshToken})
-            }))
-          sinon.stub(requester, 'do')
-            .withArgs({data, timeout}, accessToken, parsedApiUrl)
-            .returns(new Promise(resolve => {
-              resolve(uuid)
-            }))
-          sinon.stub(poller, 'do')
-            .withArgs(uuid, accessToken, parsedApiUrl, undefined, timeout)
-            .returns(new Promise(resolve => {
-              resolve(issues)
-            }))
-
-          await this.instance.analyze({data, timeout}).should.eventually.equal(issues)
-        })
-      })
-
-      describe('when the client is already logged in', () => {
-        it('should not call login again', async () => {
-          this.instance.accessToken = accessToken
-
-          sinon.stub(requester, 'do')
-            .withArgs({data}, accessToken, parsedApiUrl)
-            .returns(new Promise(resolve => {
-              resolve(uuid)
-            }))
-          sinon.stub(poller, 'do')
-            .withArgs(uuid, accessToken, parsedApiUrl)
-            .returns(new Promise(resolve => {
-              resolve(issues)
-            }))
-
-          await this.instance.analyze({data}).should.eventually.equal(issues)
+            await this.instance.analyze({data}).should.eventually.equal(issues)
+          })
         })
       })
 
@@ -285,6 +297,8 @@ describe('main module', () => {
 
         afterEach(() => {
           refresh.do.restore()
+          requester.do.restore()
+          poller.do.restore()
         })
 
         it('should refresh expired tokens when requester fails', async () => {
@@ -337,6 +351,121 @@ describe('main module', () => {
             }))
 
           await this.instance.analyze({data}).should.eventually.equal(issues)
+        })
+      })
+
+      describe('analyses', () => {
+        const dateFrom = '2018-11-24'
+        const dateTo = '2018-11-25'
+        const offset = 5
+        const baseUrl = `${apiUrl}/${armlet.defaultApiVersion}/analyses`
+        const url = `${baseUrl}?dateFrom=${dateFrom}&dateTo=${dateTo}&offset=${offset}`
+        const analyses = ['analysis1', 'analysis2']
+
+        describe('when the client logs in for the first time', () => {
+          afterEach(() => {
+            login.do.restore()
+            simpleRequester.do.restore()
+          })
+
+          it('should login and call simpleRequester', async () => {
+            sinon.stub(login, 'do')
+              .withArgs(email, ethAddress, password, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve({access: accessToken, refresh: refreshToken})
+              }))
+            sinon.stub(simpleRequester, 'do')
+              .withArgs({url, accessToken, json: true})
+              .returns(new Promise(resolve => {
+                resolve(analyses)
+              }))
+
+            await this.instance.analyses({dateFrom, dateTo, offset}).should.eventually.equal(analyses)
+          })
+
+          it('should reject with login failures', async () => {
+            const errorMsg = 'Booom! from login'
+            sinon.stub(login, 'do')
+              .withArgs(email, ethAddress, password, parsedApiUrl)
+              .returns(new Promise((resolve, reject) => {
+                reject(new Error(errorMsg))
+              }))
+            sinon.stub(simpleRequester, 'do')
+              .withArgs({url, accessToken, json: true})
+              .returns(new Promise(resolve => {
+                resolve(analyses)
+              }))
+
+            await this.instance.analyses({dateFrom, dateTo, offset}).should.be.rejectedWith(Error, errorMsg)
+          })
+
+          it('should reject with simpleRequester failures', async () => {
+            const errorMsg = 'Booom! from simpleRequester'
+            sinon.stub(login, 'do')
+              .withArgs(email, ethAddress, password, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve({access: accessToken, refresh: refreshToken})
+              }))
+            sinon.stub(simpleRequester, 'do')
+              .withArgs({url, accessToken, json: true})
+              .returns(new Promise((resolve, reject) => {
+                reject(new Error(errorMsg))
+              }))
+
+            await this.instance.analyses({dateFrom, dateTo, offset}).should.be.rejectedWith(Error, errorMsg)
+          })
+        })
+
+        describe('when the client is already logged in', () => {
+          afterEach(() => {
+            simpleRequester.do.restore()
+          })
+
+          it('should not call login again', async () => {
+            this.instance.accessToken = accessToken
+
+            sinon.stub(simpleRequester, 'do')
+              .withArgs({url, accessToken, json: true})
+              .returns(new Promise(resolve => {
+                resolve(analyses)
+              }))
+
+            await this.instance.analyses({dateFrom, dateTo, offset}).should.eventually.equal(analyses)
+          })
+        })
+        describe('refresh', () => {
+          const newAccessToken = 'newAccessToken'
+          const newRefreshToken = 'newRefreshToken'
+
+          beforeEach(() => {
+            this.instance.accessToken = accessToken
+            this.instance.refreshToken = refreshToken
+          })
+
+          afterEach(() => {
+            refresh.do.restore()
+            simpleRequester.do.restore()
+          })
+
+          it('should refresh expired tokens when simpleRequester fails', async () => {
+            const requesterStub = sinon.stub(simpleRequester, 'do')
+            requesterStub.withArgs({url, accessToken, json: true})
+              .returns(new Promise((resolve, reject) => {
+                reject(HttpErrors.Unauthorized())
+              }))
+            requesterStub.withArgs({url, accessToken: newAccessToken, json: true})
+              .returns(new Promise(resolve => {
+                resolve(analyses)
+              }))
+
+            sinon.stub(refresh, 'do')
+              .withArgs(accessToken, refreshToken, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve({access: newAccessToken, refresh: newRefreshToken})
+              }))
+
+            await this.instance.analyses({dateFrom, dateTo, offset}).should.eventually.equal(analyses)
+          })
         })
       })
     })
