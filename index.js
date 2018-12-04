@@ -75,6 +75,33 @@ class Client {
     }
     return result
   }
+
+  async analyses (options) {
+    if (options === undefined || options.dateFrom === undefined) {
+      throw new TypeError('Please provide a dateFrom option.')
+    }
+
+    if (!this.accessToken) {
+      const tokens = await login.do(this.email, this.ethAddress, this.password, this.apiUrl)
+      this.accessToken = tokens.access
+      this.refreshToken = tokens.refresh
+    }
+    const url = `${this.apiUrl.href}${defaultApiVersion}/analyses?dateFrom=${options.dateFrom}&dateTo=${options.dateTo}&offset=${options.offset}`
+    let analyses
+    try {
+      analyses = await simpleRequester.do({url, accessToken: this.accessToken, json: true})
+    } catch (e) {
+      if (e.statusCode !== 401) {
+        throw e
+      }
+      const tokens = await refresh.do(this.accessToken, this.refreshToken, this.apiUrl)
+      this.accessToken = tokens.access
+      this.refreshToken = tokens.refresh
+
+      analyses = await simpleRequester.do({url, accessToken: this.accessToken, json: true})
+    }
+    return analyses
+  }
 }
 
 module.exports.ApiVersion = (inputApiUrl = defaultApiUrl) => {
