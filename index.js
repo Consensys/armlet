@@ -19,7 +19,7 @@ class Client {
       throw new TypeError('Please provide an user id auth option.')
     }
 
-    if ((auth.email !== undefined || auth.ethAddress !== undefined) && auth.password === undefined) {
+    if ((auth.email === undefined || auth.ethAddress !== undefined) && auth.password === undefined) {
       throw new TypeError('Please provide a password auth option.')
     }
 
