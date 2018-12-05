@@ -14,6 +14,10 @@ Set environment MYTHRIL_PASSWORD and one of the following:
 * MYTHRIL_EMAIL_ADDRESS
 
 before using.
+
+OR
+
+Set environment MYTHRIL_API_KEY
 `)
     process.exit(1)
 }
