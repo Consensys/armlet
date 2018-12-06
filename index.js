@@ -11,27 +11,29 @@ const defaultApiVersion = 'v1'
 
 class Client {
   constructor (auth, inputApiUrl = defaultApiUrl) {
-    if (auth === undefined) {
+    if (typeof auth !== 'object' || Array.isArray(auth)) {
       throw new TypeError('Please provide auth options.')
     }
 
-    if (auth.email === undefined && auth.ethAddress === undefined && auth.apiKey === undefined) {
+    const { email, ethAddress, apiKey, password } = auth
+
+    if (!email && !ethAddress && !apiKey) {
       throw new TypeError('Please provide an user id auth option.')
     }
 
-    if (auth.apiKey === undefined && (auth.password === undefined && (auth.email !== undefined || auth.ethAddress !== undefined))) {
+    if (!apiKey && (!password && (email || ethAddress))) {
       throw new TypeError('Please provide a password auth option.')
     }
 
     const apiUrl = url.parse(inputApiUrl)
-    if (apiUrl.hostname === null) {
+    if (!apiUrl.hostname) {
       throw new TypeError(`${inputApiUrl} is not a valid URL`)
     }
 
-    this.email = auth.email
-    this.ethAddress = auth.ethAddress
-    this.password = auth.password
-    this.accessToken = auth.apiKey
+    this.email = email
+    this.ethAddress = ethAddress
+    this.password = password
+    this.accessToken = apiKey
     this.apiUrl = apiUrl
   }
 
