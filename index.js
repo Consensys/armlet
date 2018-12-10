@@ -11,7 +11,7 @@ const defaultApiVersion = 'v1'
 
 class Client {
   constructor (auth, inputApiUrl = defaultApiUrl) {
-    if (typeof auth !== 'object' || Array.isArray(auth)) {
+    if (!auth) {
       throw new TypeError('Please provide auth options.')
     }
 
