@@ -9,12 +9,12 @@ const refresh = require('../../lib/refresh')
 describe('refresh', () => {
   describe('#do', () => {
     const apiUrl = 'https://localhost:3100'
-    const parsedApiUrl = url.parse(apiUrl)
+    const parsedApiUrl = new url.URL(apiUrl)
     const refreshPath = '/v1/auth/refresh'
     const expiredRefreshToken = 'expiredRefresh'
     const expiredAccessToken = 'expiredAccess'
-    const expiredJsonTokens = {refreshToken: expiredRefreshToken, accessToken: expiredAccessToken}
-    const renewedJsonTokens = {refreshToken: 'renewedRefresh', accessToken: 'renewedAccess'}
+    const expiredJsonTokens = { refreshToken: expiredRefreshToken, accessToken: expiredAccessToken }
+    const renewedJsonTokens = { refreshToken: 'renewedRefresh', accessToken: 'renewedAccess' }
 
     it('should return renewed refresh and access tokens', async () => {
       nock(apiUrl)
@@ -49,7 +49,7 @@ describe('refresh', () => {
     it('should reject if refreshToken is not present in response', async () => {
       nock(apiUrl)
         .post(refreshPath, expiredJsonTokens)
-        .reply(200, {accessToken: 'access'})
+        .reply(200, { accessToken: 'access' })
 
       await refresh.do(expiredRefreshToken, expiredAccessToken, parsedApiUrl).should.be.rejectedWith(Error, 'Refresh Token missing')
     })
@@ -57,7 +57,7 @@ describe('refresh', () => {
     it('should reject if accessToken is not present', async () => {
       nock(apiUrl)
         .post(refreshPath, expiredJsonTokens)
-        .reply(200, {refreshToken: 'refresh'})
+        .reply(200, { refreshToken: 'refresh' })
 
       await refresh.do(expiredRefreshToken, expiredAccessToken, parsedApiUrl).should.be.rejectedWith(Error, 'Access Token missing')
     })

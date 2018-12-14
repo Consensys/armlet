@@ -8,8 +8,8 @@ const poller = require('../../lib/poller')
 
 describe('poller', () => {
   describe('#do', () => {
-    const defaultApiUrl = url.parse('https://api.mythril.ai')
-    const httpApiUrl = url.parse('http://localhost:3100')
+    const defaultApiUrl = new url.URL('https://api.mythril.ai')
+    const httpApiUrl = new url.URL('http://localhost:3100')
     const validApiKey = 'valid-api-key'
     const uuid = 'my-uuid'
     const basePath = `/v1/analyses/${uuid}/issues`

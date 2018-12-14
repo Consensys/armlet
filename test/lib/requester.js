@@ -8,13 +8,14 @@ const requester = require('../../lib/requester')
 
 describe('requester', () => {
   describe('#do', () => {
-    const defaultApiUrl = url.parse('https://api.mythril.ai')
-    const httpApiUrl = url.parse('http://localhost:3100')
-    const httpsApiUrl = url.parse('https://localhost:3100')
+    const defaultApiUrl = new url.URL('https://api.mythril.ai')
+    const httpApiUrl = new url.URL('http://localhost:3100')
+    const httpsApiUrl = new url.URL('https://localhost:3100')
+
     const validApiKey = 'valid-api-key'
     const uuid = 'my-uuid'
     const basePath = '/v1/analyses'
-    const data = {bytecode: '00'}
+    const data = { bytecode: '00' }
 
     it('should request analysis for http API', async () => {
       nock(httpApiUrl.href, {
@@ -62,7 +63,7 @@ describe('requester', () => {
     })
 
     it('should reject on api server connection failure', async () => {
-      const invalidApiHostname = url.parse('http://not-a-valid-hostname')
+      const invalidApiHostname = new url.URL('http://not-a-valid-hostname')
 
       await requester.do(data, validApiKey, invalidApiHostname).should.be.rejectedWith(Error)
     })
@@ -105,8 +106,8 @@ describe('requester', () => {
         .post(basePath, data)
         .reply(400, {
           details: [
-            {message: expectedErrorMsg1},
-            {message: expectedErrorMsg2}
+            { message: expectedErrorMsg1 },
+            { message: expectedErrorMsg2 }
           ]
         })
 

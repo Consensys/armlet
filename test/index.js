@@ -18,7 +18,7 @@ const ethAddress = '0x74B904af705Eb2D5a6CDc174c08147bED478a60d'
 const password = 'my-password'
 
 describe('main module', () => {
-  const data = {deployedBytecode: 'my-bitecode'}
+  const data = { deployedBytecode: 'my-bitecode' }
   const apiUrl = 'http://localhost:3100'
 
   describe('#armlet', () => {
@@ -49,42 +49,42 @@ describe('main module', () => {
           })
 
           it('require a password auth option if email is provided', () => {
-            (() => new Client({email})).should.throw(TypeError)
+            (() => new Client({ email })).should.throw(TypeError)
           })
 
           it('require a password auth option if ethAddress is provided', () => {
-            (() => new Client({ethAddress})).should.throw(TypeError)
+            (() => new Client({ ethAddress })).should.throw(TypeError)
           })
 
           it('require an user id auth option', () => {
-            (() => new Client({password})).should.throw(TypeError)
+            (() => new Client({ password })).should.throw(TypeError)
           })
 
           it('require a valid apiUrl if given', () => {
-            (() => new Client({email, password}, 'not-a-valid-url')).should.throw(TypeError)
+            (() => new Client({ email, password }, 'not-a-valid-url')).should.throw(TypeError)
           })
 
           it('initialize apiUrl to a default value if not given', () => {
-            const instance = new Client({email, password})
+            const instance = new Client({ email, password })
 
             instance.apiUrl.should.be.deep.equal(armlet.defaultApiUrl)
           })
 
           it('initialize apiUrl to the given value', () => {
-            const instance = new Client({email, password}, apiUrl)
+            const instance = new Client({ email, password }, apiUrl)
 
-            instance.apiUrl.should.be.deep.equal(url.parse(apiUrl))
+            instance.apiUrl.should.be.deep.equal(new url.URL(apiUrl))
           })
 
           it('accept an apiKey auth and store it as accessToken', () => {
-            const instance = new Client({apiKey: 'my-apikey'})
+            const instance = new Client({ apiKey: 'my-apikey' })
 
             instance.accessToken.should.be.equal('my-apikey')
           })
 
           describe('instances should', () => {
             beforeEach(() => {
-              this.instance = new Client({email, password})
+              this.instance = new Client({ email, password })
             })
 
             it('be created with a constructor', () => {
@@ -142,13 +142,13 @@ describe('main module', () => {
   describe('functionality', () => {
     const uuid = 'analysis-uuid'
     const issues = ['issue1', 'issue2']
-    const parsedApiUrl = url.parse(apiUrl)
+    const parsedApiUrl = new url.URL(apiUrl)
     const refreshToken = 'refresh-token'
     const accessToken = 'access-token'
 
     describe('Client', () => {
       beforeEach(() => {
-        this.instance = new Client({email, ethAddress, password}, apiUrl)
+        this.instance = new Client({ email, ethAddress, password }, apiUrl)
       })
 
       describe('analyze', () => {
@@ -165,10 +165,10 @@ describe('main module', () => {
             sinon.stub(login, 'do')
               .withArgs(email, ethAddress, password, parsedApiUrl)
               .returns(new Promise(resolve => {
-                resolve({access: accessToken, refresh: refreshToken})
+                resolve({ access: accessToken, refresh: refreshToken })
               }))
             sinon.stub(requester, 'do')
-              .withArgs({data}, accessToken, parsedApiUrl)
+              .withArgs({ data }, accessToken, parsedApiUrl)
               .returns(new Promise(resolve => {
                 resolve(uuid)
               }))
@@ -178,7 +178,7 @@ describe('main module', () => {
                 resolve(issues)
               }))
 
-            await this.instance.analyze({data}).should.eventually.equal(issues)
+            await this.instance.analyze({ data }).should.eventually.equal(issues)
           })
 
           it('should reject with login failures', async () => {
@@ -189,7 +189,7 @@ describe('main module', () => {
                 reject(new Error(errorMsg))
               }))
             sinon.stub(requester, 'do')
-              .withArgs({data}, accessToken, parsedApiUrl)
+              .withArgs({ data }, accessToken, parsedApiUrl)
               .returns(new Promise(resolve => {
                 resolve(uuid)
               }))
@@ -199,7 +199,7 @@ describe('main module', () => {
                 resolve(issues)
               }))
 
-            await this.instance.analyze({data}).should.be.rejectedWith(Error, errorMsg)
+            await this.instance.analyze({ data }).should.be.rejectedWith(Error, errorMsg)
           })
 
           it('should reject with requester failures', async () => {
@@ -207,10 +207,10 @@ describe('main module', () => {
             sinon.stub(login, 'do')
               .withArgs(email, ethAddress, password, parsedApiUrl)
               .returns(new Promise(resolve => {
-                resolve({access: accessToken, refresh: refreshToken})
+                resolve({ access: accessToken, refresh: refreshToken })
               }))
             sinon.stub(requester, 'do')
-              .withArgs({data}, accessToken, parsedApiUrl)
+              .withArgs({ data }, accessToken, parsedApiUrl)
               .returns(new Promise((resolve, reject) => {
                 reject(new Error(errorMsg))
               }))
@@ -220,7 +220,7 @@ describe('main module', () => {
                 resolve(issues)
               }))
 
-            await this.instance.analyze({data}).should.be.rejectedWith(Error, errorMsg)
+            await this.instance.analyze({ data }).should.be.rejectedWith(Error, errorMsg)
           })
 
           it('should reject with poller failures', async () => {
@@ -228,10 +228,10 @@ describe('main module', () => {
             sinon.stub(login, 'do')
               .withArgs(email, ethAddress, password, parsedApiUrl)
               .returns(new Promise(resolve => {
-                resolve({access: accessToken, refresh: refreshToken})
+                resolve({ access: accessToken, refresh: refreshToken })
               }))
             sinon.stub(requester, 'do')
-              .withArgs({data}, accessToken, parsedApiUrl)
+              .withArgs({ data }, accessToken, parsedApiUrl)
               .returns(new Promise(resolve => {
                 resolve(uuid)
               }))
@@ -241,7 +241,7 @@ describe('main module', () => {
                 reject(new Error(errorMsg))
               }))
 
-            await this.instance.analyze({data}).should.be.rejectedWith(Error, errorMsg)
+            await this.instance.analyze({ data }).should.be.rejectedWith(Error, errorMsg)
           })
 
           it('should pass timeout option to poller', async () => {
@@ -249,10 +249,10 @@ describe('main module', () => {
             sinon.stub(login, 'do')
               .withArgs(email, ethAddress, password, parsedApiUrl)
               .returns(new Promise(resolve => {
-                resolve({access: accessToken, refresh: refreshToken})
+                resolve({ access: accessToken, refresh: refreshToken })
               }))
             sinon.stub(requester, 'do')
-              .withArgs({data, timeout}, accessToken, parsedApiUrl)
+              .withArgs({ data, timeout }, accessToken, parsedApiUrl)
               .returns(new Promise(resolve => {
                 resolve(uuid)
               }))
@@ -262,7 +262,7 @@ describe('main module', () => {
                 resolve(issues)
               }))
 
-            await this.instance.analyze({data, timeout}).should.eventually.equal(issues)
+            await this.instance.analyze({ data, timeout }).should.eventually.equal(issues)
           })
         })
 
@@ -271,7 +271,7 @@ describe('main module', () => {
             this.instance.accessToken = accessToken
 
             sinon.stub(requester, 'do')
-              .withArgs({data}, accessToken, parsedApiUrl)
+              .withArgs({ data }, accessToken, parsedApiUrl)
               .returns(new Promise(resolve => {
                 resolve(uuid)
               }))
@@ -281,7 +281,7 @@ describe('main module', () => {
                 resolve(issues)
               }))
 
-            await this.instance.analyze({data}).should.eventually.equal(issues)
+            await this.instance.analyze({ data }).should.eventually.equal(issues)
           })
         })
       })
@@ -303,11 +303,11 @@ describe('main module', () => {
 
         it('should refresh expired tokens when requester fails', async () => {
           const requesterStub = sinon.stub(requester, 'do')
-          requesterStub.withArgs({data}, accessToken, parsedApiUrl)
+          requesterStub.withArgs({ data }, accessToken, parsedApiUrl)
             .returns(new Promise((resolve, reject) => {
               reject(HttpErrors.Unauthorized())
             }))
-          requesterStub.withArgs({data}, newAccessToken, parsedApiUrl)
+          requesterStub.withArgs({ data }, newAccessToken, parsedApiUrl)
             .returns(new Promise(resolve => {
               resolve(uuid)
             }))
@@ -315,7 +315,7 @@ describe('main module', () => {
           sinon.stub(refresh, 'do')
             .withArgs(accessToken, refreshToken, parsedApiUrl)
             .returns(new Promise(resolve => {
-              resolve({access: newAccessToken, refresh: newRefreshToken})
+              resolve({ access: newAccessToken, refresh: newRefreshToken })
             }))
 
           sinon.stub(poller, 'do')
@@ -324,7 +324,7 @@ describe('main module', () => {
               resolve(issues)
             }))
 
-          await this.instance.analyze({data}).should.eventually.equal(issues)
+          await this.instance.analyze({ data }).should.eventually.equal(issues)
         })
 
         it('should refresh expired tokens when poller fails', async () => {
@@ -339,7 +339,7 @@ describe('main module', () => {
             }))
 
           sinon.stub(requester, 'do')
-            .withArgs({data}, accessToken, parsedApiUrl)
+            .withArgs({ data }, accessToken, parsedApiUrl)
             .returns(new Promise(resolve => {
               resolve(uuid)
             }))
@@ -347,10 +347,10 @@ describe('main module', () => {
           sinon.stub(refresh, 'do')
             .withArgs(accessToken, refreshToken, parsedApiUrl)
             .returns(new Promise(resolve => {
-              resolve({access: newAccessToken, refresh: newRefreshToken})
+              resolve({ access: newAccessToken, refresh: newRefreshToken })
             }))
 
-          await this.instance.analyze({data}).should.eventually.equal(issues)
+          await this.instance.analyze({ data }).should.eventually.equal(issues)
         })
       })
 
@@ -372,15 +372,15 @@ describe('main module', () => {
             sinon.stub(login, 'do')
               .withArgs(email, ethAddress, password, parsedApiUrl)
               .returns(new Promise(resolve => {
-                resolve({access: accessToken, refresh: refreshToken})
+                resolve({ access: accessToken, refresh: refreshToken })
               }))
             sinon.stub(simpleRequester, 'do')
-              .withArgs({url, accessToken, json: true})
+              .withArgs({ url, accessToken, json: true })
               .returns(new Promise(resolve => {
                 resolve(analyses)
               }))
 
-            await this.instance.analyses({dateFrom, dateTo, offset}).should.eventually.equal(analyses)
+            await this.instance.analyses({ dateFrom, dateTo, offset }).should.eventually.equal(analyses)
           })
 
           it('should reject with login failures', async () => {
@@ -391,12 +391,12 @@ describe('main module', () => {
                 reject(new Error(errorMsg))
               }))
             sinon.stub(simpleRequester, 'do')
-              .withArgs({url, accessToken, json: true})
+              .withArgs({ url, accessToken, json: true })
               .returns(new Promise(resolve => {
                 resolve(analyses)
               }))
 
-            await this.instance.analyses({dateFrom, dateTo, offset}).should.be.rejectedWith(Error, errorMsg)
+            await this.instance.analyses({ dateFrom, dateTo, offset }).should.be.rejectedWith(Error, errorMsg)
           })
 
           it('should reject with simpleRequester failures', async () => {
@@ -404,15 +404,15 @@ describe('main module', () => {
             sinon.stub(login, 'do')
               .withArgs(email, ethAddress, password, parsedApiUrl)
               .returns(new Promise(resolve => {
-                resolve({access: accessToken, refresh: refreshToken})
+                resolve({ access: accessToken, refresh: refreshToken })
               }))
             sinon.stub(simpleRequester, 'do')
-              .withArgs({url, accessToken, json: true})
+              .withArgs({ url, accessToken, json: true })
               .returns(new Promise((resolve, reject) => {
                 reject(new Error(errorMsg))
               }))
 
-            await this.instance.analyses({dateFrom, dateTo, offset}).should.be.rejectedWith(Error, errorMsg)
+            await this.instance.analyses({ dateFrom, dateTo, offset }).should.be.rejectedWith(Error, errorMsg)
           })
         })
 
@@ -425,12 +425,12 @@ describe('main module', () => {
             this.instance.accessToken = accessToken
 
             sinon.stub(simpleRequester, 'do')
-              .withArgs({url, accessToken, json: true})
+              .withArgs({ url, accessToken, json: true })
               .returns(new Promise(resolve => {
                 resolve(analyses)
               }))
 
-            await this.instance.analyses({dateFrom, dateTo, offset}).should.eventually.equal(analyses)
+            await this.instance.analyses({ dateFrom, dateTo, offset }).should.eventually.equal(analyses)
           })
         })
         describe('refresh', () => {
@@ -449,11 +449,11 @@ describe('main module', () => {
 
           it('should refresh expired tokens when simpleRequester fails', async () => {
             const requesterStub = sinon.stub(simpleRequester, 'do')
-            requesterStub.withArgs({url, accessToken, json: true})
+            requesterStub.withArgs({ url, accessToken, json: true })
               .returns(new Promise((resolve, reject) => {
                 reject(HttpErrors.Unauthorized())
               }))
-            requesterStub.withArgs({url, accessToken: newAccessToken, json: true})
+            requesterStub.withArgs({ url, accessToken: newAccessToken, json: true })
               .returns(new Promise(resolve => {
                 resolve(analyses)
               }))
@@ -461,10 +461,10 @@ describe('main module', () => {
             sinon.stub(refresh, 'do')
               .withArgs(accessToken, refreshToken, parsedApiUrl)
               .returns(new Promise(resolve => {
-                resolve({access: newAccessToken, refresh: newRefreshToken})
+                resolve({ access: newAccessToken, refresh: newRefreshToken })
               }))
 
-            await this.instance.analyses({dateFrom, dateTo, offset}).should.eventually.equal(analyses)
+            await this.instance.analyses({ dateFrom, dateTo, offset }).should.eventually.equal(analyses)
           })
         })
       })
@@ -477,10 +477,10 @@ describe('main module', () => {
       })
 
       it('should use simpleRequester', async () => {
-        const result = {result: 'result'}
+        const result = { result: 'result' }
 
         sinon.stub(simpleRequester, 'do')
-          .withArgs({url, json: true})
+          .withArgs({ url, json: true })
           .returns(new Promise(resolve => {
             resolve(result)
           }))
@@ -491,7 +491,7 @@ describe('main module', () => {
       it('should reject with simpleRequester failures', async () => {
         const errorMsg = 'Booom!'
         sinon.stub(simpleRequester, 'do')
-          .withArgs({url, json: true})
+          .withArgs({ url, json: true })
           .returns(new Promise((resolve, reject) => {
             reject(new Error(errorMsg))
           }))
@@ -511,7 +511,7 @@ describe('main module', () => {
         const result = 'result'
 
         sinon.stub(simpleRequester, 'do')
-          .withArgs({url})
+          .withArgs({ url })
           .returns(new Promise(resolve => {
             resolve(result)
           }))
@@ -522,7 +522,7 @@ describe('main module', () => {
       it('should reject with simpleRequester failures', async () => {
         const errorMsg = 'Booom!'
         sinon.stub(simpleRequester, 'do')
-          .withArgs({url})
+          .withArgs({ url })
           .returns(new Promise((resolve, reject) => {
             reject(new Error(errorMsg))
           }))
