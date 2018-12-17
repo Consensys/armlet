@@ -25,7 +25,7 @@ class Client {
       throw new TypeError('Please provide a password auth option.')
     }
 
-    const apiUrl = url.parse(inputApiUrl)
+    const apiUrl = new url.URL(inputApiUrl)
     if (!apiUrl.hostname) {
       throw new TypeError(`${inputApiUrl} is not a valid URL`)
     }
