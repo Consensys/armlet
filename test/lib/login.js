@@ -9,7 +9,7 @@ const login = require('../../lib/login')
 describe('login', () => {
   describe('#do', () => {
     const apiUrl = 'https://localhost:3100'
-    const parsedApiUrl = url.parse(apiUrl)
+    const parsedApiUrl = new url.URL(apiUrl)
     const email = 'content'
     const ethAddress = '0x74B904af705Eb2D5a6CDc174c08147bED478a60d'
     const password = 'password'
@@ -52,7 +52,7 @@ describe('login', () => {
     it('should reject if refreshToken is not present', async () => {
       nock(apiUrl)
         .post(loginPath, auth)
-        .reply(200, {access})
+        .reply(200, { access })
 
       await login.do(email, ethAddress, password, parsedApiUrl).should.be.rejectedWith(Error, 'Refresh Token missing')
     })
@@ -60,7 +60,7 @@ describe('login', () => {
     it('should reject if accessToken is not present', async () => {
       nock(apiUrl)
         .post(loginPath, auth)
-        .reply(200, {refresh})
+        .reply(200, { refresh })
 
       await login.do(email, ethAddress, password, parsedApiUrl).should.be.rejectedWith(Error, 'Access Token missing')
     })

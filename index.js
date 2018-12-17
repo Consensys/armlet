@@ -91,7 +91,7 @@ class Client {
     const url = `${this.apiUrl.href}${defaultApiVersion}/analyses?dateFrom=${options.dateFrom}&dateTo=${options.dateTo}&offset=${options.offset}`
     let analyses
     try {
-      analyses = await simpleRequester.do({url, accessToken: this.accessToken, json: true})
+      analyses = await simpleRequester.do({ url, accessToken: this.accessToken, json: true })
     } catch (e) {
       if (e.statusCode !== 401) {
         throw e
@@ -100,21 +100,21 @@ class Client {
       this.accessToken = tokens.access
       this.refreshToken = tokens.refresh
 
-      analyses = await simpleRequester.do({url, accessToken: this.accessToken, json: true})
+      analyses = await simpleRequester.do({ url, accessToken: this.accessToken, json: true })
     }
     return analyses
   }
 }
 
 module.exports.ApiVersion = (inputApiUrl = defaultApiUrl) => {
-  return simpleRequester.do({url: `${inputApiUrl}/${defaultApiVersion}/version`, json: true})
+  return simpleRequester.do({ url: `${inputApiUrl}/${defaultApiVersion}/version`, json: true })
 }
 
 module.exports.OpenApiSpec = (inputApiUrl = defaultApiUrl) => {
-  return simpleRequester.do({url: `${inputApiUrl}/${defaultApiVersion}/openapi.yaml`})
+  return simpleRequester.do({ url: `${inputApiUrl}/${defaultApiVersion}/openapi.yaml` })
 }
 
 module.exports.Client = Client
-module.exports.defaultApiUrl = url.parse(defaultApiUrl)
+module.exports.defaultApiUrl = new url.URL(defaultApiUrl)
 module.exports.defaultApiHost = defaultApiUrl
 module.exports.defaultApiVersion = defaultApiVersion
