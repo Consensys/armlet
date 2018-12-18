@@ -33,7 +33,7 @@ const client = new armlet.Client(
       password: process.env.MYTHRIL_PASSWORD,  // adjust this
 
       // Use one of the two options below
-      ethAddress: process.env.MYTHRIL_ETH_ADRRESS,
+      ethAddress: process.env.MYTHRIL_ETH_ADDRESS,
       email: process.env.EMAIL  // adjust this
   })
 
