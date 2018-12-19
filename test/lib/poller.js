@@ -8,7 +8,7 @@ const poller = require('../../lib/poller')
 
 describe('poller', () => {
   describe('#do', () => {
-    const defaultApiUrl = new url.URL('https://api.mythril.ai')
+    const defaultApiUrl = new url.URL('https://api.mythx.io')
     const httpApiUrl = new url.URL('http://localhost:3100')
     const validApiKey = 'valid-api-key'
     const uuid = 'my-uuid'
