@@ -8,7 +8,7 @@ const requester = require('../../lib/requester')
 
 describe('requester', () => {
   describe('#do', () => {
-    const defaultApiUrl = new url.URL('https://api.mythril.ai')
+    const defaultApiUrl = new url.URL('https://api.mythx.io')
     const httpApiUrl = new url.URL('http://localhost:3100')
     const httpsApiUrl = new url.URL('https://localhost:3100')
 
