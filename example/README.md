@@ -9,4 +9,4 @@ we can focus on how to set up and call the client.
 * [api-version](https://github.com/ConsenSys/armlet/blob/master/example/api-version): Retrieve Mythril Platform API version information. JSON is output.
 * [openapi-spec]((https://github.com/ConsenSys/armlet/blob/master/example/api-version)): Retrieve the current Mythril Platform openapi specification. YAML is output
 
-See folder "typescript" for some of these examples written in [typescript](https://www.typescriptlang.org/).
+See [folder `typescript`](https://github.com/ConsenSys/armlet/tree/master/example/typescript) for some of these examples written in [typescript](https://www.typescriptlang.org/).
