@@ -29,9 +29,7 @@
         "PublicStorageArray"
     ],
     "sources": {
-      "PublicStorageArray": {
-        "sourceCode": "pragma solidity ^0.4.22;\n\ncontract PublicStorageArray {\n    bytes32[] public states = [bytes32(0)];\n}\n"
-      }
+        "PublicStorageArray": "pragma solidity ^0.4.22;\n\ncontract PublicStorageArray {\n    bytes32[] public states = [bytes32(0)];\n}\n"
     },
     "analysisMode": "full"
 }
