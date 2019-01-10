@@ -69,8 +69,12 @@ const data = {
     'maincontract.sol',
   ],
   sources: {
-    'basecontract.sol': '[... source code ...]',
-    'maincontract.sol': '[... source code ...]',
+    'basecontract.sol': {
+      'sourceCode': '[... source code ...]'
+    },
+    'maincontract.sol': {
+      'sourceCode': '[... source code ...]'
+    }
   },
   analysisMode: 'full',
 };
