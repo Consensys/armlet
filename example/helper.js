@@ -1,8 +1,8 @@
-if (!process.env.MYTHRIL_ETH_ADDRESS) {
-  console.log('Please set environment variable MYTHRIL_ETH_ADDRESS.')
+if (!process.env.MYTHX_ETH_ADDRESS) {
+  console.log('Please set environment variable MYTHX_ETH_ADDRESS.')
   process.exit(2)
 }
-if (!process.env.MYTHRIL_PASSWORD) {
-  console.log('Please set environment variable MYTHRIL_PASSWORD.')
+if (!process.env.MYTHX_PASSWORD) {
+  console.log('Please set environment variable MYTHX_PASSWORD.')
   process.exit(3)
 }

@@ -4,11 +4,11 @@
 import * as fs from 'fs';
 
 function usage() {
-    console.log(`usage: ${process.argv[1]} [*mythril-api-json-path*] [*timeout-secs*]
+    console.log(`usage: ${process.argv[1]} [*mythx-api-json-path*] [*timeout-secs*]
 
-Run MythX analyses on *mythril-api-json-path*
+Run MythX analyses on *mythx-api-json-path*
 
-Set environment MYTHRIL_PASSWORD and MYTHRIL_ETH_ADDRESS or before using.
+Set environment MYTHX_PASSWORD and MYTHX_ETH_ADDRESS or before using.
 `)
     process.exit(1);
 }
@@ -41,12 +41,12 @@ interface AnalyzeOptions {
 };
 
 let armletOptions = {
-    password:  process.env.MYTHRIL_PASSWORD,
+    password:  process.env.MYTHX_PASSWORD,
     platforms: [],
 }
 
-if (process.env.MYTHRIL_ETH_ADDRESS) {
-    armletOptions["ethAddress"] = process.env.MYTHRIL_ETH_ADDRESS
+if (process.env.MYTHX_ETH_ADDRESS) {
+    armletOptions["ethAddress"] = process.env.MYTHX_ETH_ADDRESS
 }
 
 const armlet = require('../../index'); // if not installed

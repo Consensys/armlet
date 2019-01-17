@@ -6,7 +6,7 @@ const poller = require('./lib/poller')
 const login = require('./lib/login')
 const refresh = require('./lib/refresh')
 
-const defaultApiUrl = process.env['MYTHRIL_API_URL'] || 'https://api.mythx.io'
+const defaultApiUrl = process.env['MYTHX_API_URL'] || 'https://api.mythx.io'
 const defaultApiVersion = 'v1'
 
 class Client {
