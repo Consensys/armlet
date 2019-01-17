@@ -1,6 +1,6 @@
 {
   "name": "armlet",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "description": "A Mythril Platform API client.",
   "main": "index.js",
   "scripts": {
