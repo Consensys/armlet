@@ -8,7 +8,16 @@ function usage() {
 
 Run  MythOS analyses on *mythril-api-json-path*
 
-Set environment MYTHRIL_PASSWORD and MYTHRIL_ETH_ADDRESS before using.
+Set environment MYTHRIL_PASSWORD and one of the following:
+
+* MYTHRIL_ETH_ADDRESS or
+* MYTHRIL_EMAIL_ADDRESS
+
+before using.
+
+OR
+
+Set environment MYTHRIL_API_KEY
 `)
     process.exit(1)
 }
@@ -35,15 +44,17 @@ const jsonPath = process.argv[2] || `${__dirname}/sample-json/PublicArray.json`
 ***********************************/
 
 let armletOptions = {
-    // ethAddress: process.env.MYTHRIL_ETH_ADDRESS,
+    apiKey: process.env.MYTHRIL_API_KEY,
+    email: process.env.MYTHRIL_EMAIL,
+    ethAddress: process.env.MYTHRIL_ETH_ADDRESS,
     password: process.env.MYTHRIL_PASSWORD,
     platforms: []  // client chargeback
 }
 
 if (process.env.MYTHRIL_ETH_ADDRESS) {
     armletOptions.ethAddress = process.env.MYTHRIL_ETH_ADDRESS
-} else if (process.env.EMAIL) {
-    armletOptions.email = process.env.EMAIL
+} else if (process.env.MYTHRIL_EMAIL) {
+    armletOptions.email = process.env.MYTHRIL_EMAIL
 }
 
 const armlet = require('../index') // if not installed
