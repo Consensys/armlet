@@ -8,20 +8,22 @@ const refresh = require('./lib/refresh')
 
 const defaultApiUrl = process.env['MYTHX_API_URL'] || 'https://api.mythx.io'
 const defaultApiVersion = 'v1'
+const trialUserId = '123456789012345678901234'
 
 class Client {
   constructor (auth, inputApiUrl = defaultApiUrl) {
-    if (!auth) {
-      throw new TypeError('Please provide auth options.')
+    const { email, ethAddress, apiKey, password } = auth || {}
+
+    let userId
+    if (!password && !email && !ethAddress && !apiKey) {
+      userId = trialUserId
     }
 
-    const { email, ethAddress, apiKey, password, userId } = auth
-
-    if (!email && !ethAddress && !apiKey && !userId) {
+    if (password && !email && !ethAddress && !apiKey) {
       throw new TypeError('Please provide an user id auth option.')
     }
 
-    if (!apiKey && (!password && (email || ethAddress || userId))) {
+    if (!apiKey && userId !== trialUserId && (!password && (email || ethAddress))) {
       throw new TypeError('Please provide a password auth option.')
     }
 
@@ -119,3 +121,4 @@ module.exports.Client = Client
 module.exports.defaultApiUrl = new url.URL(defaultApiUrl)
 module.exports.defaultApiHost = defaultApiUrl
 module.exports.defaultApiVersion = defaultApiVersion
+module.exports.trialUserId = trialUserId
