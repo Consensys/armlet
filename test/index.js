@@ -15,6 +15,7 @@ const refresh = require('../lib/refresh')
 
 const email = 'user@example.com'
 const ethAddress = '0x74B904af705Eb2D5a6CDc174c08147bED478a60d'
+const userId = '123456'
 const password = 'my-password'
 
 describe('main module', () => {
@@ -54,6 +55,10 @@ describe('main module', () => {
 
           it('require a password auth option if ethAddress is provided', () => {
             (() => new Client({ ethAddress })).should.throw(TypeError)
+          })
+
+          it('require a password auth option if userId is provided', () => {
+            (() => new Client({ userId })).should.throw(TypeError)
           })
 
           it('require an user id auth option', () => {
@@ -148,7 +153,7 @@ describe('main module', () => {
 
     describe('Client', () => {
       beforeEach(() => {
-        this.instance = new Client({ email, ethAddress, password }, apiUrl)
+        this.instance = new Client({ email, ethAddress, userId, password }, apiUrl)
       })
 
       describe('analyze', () => {
@@ -163,7 +168,7 @@ describe('main module', () => {
           })
           it('should login and chain requester and poller', async () => {
             sinon.stub(login, 'do')
-              .withArgs(email, ethAddress, password, parsedApiUrl)
+              .withArgs(email, ethAddress, userId, password, parsedApiUrl)
               .returns(new Promise(resolve => {
                 resolve({ access: accessToken, refresh: refreshToken })
               }))
@@ -184,7 +189,7 @@ describe('main module', () => {
           it('should reject with login failures', async () => {
             const errorMsg = 'Booom! from login'
             sinon.stub(login, 'do')
-              .withArgs(email, ethAddress, password, parsedApiUrl)
+              .withArgs(email, ethAddress, userId, password, parsedApiUrl)
               .returns(new Promise((resolve, reject) => {
                 reject(new Error(errorMsg))
               }))
@@ -205,7 +210,7 @@ describe('main module', () => {
           it('should reject with requester failures', async () => {
             const errorMsg = 'Booom! from requester'
             sinon.stub(login, 'do')
-              .withArgs(email, ethAddress, password, parsedApiUrl)
+              .withArgs(email, ethAddress, userId, password, parsedApiUrl)
               .returns(new Promise(resolve => {
                 resolve({ access: accessToken, refresh: refreshToken })
               }))
@@ -226,7 +231,7 @@ describe('main module', () => {
           it('should reject with poller failures', async () => {
             const errorMsg = 'Booom! from poller'
             sinon.stub(login, 'do')
-              .withArgs(email, ethAddress, password, parsedApiUrl)
+              .withArgs(email, ethAddress, userId, password, parsedApiUrl)
               .returns(new Promise(resolve => {
                 resolve({ access: accessToken, refresh: refreshToken })
               }))
@@ -247,7 +252,7 @@ describe('main module', () => {
           it('should pass timeout option to poller', async () => {
             const timeout = 10
             sinon.stub(login, 'do')
-              .withArgs(email, ethAddress, password, parsedApiUrl)
+              .withArgs(email, ethAddress, userId, password, parsedApiUrl)
               .returns(new Promise(resolve => {
                 resolve({ access: accessToken, refresh: refreshToken })
               }))

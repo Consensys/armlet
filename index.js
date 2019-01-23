@@ -15,13 +15,13 @@ class Client {
       throw new TypeError('Please provide auth options.')
     }
 
-    const { email, ethAddress, apiKey, password } = auth
+    const { email, ethAddress, apiKey, password, userId } = auth
 
-    if (!email && !ethAddress && !apiKey) {
+    if (!email && !ethAddress && !apiKey && !userId) {
       throw new TypeError('Please provide an user id auth option.')
     }
 
-    if (!apiKey && (!password && (email || ethAddress))) {
+    if (!apiKey && (!password && (email || ethAddress || userId))) {
       throw new TypeError('Please provide a password auth option.')
     }
 
@@ -30,6 +30,7 @@ class Client {
       throw new TypeError(`${inputApiUrl} is not a valid URL`)
     }
 
+    this.userId = userId
     this.email = email
     this.ethAddress = ethAddress
     this.password = password
@@ -43,7 +44,7 @@ class Client {
     }
 
     if (!this.accessToken) {
-      const tokens = await login.do(this.email, this.ethAddress, this.password, this.apiUrl)
+      const tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
       this.accessToken = tokens.access
       this.refreshToken = tokens.refresh
     }
