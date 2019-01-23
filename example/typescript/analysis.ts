@@ -2,6 +2,7 @@
 
 "use strict";
 import * as fs from 'fs';
+import * as util from 'util';
 
 function usage() {
     console.log(`usage: ${process.argv[1]} [*mythx-api-json-path*] [*timeout-secs*]
@@ -61,7 +62,7 @@ const analyzeOptions = {
 
 client.analyze(analyzeOptions)
     .then(issues => {
-        console.log(issues)
+        console.log(`${util.inspect(issues, {depth: null})}`)
     }).catch(err => {
         console.log(err)
     })
