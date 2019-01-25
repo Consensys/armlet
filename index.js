@@ -23,7 +23,7 @@ class Client {
       throw new TypeError('Please provide an user id auth option.')
     }
 
-    if (!apiKey && userId !== trialUserId && (!password && (email || ethAddress))) {
+    if (!apiKey && !userId && (!password && (email || ethAddress))) {
       throw new TypeError('Please provide a password auth option.')
     }
 
