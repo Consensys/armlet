@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-
 "use strict"
 const fs = require('fs')
 
 function usage() {
-    console.log(`usage: ${process.argv[1]} [*mythx-api-json-path*] [*timeout-secs*]
+    console.log(`usage: ${process.argv[1]} *UUID*
 
-Run MythX analyses on *mythx-api-json-path*
+Get MythX status on a previously-submitted analyses. *UUID* is the
+value that was given back by the previously-submitted requiest.
 
 Set environment MYTHX_PASSWORD and one of the following:
 
@@ -35,13 +35,12 @@ if (argLen === 3 &&
 }
 
 let timeout = 20
-if (argLen >= 3 &&
-    process.argv[argLen-1].match(/^\d+$/)) {
-    timeout = parseInt(process.argv[argLen-1])
+if (argLen < 3 || !process.argv[2].match(/^[0-9a-f-]+$/)) {
+    console.log("Need to pass a UUID...\n")
+    usage()
 }
 
-
-const jsonPath = process.argv[2] || `${__dirname}/sample-json/PublicArray.json`
+const uuid = process.argv[2]
 
 /**********************************
   Authentication and option setup
@@ -70,12 +69,7 @@ const armlet = require('../index') // if not installed
 
 const client = new armlet.Client(armletOptions)
 
-const analyzeOptions = {
-    data: JSON.parse(fs.readFileSync(jsonPath, 'utf8')),
-    timeout: timeout * 1000  // convert secs to millisecs
-}
-
-client.analyzeWithStatus(analyzeOptions)
+client.analyzeStatus(uuid)
     .then(issues => {
         const util = require('util')
         console.log(`${util.inspect(issues, {depth: null})}`)
