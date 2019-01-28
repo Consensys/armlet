@@ -63,8 +63,8 @@ class Client {
     *
     **/
   async analyze (options) {
-    if (options === undefined || options.data === undefined || options.data.deployedBytecode === undefined) {
-      throw new TypeError('Please provide a deployedBytecode option.')
+    if (options === undefined || options.data === undefined) {
+      throw new TypeError('Please provide a data option.')
     }
 
     if (!this.accessToken) {

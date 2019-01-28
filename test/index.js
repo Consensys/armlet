@@ -95,8 +95,8 @@ describe('main module', () => {
                 this.instance.analyze.should.be.a('function')
               })
 
-              it('should require a deployedBytecode option', async () => {
-                await this.instance.analyze().should.be.rejectedWith(TypeError)
+              it('should require a data option', async () => {
+                await this.instance.analyze({ 'field': 'value' }).should.be.rejectedWith(TypeError)
               })
             })
             describe('have an analyses method which', () => {
