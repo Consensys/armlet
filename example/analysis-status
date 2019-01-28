@@ -54,12 +54,6 @@ let armletOptions = {
     platforms: ['armlet-example']  // client chargeback
 }
 
-if (process.env.MYTHX_ETH_ADDRESS) {
-    armletOptions.ethAddress = process.env.MYTHX_ETH_ADDRESS
-} else if (process.env.MYTHX_EMAIL) {
-    armletOptions.email = process.env.MYTHX_EMAIL
-}
-
 /**********************************
   Example code starts here ...
 ***********************************/

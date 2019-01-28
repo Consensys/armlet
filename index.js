@@ -175,13 +175,12 @@ class Client {
   }
 
   async getIssues (uuid, inputApiUrl = defaultApiUrl) {
-    let accessToken = this.accessToken
-    if (!accessToken) {
+    if (!this.accessToken) {
       const tokens = await login.do(this.email, this.ethAddress, this.password, this.apiUrl)
-      accessToken = tokens.access
+      this.accessToken = tokens.access
     }
     const url = `${inputApiUrl}/${defaultApiVersion}/analyses/${uuid}/issues`
-    return simpleRequester.do({ url, accessToken: accessToken, json: true })
+    return simpleRequester.do({ url, accessToken: this.accessToken, json: true })
   }
 }
 
