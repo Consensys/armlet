@@ -59,7 +59,7 @@ class Client {
     *
     * @returns an array-like object of issues, and a uuid attribute which can
     *          be subsequently used to retrieve the information from our stored
-    *          database using analyzeIssues().
+    *          database using getIssues().
     *
     **/
   async analyze (options) {
@@ -157,14 +157,14 @@ class Client {
     const issues = await this.analyze(options)
     const uuid = issues.uuid
     delete issues.uuid
-    const status = await this.analyzeStatus(uuid)
+    const status = await this.getStatus(uuid)
     return {
       issues,
       status
     }
   }
 
-  async analyzeStatus (uuid, inputApiUrl = defaultApiUrl) {
+  async getStatus (uuid, inputApiUrl = defaultApiUrl) {
     let accessToken = this.accessToken
     if (!accessToken) {
       const tokens = await login.do(this.email, this.ethAddress, this.password, this.apiUrl)
@@ -174,7 +174,7 @@ class Client {
     return simpleRequester.do({ url, accessToken: accessToken, json: true })
   }
 
-  async analyzeIssues (uuid, inputApiUrl = defaultApiUrl) {
+  async getIssues (uuid, inputApiUrl = defaultApiUrl) {
     let accessToken = this.accessToken
     if (!accessToken) {
       const tokens = await login.do(this.email, this.ethAddress, this.password, this.apiUrl)
