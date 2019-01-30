@@ -52,7 +52,6 @@ let armletOptions = {
     email: process.env.MYTHX_EMAIL,
     ethAddress: process.env.MYTHX_ETH_ADDRESS,
     password: process.env.MYTHX_PASSWORD,
-    platforms: ['armlet-example']  // client chargeback
 }
 
 if (process.env.MYTHX_ETH_ADDRESS) {
@@ -73,6 +72,8 @@ const client = new armlet.Client(armletOptions)
 const analyzeOptions = {
     data: JSON.parse(fs.readFileSync(jsonPath, 'utf8')),
     timeout: timeout * 1000  // convert secs to millisecs
+    // client tool tracking (same as default above so really no change)
+    clientToolName: 'armlet-example',
 }
 
 client.analyzeWithStatus(analyzeOptions)
