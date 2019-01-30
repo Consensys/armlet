@@ -1,31 +1,37 @@
 [![CircleCI](https://circleci.com/gh/ConsenSys/armlet.svg?style=svg)](https://circleci.com/gh/ConsenSys/armlet)
 [![Coverage Status](https://coveralls.io/repos/github/ConsenSys/armlet/badge.svg?branch=master)](https://coveralls.io/github/ConsenSys/armlet?branch=master)
 
-# Armlet, a Mythril Platform API client
+# Armlet, a MythX API client wrapper
 
-Armlet is a Node.js client for the Mythril Platform API.
+Armlet is a thin wrapper around the MythX API written in Javascript
+which simplifies interaction with MythX. For example, the library
+wraps API analysis requests into a promise.
 
-# Usage
+# Installation
 
-Install with:
+Just as with any nodejs package, install with:
+
 ```
-$ npm i armlet
+$ npm install armlet
 ```
+
+# Example
 
 Here is a small example of how you might use this client. For
-demonstration purposes, we'll set the credentials created on the
-Mythril Platform, you can use either the Ethereum address or email
-used during registration and the password you created:
+demonstration purposes, we’ll set the credentials created on the
+MythX, you can use either the Ethereum address or email used during
+[registration](https://docs.mythx.io/en/latest/main/getting-started.html#how-do-i-sign-up)
+and the password you created:
+
 
 ```console
-$ export MYTHX_PASSWORD=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-$ # Only one of two below is needed:
+$ export MYTHX_API_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 $ export EMAIL=me@example.com
-$ export MYTHX_ETH_ADDRESS=0x.............
 ```
 
-Then get the Mythril Platform analysis results with the promise returned by
+Then get the MythX analysis results with the promise returned by
 the exposed function:
+
 ```javascript
 const armlet = require('armlet')
 const client = new armlet.Client(
