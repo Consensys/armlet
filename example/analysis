@@ -34,7 +34,7 @@ if (argLen === 3 &&
     usage()
 }
 
-let timeout = 20
+let timeout = 30 // 30 seconds is a minimum timeout
 if (argLen >= 3 &&
     process.argv[argLen-1].match(/^\d+$/)) {
     timeout = parseInt(process.argv[argLen-1])
@@ -70,10 +70,10 @@ const armlet = require('../index') // if not installed
 const client = new armlet.Client(armletOptions)
 
 const analyzeOptions = {
-    data: JSON.parse(fs.readFileSync(jsonPath, 'utf8')),
-    timeout: timeout * 1000  // convert secs to millisecs
-    // client tool tracking (same as default above so really no change)
     clientToolName: 'armlet-example',
+    data: JSON.parse(fs.readFileSync(jsonPath, 'utf8')),
+    timeout: timeout * 1000,  // convert secs to millisecs
+    // client tool tracking (same as default above so really no change)
 }
 
 client.analyzeWithStatus(analyzeOptions)
