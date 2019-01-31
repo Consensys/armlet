@@ -44,60 +44,30 @@ const client = new armlet.Client(
   })
 
 const data = {
-  contractName: 'TestMe',
-  abi: [
-    {
-      constant: false,
-      inputs: [
-        {
-          name: 'first_input',
-          type: 'uint256',
-        },
-      ],
-      name: 'lol',
-      outputs: [
-        {
-          name: '',
-          type: 'uint256',
-        },
-      ],
-      payable: false,
-      stateMutability: 'nonpayable',
-      type: 'function',
-    },
-  ],
-  bytecode: '0xf6...',
-  deployedBytecode: '0xf6...',
-  sourceMap: '25:78:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;25:78:1;;;;;;;',
-  deployedSourceMap: '25:78:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;25:78:1;;;;;;;',
-  sourceList: [
-    'basecontract.sol',
-    'maincontract.sol',
-  ],
-  sources: {
-    'basecontract.sol': {
-      'source': '[... source code ...]'
-    },
-    'maincontract.sol': {
-      'source': '[... source code ...]'
-    }
-  },
-  analysisMode: 'full',
+    clientToolName: 'armlet-readme',
+    "bytecode": "0x608060405234801561001057600080fd5b5060d48061001f6000396000f3fe608060405260043610603f576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806338d94193146044575b600080fd5b348015604f57600080fd5b50607960048036036020811015606457600080fd5b8101908080359060200190929190505050608f565b6040518082815260200191505060405180910390f35b600081600881101515609d57fe5b01600091509050548156fea165627a7a723058206f554b09240c9771a583534d72575fcfb4623ab4df3ddc139442047795fd383b0029",
 };
 
-client.analyze({data})
-  .then(issues => {
-    console.log(issues)
+client.analyzeWithStatus({data})
+    .then(result => {
+	const util = require('util');
+	console.log(`${util.inspect(result.status, {depth: null})}`);
+	console.log(`${util.inspect(result.issues, {depth: null})}`);
   }).catch(err => {
     console.log(err)
   })
 ```
 You can also specify the timeout in milliseconds to wait for the analysis to be
-done (the default is 10 seconds). For instance, to wait up to 5 seconds:
+done (the default is 10 seconds). Also, for statistical tracking you can tag the type of tool making the request using `clientToolName`.
+
+
+As an example, to wait up to 5 seconds, and log analysis request as as use of `armlet-readme`, run:
+
 ```javascript
-client.analyze({data, timeout: 5000})
-  .then(issues => {
-    console.log(issues)
+client.analyzeWithStatus({data, timeout: 5000, clientToolName: 'armlet-readme})
+  .then(result => {
+    console.log(result.status, {depth: null})
+    console.log(result.issues, {depth: null})
   }).catch(err => {
     console.log(err)
   })

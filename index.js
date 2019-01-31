@@ -59,6 +59,7 @@ class Client {
     * @param {options} object - structure which must contain
     *      {data} object       - information containing Smart Contract information to be analyzed
     *      {timeout} number    - optional timeout value in milliseconds
+    *      {clientToolName} string - optional; sets up for client tool usage tracking
     *
     * @returns an array-like object of issues, and a uuid attribute which can
     *          be subsequently used to retrieve the information from our stored
@@ -150,6 +151,7 @@ class Client {
     * @param {options} object - structure which must contain:
     *      {data} object       - information containing Smart Contract information to be analyzed
     *      {timeout} number    - optional timeout value in milliseconds
+    *      {clientToolName} string - optional; sets up for client tool usage tracking
     *
     * @returns object which contains:
     *      (issues}  object - an like object which of issues is grouped by (file) input container.
