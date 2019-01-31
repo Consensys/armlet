@@ -74,5 +74,23 @@ describe('simpleRequester', () => {
 
       await simpleRequester.do({ url: url, json: true }).should.be.rejectedWith(Error)
     })
+
+    it('should reject on api server 401 with JSON data', async () => {
+      const jsonContent = { error: textContent }
+
+      nock(httpsApiUrl)
+        .get(basePath)
+        .reply(401, jsonContent)
+
+      await simpleRequester.do({ url: url }).should.be.rejectedWith(Error)
+    })
+
+    it('should reject on api server 401 with non-JSON data', async () => {
+      nock(httpsApiUrl)
+        .get(basePath)
+        .reply(401, textContent)
+
+      await simpleRequester.do({ url: url }).should.be.rejectedWith(Error)
+    })
   })
 })
