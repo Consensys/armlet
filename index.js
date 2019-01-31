@@ -124,7 +124,7 @@ class Client {
     }
 
     if (!this.accessToken) {
-      const tokens = await login.do(this.email, this.ethAddress, this.password, this.apiUrl)
+      const tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
       this.accessToken = tokens.access
       this.refreshToken = tokens.refresh
     }
@@ -172,7 +172,7 @@ class Client {
   async getStatus (uuid, inputApiUrl = defaultApiUrl) {
     let accessToken = this.accessToken
     if (!accessToken) {
-      const tokens = await login.do(this.email, this.ethAddress, this.password, this.apiUrl)
+      const tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
       accessToken = tokens.access
     }
     const url = `${inputApiUrl}/${defaultApiVersion}/analyses/${uuid}`
@@ -181,7 +181,7 @@ class Client {
 
   async getIssues (uuid, inputApiUrl = defaultApiUrl) {
     if (!this.accessToken) {
-      const tokens = await login.do(this.email, this.ethAddress, this.password, this.apiUrl)
+      const tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
       this.accessToken = tokens.access
     }
     const url = `${inputApiUrl}/${defaultApiVersion}/analyses/${uuid}/issues`
