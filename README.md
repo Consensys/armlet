@@ -25,8 +25,8 @@ and the password you created:
 
 
 ```console
-$ export MYTHX_API_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-$ export EMAIL=me@example.com
+$ export MYTHX_PASSWORD='AAAyyyyyyyy@*#!?'
+$ export MYTHX_ETH_ADDRESS=deadbeef000000
 ```
 
 Then get the MythX analysis results with the promise returned by
