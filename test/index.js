@@ -111,6 +111,32 @@ describe('main module', () => {
                 await this.instance.analyses(options).should.be.rejectedWith(TypeError)
               })
             })
+            describe('have an analyzeWithStatus method which', () => {
+              it('should be a function', () => {
+                this.instance.analyzeWithStatus.should.be.a('function')
+              })
+
+              it('should call analyze and getStatus methods', async () => {
+                const input = { data: 'content' }
+                const analyzeStub = sinon.stub(this.instance, 'analyze')
+                  .resolves({ issues: 'issues', uuid: 'uuid' })
+                const getStatusStub = sinon.stub(this.instance, 'getStatus')
+                  .resolves('stubbed')
+
+                await this.instance.analyzeWithStatus(input)
+                  .should.eventually.deep.equal({ issues: { issues: 'issues' }, status: 'stubbed' })
+                analyzeStub.calledWith(input).should.be.equal(true)
+                getStatusStub.calledWith('uuid').should.be.equal(true)
+
+                analyzeStub.restore()
+                getStatusStub.restore()
+              })
+            })
+            describe('have a getStatus method which', () => {
+              it('should be a function', () => {
+                this.instance.getStatus.should.be.a('function')
+              })
+            })
           })
         })
       })
@@ -152,6 +178,28 @@ describe('main module', () => {
       describe('as authenticated user', () => {
         beforeEach(() => {
           this.instance = new Client({ email, ethAddress, password }, apiUrl)
+        })
+
+        describe('getStatus', () => {
+          afterEach(() => {
+            simpleRequester.do.restore()
+            login.do.restore()
+          })
+
+          it('should login and chain simpleRequester', async () => {
+            const uuid = '1234'
+            sinon.stub(login, 'do')
+              .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve({ access: accessToken, refresh: refreshToken })
+              }))
+            sinon.stub(simpleRequester, 'do')
+              .withArgs({ url: `${apiUrl}/v1/analyses/${uuid}`, accessToken, json: true })
+              .returns(new Promise(resolve => {
+                resolve('stubbed')
+              }))
+            await this.instance.getStatus(uuid, apiUrl).should.eventually.equal('stubbed')
+          })
         })
 
         describe('analyze', () => {
@@ -373,7 +421,7 @@ describe('main module', () => {
 
             it('should login and call simpleRequester', async () => {
               sinon.stub(login, 'do')
-                .withArgs(email, ethAddress, password, parsedApiUrl)
+                .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
                 .returns(new Promise(resolve => {
                   resolve({ access: accessToken, refresh: refreshToken })
                 }))
@@ -389,7 +437,7 @@ describe('main module', () => {
             it('should reject with login failures', async () => {
               const errorMsg = 'Booom! from login'
               sinon.stub(login, 'do')
-                .withArgs(email, ethAddress, password, parsedApiUrl)
+                .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
                 .returns(new Promise((resolve, reject) => {
                   reject(new Error(errorMsg))
                 }))
@@ -405,7 +453,7 @@ describe('main module', () => {
             it('should reject with simpleRequester failures', async () => {
               const errorMsg = 'Booom! from simpleRequester'
               sinon.stub(login, 'do')
-                .withArgs(email, ethAddress, password, parsedApiUrl)
+                .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
                 .returns(new Promise(resolve => {
                   resolve({ access: accessToken, refresh: refreshToken })
                 }))
