@@ -64,7 +64,7 @@ done (the default is 10 seconds). Also, for statistical tracking you can tag the
 As an example, to wait up to 5 seconds, and log analysis request as as use of `armlet-readme`, run:
 
 ```javascript
-client.analyzeWithStatus({data, timeout: 5000, clientToolName: 'armlet-readme})
+client.analyzeWithStatus({data, timeout: 5000, clientToolName: 'armlet-readme'})
   .then(result => {
     console.log(result.status, {depth: null})
     console.log(result.issues, {depth: null})
