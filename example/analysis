@@ -34,7 +34,7 @@ if (argLen === 3 &&
     usage()
 }
 
-let timeout = 30 // 30 seconds is a minimum timeout
+let timeout = 40 // 40 seconds is a minimum timeout
 if (argLen >= 3 &&
     process.argv[argLen-1].match(/^\d+$/)) {
     timeout = parseInt(process.argv[argLen-1])
