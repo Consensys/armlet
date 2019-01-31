@@ -8,6 +8,7 @@ const refresh = require('./lib/refresh')
 
 const defaultApiUrl = process.env['MYTHX_API_URL'] || 'https://api.mythx.io'
 const defaultApiVersion = 'v1'
+const trialUserId = '123456789012345678901234'
 
 class Client {
   /**
@@ -23,17 +24,18 @@ class Client {
    *
    */
   constructor (auth, inputApiUrl = defaultApiUrl) {
-    if (!auth) {
-      throw new TypeError('Please provide auth options.')
+    const { email, ethAddress, apiKey, password } = auth || {}
+
+    let userId
+    if (!password && !email && !ethAddress && !apiKey) {
+      userId = trialUserId
     }
 
-    const { email, ethAddress, apiKey, password } = auth
-
-    if (!email && !ethAddress && !apiKey) {
+    if (password && !email && !ethAddress && !apiKey) {
       throw new TypeError('Please provide an user id auth option.')
     }
 
-    if (!apiKey && (!password && (email || ethAddress))) {
+    if (!apiKey && !userId && (!password && (email || ethAddress))) {
       throw new TypeError('Please provide a password auth option.')
     }
 
@@ -42,6 +44,7 @@ class Client {
       throw new TypeError(`${inputApiUrl} is not a valid URL`)
     }
 
+    this.userId = userId
     this.email = email
     this.ethAddress = ethAddress
     this.password = password
@@ -68,7 +71,7 @@ class Client {
     }
 
     if (!this.accessToken) {
-      const tokens = await login.do(this.email, this.ethAddress, this.password, this.apiUrl)
+      const tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
       this.accessToken = tokens.access
       this.refreshToken = tokens.refresh
     }
@@ -196,3 +199,4 @@ module.exports.Client = Client
 module.exports.defaultApiUrl = new url.URL(defaultApiUrl)
 module.exports.defaultApiHost = defaultApiUrl
 module.exports.defaultApiVersion = defaultApiVersion
+module.exports.trialUserId = trialUserId
