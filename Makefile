@@ -14,3 +14,13 @@ lint:
 #: Look and fix nodejs lint violations
 lint-fix:
 	npm run lint-fix
+
+RM      ?= rm
+GIT2CL ?= git2cl
+
+rmChangeLog:
+	rm ChangeLog || true
+
+#: Create a ChangeLog from git via git log and git2cl
+ChangeLog: rmChangeLog
+	git log --pretty --numstat --summary | $(GIT2CL) >$@

@@ -160,8 +160,9 @@ describe('poller', () => {
         .get(basePath)
         .delay(timeout + pollStep)
         .reply(200, expectedIssues)
-
-      await poller.do(uuid, validApiKey, defaultApiUrl, pollStep, timeout).should.be.rejectedWith(Error, `Timed out in ${timeout} ms.`)
+      await poller.do(uuid, validApiKey, defaultApiUrl, pollStep, timeout).should.be
+        .rejectedWith('User-specified or default timeout after less than a millisecond.\n' +
+                          'Analysis continues on and may complete on the server, so run again?')
     })
   })
 })

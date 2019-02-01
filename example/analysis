@@ -77,9 +77,9 @@ const analyzeOptions = {
 }
 
 client.analyzeWithStatus(analyzeOptions)
-    .then(issues => {
+    .then(result => {
         const util = require('util')
-        console.log(`${util.inspect(issues, {depth: null})}`)
+        console.log(`${util.inspect(result, {depth: null})}`)
     }).catch(err => {
         console.log(err)
     })
