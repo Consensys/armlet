@@ -154,5 +154,17 @@ describe('requester', () => {
 
       await requester.do(data, validApiKey, defaultApiUrl).should.be.rejectedWith(SyntaxError)
     })
+
+    it('should reject on input data is too large', async () => {
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .post(basePath, data)
+        .reply(413)
+
+      await requester.do(data, validApiKey, defaultApiUrl).should.be.rejectedWith(Error, 'The requsted input data is too large to process.')
+    })
   })
 })
