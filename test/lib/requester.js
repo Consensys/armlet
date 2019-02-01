@@ -68,6 +68,18 @@ describe('requester', () => {
       await requester.do(data, validApiKey, invalidApiHostname).should.be.rejectedWith(Error)
     })
 
+    it('should reject on api server 401', async () => {
+      nock(httpApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .post(basePath, data)
+        .reply(401)
+
+      await requester.do(data, validApiKey, httpApiUrl).should.be.rejectedWith(Error, 'MythX credentials are incorrect.')
+    })
+
     it('should reject on api server 500', async () => {
       nock(httpApiUrl.href, {
         reqheaders: {
