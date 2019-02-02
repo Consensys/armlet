@@ -1,8 +1,15 @@
-.PHONY: test check lint lint-fix
+.PHONY: test check lint lint-fix rebuild distcheck
 
 #: Run lint and then tests
 check:
 	npm test
+
+#: Rebuild all
+rebuild:
+	rm -fr node_modules && npm install --no-progress
+
+#: Rebuild all
+distcheck: rebuild check
 
 #: same thing as "make check"
 test: check

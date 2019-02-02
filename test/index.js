@@ -233,7 +233,7 @@ describe('main module', () => {
             })
 
             it('should reject with login failures', async () => {
-              const errorMsg = 'Booom! from login'
+              const errorMsg = 'Invalid MythX credentials for email address user@example.com given.'
               sinon.stub(login, 'do')
                 .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
                 .returns(new Promise((resolve, reject) => {
@@ -250,7 +250,7 @@ describe('main module', () => {
                   resolve(issues)
                 }))
 
-              await this.instance.analyze({ data }).should.be.rejectedWith(Error, errorMsg)
+              await this.instance.analyze({ data }).should.be.rejectedWith(errorMsg)
             })
 
             it('should reject with requester failures', async () => {

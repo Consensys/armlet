@@ -161,8 +161,8 @@ describe('poller', () => {
         .delay(timeout + pollStep)
         .reply(200, expectedIssues)
       await poller.do(uuid, validApiKey, defaultApiUrl, pollStep, timeout).should.be
-        .rejectedWith('User-specified or default timeout after less than a millisecond.\n' +
-                          'Analysis continues on and may complete on the server, so run again?')
+        .rejectedWith('User-specified or default time out reached after 0.015 seconds.\n' +
+                      'Analysis continues on server and may have completed; so run again?')
     })
   })
 })

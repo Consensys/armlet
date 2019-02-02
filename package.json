@@ -37,6 +37,8 @@
   },
   "dependencies": {
     "http-errors": "^1.7.1",
+    "humanize-duration": "^3.17.0",
+    "moment": "^2.24.0",
     "request": "^2.88.0"
   }
 }
