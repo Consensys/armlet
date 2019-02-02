@@ -72,7 +72,19 @@ class Client {
     }
 
     if (!this.accessToken) {
-      const tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
+      let tokens
+      try {
+        tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
+      } catch (e) {
+        let authType = ''
+        if (this.email) {
+          authType = ` for email address ${this.email}`
+        } else if (this.ethAddress) {
+          authType = ` for ethereum address ${this.ethAddress}`
+        }
+        // eslint-disable-next-line no-throw-literal
+        throw (`Invalid MythX credentials${authType} given.`)
+      }
       this.accessToken = tokens.access
       this.refreshToken = tokens.refresh
     }
