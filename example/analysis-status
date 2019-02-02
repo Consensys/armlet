@@ -62,7 +62,7 @@ const armlet = require('../index') // if not installed
 
 const client = new armlet.Client(armletOptions)
 
-client.analyzeStatus(uuid)
+client.getStatus(uuid)
     .then(issues => {
         const util = require('util')
         console.log(`${util.inspect(issues, {depth: null})}`)
