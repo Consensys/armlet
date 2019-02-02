@@ -181,23 +181,47 @@ class Client {
     }
   }
 
-  async getStatus (uuid, inputApiUrl = defaultApiUrl) {
+  async getStatusOrIssues (uuid, url, inputApiUrl) {
     let accessToken = this.accessToken
     if (!accessToken) {
       const tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
       accessToken = tokens.access
     }
+    let promise
+    await simpleRequester.do({ url, accessToken: accessToken, json: true })
+      .then(result => {
+        promise = new Promise(function (resolve, reject) {
+          resolve(result)
+        })
+      }).catch(err => {
+        if (err.status === 404) {
+          err.error = `Analysis with UUID ${uuid} not found.`
+        }
+        promise = new Promise(function (resolve, reject) {
+          reject(err)
+        })
+      })
+    return promise
+  }
+
+  async getStatus (uuid, inputApiUrl = defaultApiUrl) {
     const url = `${inputApiUrl}/${defaultApiVersion}/analyses/${uuid}`
-    return simpleRequester.do({ url, accessToken: accessToken, json: true })
+    return this.getStatusOrIssues(uuid, url, inputApiUrl)
   }
 
   async getIssues (uuid, inputApiUrl = defaultApiUrl) {
-    if (!this.accessToken) {
-      const tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
-      this.accessToken = tokens.access
-    }
     const url = `${inputApiUrl}/${defaultApiVersion}/analyses/${uuid}/issues`
-    return simpleRequester.do({ url, accessToken: this.accessToken, json: true })
+    return this.getStatusOrIssues(uuid, url, inputApiUrl)
+  }
+
+  async listAnalyses (inputApiUrl = defaultApiUrl) {
+    let accessToken = this.accessToken
+    if (!accessToken) {
+      const tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
+      accessToken = tokens.access
+    }
+    const url = `${inputApiUrl}/${defaultApiVersion}/analyses`
+    return simpleRequester.do({ url, accessToken: accessToken, json: true })
   }
 }
 

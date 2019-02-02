@@ -3,10 +3,9 @@
 const fs = require('fs')
 
 function usage() {
-    console.log(`usage: ${process.argv[1]} *UUID*
+    console.log(`usage: ${process.argv[1]}
 
-Get MythX status on a previously-submitted analyses. *UUID* is the
-value that was given back by the previously-submitted requiest.
+List prior previously-submitted MythX analyses.
 
 Set environment MYTHX_PASSWORD and one of the following:
 
@@ -27,12 +26,6 @@ require('./helper')
 const argLen = process.argv.length
 if (argLen === 3 &&
     process.argv[2].match(/^[-]{0,2}h(?:elp)?$/)) {
-    usage()
-}
-
-let timeout = 20
-if (argLen < 3 || !process.argv[2].match(/^[0-9a-f-]+$/)) {
-    console.log("Need to pass a UUID...\n")
     usage()
 }
 
@@ -59,9 +52,10 @@ const armlet = require('../index') // if not installed
 const client = new armlet.Client(armletOptions)
 const util = require('util')
 
-client.getStatus(uuid)
-    .then(status => {
-        console.log(`status:\n${util.inspect(status, {depth: null})}`)
+// FIXME: add fromDate toDate options?
+client.listAnalyses()
+    .then(runs => {
+        console.log(`${util.inspect(runs, {depth: null})}`)
     }).catch(err => {
         console.log(`error: ${util.inspect(err)}`)
     })
