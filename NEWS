@@ -1,0 +1,6 @@
+v1.2.0 - 2019-01-31 1.2
+
+- tool status tracking via clientToolName
+- Simplify example in README
+- Adjust to accomodate looser required data fields
+- If no registration set, run as a trial user
