@@ -77,7 +77,7 @@ describe('requester', () => {
         .post(basePath, data)
         .reply(401)
 
-      await requester.do(data, validApiKey, httpApiUrl).should.be.rejectedWith(Error, 'MythX credentials are incorrect.')
+      await requester.do(data, validApiKey, httpApiUrl).should.be.rejectedWith('MythX credentials are incorrect.')
     })
 
     it('should reject on api server 500', async () => {
@@ -140,7 +140,7 @@ describe('requester', () => {
         .post(basePath, data)
         .reply(401, 'Unauthorized')
 
-      await requester.do(data, inValidApiKey, httpApiUrl).should.be.rejectedWith(Error)
+      await requester.do(data, inValidApiKey, httpApiUrl).should.be.rejectedWith('MythX credentials are incorrect.')
     })
 
     it('should reject on non-JSON data', async () => {
