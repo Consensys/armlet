@@ -60,10 +60,10 @@ You can also specify the timeout in milliseconds to wait for the analysis to be
 done (the default is 40 seconds). Also, for statistical tracking you can tag the type of tool making the request using `clientToolName`.
 
 
-As an example, to wait up to 5 seconds, and log analysis request as as use of `armlet-readme`, run:
+As an example, to wait up to 50 seconds, and log analysis request as as use of `armlet-readme`, run:
 
 ```javascript
-client.analyzeWithStatus({data, timeout: 5000, clientToolName: 'armlet-readme'})
+client.analyzeWithStatus({data, timeout: 50000, clientToolName: 'armlet-readme'})
   .then(result => {
     console.log(result.status, {depth: null})
     console.log(result.issues, {depth: null})
