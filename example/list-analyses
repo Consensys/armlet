@@ -7,7 +7,8 @@ function usage() {
 
 List prior previously-submitted MythX analyses.
 
-Set environment MYTHX_PASSWORD and one of the following:
+This command requires an account to use, so set environment
+MYTHX_PASSWORD and one of the following:
 
 * MYTHX_ETH_ADDRESS or
 * MYTHX_EMAIL_ADDRESS

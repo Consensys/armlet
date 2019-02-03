@@ -13,16 +13,10 @@ Set environment MYTHX_PASSWORD and one of the following:
 * MYTHX_ETH_ADDRESS or
 * MYTHX_EMAIL_ADDRESS
 
-before using.
-
-OR
-
-Set environment MYTHX_API_KEY
+if you have have registered to reduce request rate-limiting.
 `)
     process.exit(1)
 }
-
-require('./helper')
 
 /**********************************
   Minimal option processing
@@ -62,7 +56,7 @@ const armlet = require('../index') // if not installed
 
 const client = new armlet.Client(armletOptions)
 
-client.analyzeIssues(uuid)
+client.getIssues(uuid)
     .then(issues => {
         const util = require('util')
         console.log(`${util.inspect(issues, {depth: null})}`)
