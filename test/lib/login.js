@@ -28,6 +28,16 @@ describe('login', () => {
       await login.do(email, ethAddress, userId, password, parsedApiUrl).should.eventually.deep.equal(jsonTokens)
     })
 
+    it('should redirect refresh and access tokens', async () => {
+      nock('http://localhost:3100')
+        .post(loginPath, auth)
+        .reply(200, jsonTokens)
+
+      const parsedApiUrlHttp = new url.URL('http://localhost:3100')
+      await login.do(email, ethAddress, userId, password, parsedApiUrlHttp)
+        .should.eventually.deep.equal(jsonTokens)
+    })
+
     it('should reject on api server connection failure', async () => {
       const invalidUrlObject = 'not-an-url-object'
 
