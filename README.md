@@ -57,7 +57,7 @@ client.analyzeWithStatus({data})
   })
 ```
 You can also specify the timeout in milliseconds to wait for the analysis to be
-done (the default is 10 seconds). Also, for statistical tracking you can tag the type of tool making the request using `clientToolName`.
+done (the default is 40 seconds). Also, for statistical tracking you can tag the type of tool making the request using `clientToolName`.
 
 
 As an example, to wait up to 5 seconds, and log analysis request as as use of `armlet-readme`, run:
