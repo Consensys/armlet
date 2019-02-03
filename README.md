@@ -72,9 +72,10 @@ client.analyzeWithStatus({data, timeout: 5000, clientToolName: 'armlet-readme'})
   })
 ```
 
+# See Also
 
-See the [example
-directory](https://github.com/ConsenSys/armlet/tree/master/example)
+* [example directory](https://github.com/ConsenSys/armlet/tree/master/example)
 for some simple but runnable examples of how to use the client.
-
-For more info join the Mythril community at [Discord](https://discord.gg/kktn8Wt).
+* [openapi spec](https://api.mythx.io/v1/openapi) for details of the MythX API.
+* [MythX Developer and User Guide](https://docs.mythx.io) for more information
+* [MythX Discord channel](https://discord.gg/kktn8Wt) to join the MythX community.
