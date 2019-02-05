@@ -2,7 +2,7 @@
 
 #: Run lint and then tests
 check:
-	npm test
+	npm run lint-fix && npm test
 
 #: Rebuild all
 rebuild:
