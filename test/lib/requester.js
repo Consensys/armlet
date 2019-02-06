@@ -90,7 +90,7 @@ describe('requester', () => {
         .reply(500)
 
       await requester.do(data, validApiKey, httpApiUrl).should.be
-        .rejectedWith('Failed to get response, status code 500')
+        .rejectedWith('Failed in retrieving analysis response, HTTP status code: 500')
     })
 
     it('should reject on request limit errors', async () => {
@@ -106,7 +106,7 @@ describe('requester', () => {
         })
 
       await requester.do(data, validApiKey, httpApiUrl).should.be
-        .rejectedWith('Failed to get response, status code 429')
+        .rejectedWith('Failed in retrieving analysis response, HTTP status code: 429\nnull')
     })
 
     it('should reject on validation errors', async () => {

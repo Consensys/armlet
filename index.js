@@ -181,7 +181,7 @@ class Client {
     }
   }
 
-  async getStatusOrIssues (uuid, url, inputApiUrl) {
+  async getStatusOrIssues (uuid, url) {
     let accessToken = this.accessToken
     if (!accessToken) {
       const tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
@@ -198,20 +198,20 @@ class Client {
           err.error = `Analysis with UUID ${uuid} not found.`
         }
         promise = new Promise(function (resolve, reject) {
-          reject(err)
+          reject(err.error)
         })
       })
     return promise
   }
 
-  async getStatus (uuid, inputApiUrl = defaultApiUrl) {
-    const url = `${inputApiUrl}/${defaultApiVersion}/analyses/${uuid}`
-    return this.getStatusOrIssues(uuid, url, inputApiUrl)
+  async getStatus (uuid) {
+    const url = `${this.apiUrl}/${defaultApiVersion}/analyses/${uuid}`
+    return this.getStatusOrIssues(uuid, url)
   }
 
-  async getIssues (uuid, inputApiUrl = defaultApiUrl) {
-    const url = `${inputApiUrl}/${defaultApiVersion}/analyses/${uuid}/issues`
-    return this.getStatusOrIssues(uuid, url, inputApiUrl)
+  async getIssues (uuid) {
+    const url = `${this.apiUrl}/${defaultApiVersion}/analyses/${uuid}/issues`
+    return this.getStatusOrIssues(uuid, url)
   }
 
   async listAnalyses (inputApiUrl = defaultApiUrl) {
