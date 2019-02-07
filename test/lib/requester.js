@@ -89,7 +89,8 @@ describe('requester', () => {
         .post(basePath, data)
         .reply(500)
 
-      await requester.do(data, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
+      await requester.do(data, validApiKey, httpApiUrl).should.be
+        .rejectedWith('Failed in retrieving analysis response, HTTP status code: 500')
     })
 
     it('should reject on request limit errors', async () => {
@@ -104,29 +105,24 @@ describe('requester', () => {
           error: expectedErrorMsg
         })
 
-      await requester.do(data, validApiKey, httpApiUrl).should.be.rejectedWith(Error)
+      await requester.do(data, validApiKey, httpApiUrl).should.be
+        .rejectedWith('Failed in retrieving analysis response, HTTP status code: 429\nnull')
     })
 
     it('should reject on validation errors', async () => {
-      const expectedErrorMsg1 = 'field x required'
-      const expectedErrorMsg2 = 'field y required'
+      const expectedErrorMsg1 = 'Failed to get response, status code 400: field x required'
       nock(httpApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
         }
       })
         .post(basePath, data)
-        .reply(400, {
-          details: [
-            { message: expectedErrorMsg1 },
-            { message: expectedErrorMsg2 }
-          ]
-        })
+        .reply(400, expectedErrorMsg1)
 
       await requester.do(
         data,
         validApiKey,
-        httpApiUrl).should.be.rejectedWith(Error, `Failed to get response, status code 400: ${expectedErrorMsg1}, ${expectedErrorMsg2}`)
+        httpApiUrl).should.be.rejectedWith(expectedErrorMsg1)
     })
 
     // it('should reject on authentication errors', async () => {

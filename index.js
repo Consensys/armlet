@@ -198,7 +198,7 @@ class Client {
           err.error = `Analysis with UUID ${uuid} not found.`
         }
         promise = new Promise(function (resolve, reject) {
-          reject(err)
+          reject(err.error)
         })
       })
     return promise
