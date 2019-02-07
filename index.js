@@ -5,6 +5,7 @@ const simpleRequester = require('./lib/simpleRequester')
 const poller = require('./lib/poller')
 const login = require('./lib/login')
 const refresh = require('./lib/refresh')
+const util = require('./lib/util')
 
 const defaultApiUrl = process.env['MYTHX_API_URL'] || 'https://api.mythx.io'
 const defaultApiVersion = 'v1'
@@ -140,7 +141,7 @@ class Client {
       this.accessToken = tokens.access
       this.refreshToken = tokens.refresh
     }
-    const url = `${this.apiUrl.href}${defaultApiVersion}/analyses?dateFrom=${options.dateFrom}&dateTo=${options.dateTo}&offset=${options.offset}`
+    const url = util.joinUrl(this.apiUrl.href, `${defaultApiVersion}/analyses?dateFrom=${options.dateFrom}&dateTo=${options.dateTo}&offset=${options.offset}`)
     let analyses
     try {
       analyses = await simpleRequester.do({ url, accessToken: this.accessToken, json: true })
@@ -205,12 +206,12 @@ class Client {
   }
 
   async getStatus (uuid, inputApiUrl = defaultApiUrl) {
-    const url = `${inputApiUrl}/${defaultApiVersion}/analyses/${uuid}`
+    const url = util.joinUrl(this.apiUrl.href, `${defaultApiVersion}/analyses/${uuid}`)
     return this.getStatusOrIssues(uuid, url, inputApiUrl)
   }
 
   async getIssues (uuid, inputApiUrl = defaultApiUrl) {
-    const url = `${inputApiUrl}/${defaultApiVersion}/analyses/${uuid}/issues`
+    const url = util.joinUrl(this.apiUrl.href, `${defaultApiVersion}/analyses/${uuid}/issues`)
     return this.getStatusOrIssues(uuid, url, inputApiUrl)
   }
 
@@ -220,17 +221,19 @@ class Client {
       const tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
       accessToken = tokens.access
     }
-    const url = `${inputApiUrl}/${defaultApiVersion}/analyses`
+    const url = util.joinUrl(inputApiUrl, `${defaultApiVersion}/analyses`)
     return simpleRequester.do({ url, accessToken: accessToken, json: true })
   }
 }
 
 module.exports.ApiVersion = (inputApiUrl = defaultApiUrl) => {
-  return simpleRequester.do({ url: `${inputApiUrl}/${defaultApiVersion}/version`, json: true })
+  const url = util.joinUrl(inputApiUrl, `${defaultApiVersion}/version`)
+  return simpleRequester.do({ url, json: true })
 }
 
 module.exports.OpenApiSpec = (inputApiUrl = defaultApiUrl) => {
-  return simpleRequester.do({ url: `${inputApiUrl}/${defaultApiVersion}/openapi.yaml` })
+  const url = util.joinUrl(inputApiUrl, `${defaultApiVersion}/openapi.yaml`)
+  return simpleRequester.do({ url })
 }
 
 module.exports.Client = Client
