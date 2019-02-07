@@ -205,7 +205,6 @@ class Client {
     return promise
   }
 
-
   async getStatus (uuid, inputApiUrl = defaultApiUrl) {
     const url = util.joinUrl(this.apiUrl.href, `${defaultApiVersion}/analyses/${uuid}`)
     return this.getStatusOrIssues(uuid, url, inputApiUrl)
