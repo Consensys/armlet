@@ -182,7 +182,7 @@ class Client {
     }
   }
 
-  async getStatusOrIssues (uuid, url) {
+  async getStatusOrIssues (uuid, url, inputApiUrl) {
     let accessToken = this.accessToken
     if (!accessToken) {
       const tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
@@ -205,14 +205,15 @@ class Client {
     return promise
   }
 
-  async getStatus (uuid) {
+
+  async getStatus (uuid, inputApiUrl = defaultApiUrl) {
     const url = util.joinUrl(this.apiUrl.href, `${defaultApiVersion}/analyses/${uuid}`)
-    return this.getStatusOrIssues(uuid, url)
+    return this.getStatusOrIssues(uuid, url, inputApiUrl)
   }
 
-  async getIssues (uuid) {
+  async getIssues (uuid, inputApiUrl = defaultApiUrl) {
     const url = util.joinUrl(this.apiUrl.href, `${defaultApiVersion}/analyses/${uuid}/issues`)
-    return this.getStatusOrIssues(uuid, url)
+    return this.getStatusOrIssues(uuid, url, inputApiUrl)
   }
 
   async listAnalyses (inputApiUrl = defaultApiUrl) {

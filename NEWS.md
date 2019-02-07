@@ -1,4 +1,11 @@
+v1.2.1 - 2019-02-06
+-----------------------
+
+- Better MythX API error reporting, esp HTTP 400, 401, 502, 504
+- example analysis mode is "quick"
+
 v1.2.0 - 2019-02-03
+-----------------------
 
 - tool status tracking via clientToolName
 - Simplify example in README
