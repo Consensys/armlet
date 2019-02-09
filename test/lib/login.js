@@ -49,7 +49,7 @@ describe('login', () => {
         .post(loginPath, auth)
         .reply(500)
 
-      await login.do(email, ethAddress, userId, password, parsedApiUrl).should.be.rejectedWith(Error, 'Invalid status code')
+      await login.do(email, ethAddress, userId, password, parsedApiUrl).should.be.rejectedWith('HTTP status 500')
     })
 
     it('should reject on non-JSON data', async () => {

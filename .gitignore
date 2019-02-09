@@ -2,7 +2,6 @@
 .python-version
 .vscode
 node_modules
-package-lock.json
 tmp
 .nyc_output/
 ChangeLog

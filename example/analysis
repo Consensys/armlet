@@ -28,9 +28,9 @@ if (argLen === 3 &&
     usage()
 }
 
-// 40 seconds is a reasonable minimum timeout; For a "quick" analysis
+// 60 seconds is a reasonable minimum timeout; For a "quick" analysis
 // the backend uses a value of 30 seconds.
-let timeout = 40
+let timeout = 60
 if (argLen >= 3 &&
     process.argv[argLen-1].match(/^\d+$/)) {
     timeout = parseInt(process.argv[argLen-1])

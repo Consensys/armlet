@@ -12,7 +12,8 @@ describe('poller', () => {
     const httpApiUrl = new url.URL('http://localhost:3100')
     const validApiKey = 'valid-api-key'
     const uuid = 'my-uuid'
-    const basePath = `/v1/analyses/${uuid}/issues`
+    const statusUrl = `/v1/analyses/${uuid}`
+    const issuesUrl = `/v1/analyses/${uuid}/issues`
     const pollStep = 10
     const expectedIssues = [
       {
@@ -33,19 +34,26 @@ describe('poller', () => {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .get(basePath)
+        .get(statusUrl)
         .times(3)
-        .reply(400, {
-          status: 400,
-          error: 'Result is not Finished',
-          stack: 'BadRequestError: Result is not Finished\n    at getIssues (/home/fgimenez/workspace/mythril-api/src/services/AnalysisService.js:129:11)\n    at <anonymous>'
+        .reply(200, {
+          status: 'In progress'
         })
       nock(defaultApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .get(basePath)
+        .get(statusUrl)
+        .reply(200, {
+          status: 'Finished'
+        })
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(issuesUrl)
         .reply(200, emptyResult)
 
       await poller.do(uuid, validApiKey, defaultApiUrl, pollStep).should.eventually.deep.equal(emptyResult)
@@ -57,19 +65,26 @@ describe('poller', () => {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .get(basePath)
+        .get(statusUrl)
         .times(3)
-        .reply(400, {
-          status: 400,
-          error: 'Result is not Finished',
-          stack: 'BadRequestError: Result is not Finished\n    at getIssues (/home/fgimenez/workspace/mythril-api/src/services/AnalysisService.js:129:11)\n    at <anonymous>'
+        .reply(200, {
+          status: 'In progress'
         })
       nock(defaultApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .get(basePath)
+        .get(statusUrl)
+        .reply(200, {
+          status: 'Finished'
+        })
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(issuesUrl)
         .reply(200, expectedIssues)
 
       await poller.do(uuid, validApiKey, defaultApiUrl, pollStep).should.eventually.deep.equal(expectedIssues)
@@ -81,19 +96,26 @@ describe('poller', () => {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .get(basePath)
+        .get(statusUrl)
         .times(3)
-        .reply(400, {
-          status: 400,
-          error: 'Result is not Finished',
-          stack: 'BadRequestError: Result is not Finished\n    at getIssues (/home/fgimenez/workspace/mythril-api/src/services/AnalysisService.js:129:11)\n    at <anonymous>'
+        .reply(200, {
+          status: 'In progress'
         })
       nock(httpApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .get(basePath)
+        .get(statusUrl)
+        .reply(200, {
+          status: 'Finished'
+        })
+      nock(httpApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(issuesUrl)
         .reply(200, expectedIssues)
 
       await poller.do(uuid, validApiKey, httpApiUrl, pollStep).should.eventually.deep.equal(expectedIssues)
@@ -105,7 +127,7 @@ describe('poller', () => {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .get(basePath)
+        .get(statusUrl)
         .reply(500)
 
       await poller.do(uuid, validApiKey, defaultApiUrl, pollStep).should.be.rejectedWith(Error)
@@ -119,7 +141,7 @@ describe('poller', () => {
           authorization: `Bearer ${inValidApiKey}`
         }
       })
-        .get(basePath)
+        .get(statusUrl)
         .reply(401, 'Unauthorized')
 
       await poller.do(uuid, inValidApiKey, defaultApiUrl, pollStep).should.be.rejectedWith(Error)
@@ -131,35 +153,43 @@ describe('poller', () => {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .get(basePath)
+        .get(statusUrl)
         .times(3)
-        .reply(400, {
-          status: 400,
-          error: 'Result is not Finished',
-          stack: 'BadRequestError: Result is not Finished\n    at getIssues (/home/fgimenez/workspace/mythril-api/src/services/AnalysisService.js:129:11)\n    at <anonymous>'
+        .reply(200, {
+          status: 'In progress'
         })
       nock(defaultApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .get(basePath)
-        .reply(200, 'non-json-data')
-
-      await poller.do(uuid, validApiKey, defaultApiUrl, pollStep).should.be.rejectedWith(SyntaxError)
-    })
-
-    it('should reject after a timeout', async () => {
-      const timeout = 15
-
+        .get(statusUrl)
+        .reply(200, {
+          status: 'Finished'
+        })
       nock(defaultApiUrl.href, {
         reqheaders: {
           authorization: `Bearer ${validApiKey}`
         }
       })
-        .get(basePath)
+        .get(issuesUrl)
+        .reply(200, 'non-json-data')
+
+      await poller.do(uuid, validApiKey, defaultApiUrl, pollStep).should.be.rejected
+    })
+
+    it('should reject after a timeout', async () => {
+      const timeout = 15
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(statusUrl)
         .delay(timeout + pollStep)
-        .reply(200, expectedIssues)
+        .reply(200, {
+          status: 'In progress'
+        })
       await poller.do(uuid, validApiKey, defaultApiUrl, pollStep, timeout).should.be
         .rejectedWith('User-specified or default time out reached after 0.015 seconds.\n' +
                       'Analysis continues on server and may have completed; so run again?')
