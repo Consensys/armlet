@@ -1,6 +1,6 @@
 {
   "name": "armlet",
-  "version": "1.2.1",
+  "version": "1.2.2-git",
   "description": "A MythX API client.",
   "main": "index.js",
   "scripts": {

@@ -14,6 +14,13 @@ distcheck: rebuild check
 #: same thing as "make check"
 test: check
 
+#: Rebuild all
+rebuild:
+	rm -fr node_modules && npm install --no-progress
+
+#: Rebuild all
+distcheck: rebuild check
+
 #: Look for nodejs lint violations
 lint:
 	npm run lint
