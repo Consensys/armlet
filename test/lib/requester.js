@@ -148,7 +148,7 @@ describe('requester', () => {
         .post(basePath, data)
         .reply(200, 'non-json-response')
 
-      await requester.do(data, validApiKey, defaultApiUrl).should.be.rejectedWith(SyntaxError)
+      await requester.do(data, validApiKey, defaultApiUrl).should.be.rejectedWith('Non JSON data returned: non-json-response')
     })
 
     it('should reject on Smart Contract input JSON too large', async () => {
