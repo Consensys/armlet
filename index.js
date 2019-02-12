@@ -10,6 +10,7 @@ const util = require('./lib/util')
 const defaultApiUrl = process.env['MYTHX_API_URL'] || 'https://api.mythx.io'
 const defaultApiVersion = 'v1'
 const trialUserId = '123456789012345678901234'
+const delayPollingInterval = 30000
 
 class Client {
   /**
@@ -103,6 +104,8 @@ class Client {
 
       uuid = await requester.do(options, this.accessToken, this.apiUrl)
     }
+
+    await util.timer(delayPollingInterval)
 
     let result
     try {

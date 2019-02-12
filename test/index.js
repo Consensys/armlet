@@ -12,6 +12,7 @@ const simpleRequester = require('../lib/simpleRequester')
 const poller = require('../lib/poller')
 const login = require('../lib/login')
 const refresh = require('../lib/refresh')
+const util = require('../lib/util')
 
 const email = 'user@example.com'
 const ethAddress = '0x74B904af705Eb2D5a6CDc174c08147bED478a60d'
@@ -27,9 +28,11 @@ describe('main module', () => {
         requester.do.restore()
         poller.do.restore()
         simpleRequester.do.restore()
+        util.timer.restore()
       })
 
       beforeEach(() => {
+        sinon.stub(util, 'timer')
         sinon.stub(requester, 'do')
           .returns(new Promise((resolve, reject) => resolve(true)))
         sinon.stub(poller, 'do')
@@ -206,6 +209,7 @@ describe('main module', () => {
           afterEach(() => {
             requester.do.restore()
             poller.do.restore()
+            util.timer.restore()
           })
 
           describe('when the client logs in for the first time', () => {
@@ -213,6 +217,7 @@ describe('main module', () => {
               login.do.restore()
             })
             it('should login and chain requester and poller', async () => {
+              sinon.stub(util, 'timer')
               sinon.stub(login, 'do')
                 .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
                 .returns(new Promise(resolve => {
@@ -234,6 +239,7 @@ describe('main module', () => {
 
             it('should reject with login failures', async () => {
               const errorMsg = 'Invalid MythX credentials for email address user@example.com given.'
+              sinon.stub(util, 'timer')
               sinon.stub(login, 'do')
                 .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
                 .returns(new Promise((resolve, reject) => {
@@ -254,6 +260,7 @@ describe('main module', () => {
             })
 
             it('should reject with requester failures', async () => {
+              sinon.stub(util, 'timer')
               const errorMsg = 'Booom! from requester'
               sinon.stub(login, 'do')
                 .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
@@ -275,6 +282,7 @@ describe('main module', () => {
             })
 
             it('should reject with poller failures', async () => {
+              sinon.stub(util, 'timer')
               const errorMsg = 'Booom! from poller'
               sinon.stub(login, 'do')
                 .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
@@ -297,6 +305,7 @@ describe('main module', () => {
 
             it('should pass timeout option to poller', async () => {
               const timeout = 10
+              sinon.stub(util, 'timer')
               sinon.stub(login, 'do')
                 .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
                 .returns(new Promise(resolve => {
@@ -319,6 +328,7 @@ describe('main module', () => {
 
           describe('when the client is already logged in', () => {
             it('should not call login again', async () => {
+              sinon.stub(util, 'timer')
               this.instance.accessToken = accessToken
 
               sinon.stub(requester, 'do')
@@ -350,9 +360,11 @@ describe('main module', () => {
             refresh.do.restore()
             requester.do.restore()
             poller.do.restore()
+            util.timer.restore()
           })
 
           it('should refresh expired tokens when requester fails', async () => {
+            sinon.stub(util, 'timer')
             const requesterStub = sinon.stub(requester, 'do')
             requesterStub.withArgs({ data }, accessToken, parsedApiUrl)
               .returns(new Promise((resolve, reject) => {
@@ -379,6 +391,7 @@ describe('main module', () => {
           })
 
           it('should refresh expired tokens when poller fails', async () => {
+            sinon.stub(util, 'timer')
             const pollerStub = sinon.stub(poller, 'do')
             pollerStub.withArgs(uuid, accessToken, parsedApiUrl)
               .returns(new Promise((resolve, reject) => {
@@ -528,6 +541,7 @@ describe('main module', () => {
 
         describe('analyze', () => {
           it('should login and chain requester and poller', async () => {
+            sinon.stub(util, 'timer')
             sinon.stub(login, 'do')
               .withArgs(undefined, undefined, armlet.trialUserId, undefined, parsedApiUrl)
               .returns(new Promise(resolve => {
