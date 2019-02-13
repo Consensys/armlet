@@ -10,7 +10,11 @@ const util = require('./lib/util')
 const defaultApiUrl = process.env['MYTHX_API_URL'] || 'https://api.mythx.io'
 const defaultApiVersion = 'v1'
 const trialUserId = '123456789012345678901234'
-const delayPollingInterval = 30000
+
+// No MythX job we've seen is faster than this value.  So if a request
+// isn't cached, then the *first* poll for completion will take this
+// long, unless we have a total timeout value which is smaller.
+const defaultInitialDelay = 30000 // 30 seconds
 
 class Client {
   /**
@@ -52,6 +56,9 @@ class Client {
     this.password = password
     this.accessToken = apiKey
     this.apiUrl = apiUrl
+
+    // FIXME: This will get adjusted exponentially soon.
+    this.delayPollingInterval = 1000 // 1 second for now.
   }
 
   /**
@@ -62,6 +69,9 @@ class Client {
     *      {data} object       - information containing Smart Contract information to be analyzed
     *      {timeout} number    - optional timeout value in milliseconds
     *      {clientToolName} string - optional; sets up for client tool usage tracking
+    *      {initialDelay} number - optional; minimum value for how long a non-cached analyses will take
+    *                              this must be larger than defaultInitialDelay which we believe to be
+    *                              the smallest reasonable value.
     *
     * @returns an array-like object of issues, and a uuid attribute which can
     *          be subsequently used to retrieve the information from our stored
@@ -91,9 +101,9 @@ class Client {
       this.refreshToken = tokens.refresh
     }
 
-    let uuid
+    let requestResponse
     try {
-      uuid = await requester.do(options, this.accessToken, this.apiUrl)
+      requestResponse = await requester.do(options, this.accessToken, this.apiUrl)
     } catch (e) {
       if (e.statusCode !== 401) {
         throw e
@@ -102,14 +112,39 @@ class Client {
       this.accessToken = tokens.access
       this.refreshToken = tokens.refresh
 
-      uuid = await requester.do(options, this.accessToken, this.apiUrl)
+      requestResponse = await requester.do(options, this.accessToken, this.apiUrl)
     }
 
-    await util.timer(delayPollingInterval)
+    const uuid = requestResponse.uuid
+    let timeout = options.timeout
+
+    // FIXME: this might not be optimal. The test should be negated
+    // and then do the *only* subset of poller that needs to be done,
+    // given that we know this is finished. Instead, I think we'll
+    // make one more additional request of status only to find out
+    // that it is still finished.
+    if (requestResponse.status !== 'Finished') {
+      // console.log(Math.trunc(Date.now() / 1000))
+
+      // Compute the initial delay as the larger of the default value
+      // and what is passed in.
+
+      let initialDelay = defaultInitialDelay
+      if (!isNaN(options.initialDelay) && options.initialDelay > initialDelay) {
+        initialDelay = options.initialDelay
+      }
+
+      // However, if the *total* timeout is small, we can use 90% of that
+      // instead, since we'll do just one or two polls anyway.
+
+      initialDelay = Math.min(initialDelay, 0.9 * timeout)
+      await util.timer(initialDelay)
+      timeout -= initialDelay
+    }
 
     let result
     try {
-      result = await poller.do(uuid, this.accessToken, this.apiUrl, undefined, options.timeout)
+      result = await poller.do(uuid, this.accessToken, this.apiUrl, this.delayPollingInterval, timeout)
     } catch (e) {
       if (e.statusCode !== 401) {
         throw e
@@ -118,7 +153,7 @@ class Client {
       this.accessToken = tokens.access
       this.refreshToken = tokens.refresh
 
-      result = await poller.do(uuid, this.accessToken, this.apiUrl, undefined, options.timeout)
+      result = await poller.do(uuid, this.accessToken, this.apiUrl, this.delayPollingInterval, options.timeout)
     }
     result.uuid = uuid
     return result

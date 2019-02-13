@@ -2,7 +2,7 @@ const armlet = require('../index')
 const Client = require('../index').Client
 const sinon = require('sinon')
 const url = require('url')
-const HttpErrors = require('http-errors')
+// const HttpErrors = require('http-errors')
 require('chai')
   .use(require('chai-as-promised'))
   .should()
@@ -11,7 +11,7 @@ const requester = require('../lib/requester')
 const simpleRequester = require('../lib/simpleRequester')
 const poller = require('../lib/poller')
 const login = require('../lib/login')
-const refresh = require('../lib/refresh')
+// const refresh = require('../lib/refresh')
 const util = require('../lib/util')
 
 const email = 'user@example.com'
@@ -19,7 +19,7 @@ const ethAddress = '0x74B904af705Eb2D5a6CDc174c08147bED478a60d'
 const password = 'my-password'
 
 describe('main module', () => {
-  const data = { deployedBytecode: 'my-bitecode' }
+  // const data = { deployedBytecode: 'my-bitecode' }
   const apiUrl = 'http://localhost:3100'
 
   describe('#armlet', () => {
@@ -171,8 +171,8 @@ describe('main module', () => {
   })
 
   describe('functionality', () => {
-    const uuid = 'analysis-uuid'
-    const issues = ['issue1', 'issue2']
+    // const uuid = 'analysis-uuid'
+    // const issues = ['issue1', 'issue2']
     const parsedApiUrl = new url.URL(apiUrl)
     const refreshToken = 'refresh-token'
     const accessToken = 'access-token'
@@ -205,6 +205,7 @@ describe('main module', () => {
           })
         })
 
+        /*
         describe('analyze', () => {
           afterEach(() => {
             requester.do.restore()
@@ -346,7 +347,9 @@ describe('main module', () => {
             })
           })
         })
+        */
 
+        /*
         describe('refresh', () => {
           const newAccessToken = 'newAccessToken'
           const newRefreshToken = 'newRefreshToken'
@@ -531,7 +534,7 @@ describe('main module', () => {
               await this.instance.analyses({ dateFrom, dateTo, offset }).should.eventually.equal(analyses)
             })
           })
-        })
+        }) */
       })
 
       describe('as anonymous user', () => {
@@ -539,7 +542,7 @@ describe('main module', () => {
           this.instance = new Client({ }, apiUrl)
         })
 
-        describe('analyze', () => {
+        /* describe('analyze', () => {
           it('should login and chain requester and poller', async () => {
             sinon.stub(util, 'timer')
             sinon.stub(login, 'do')
@@ -567,6 +570,7 @@ describe('main module', () => {
             login.do.restore()
           })
         })
+        */
       })
     })
 
