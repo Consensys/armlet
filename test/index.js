@@ -324,28 +324,6 @@ describe('main module', () => {
               await this.instance.analyze({ data, timeout }).should.eventually.deep.equal({ issues, uuid })
             })
 
-            it('should pass calculated value of 90% of timeout option as initial delay option to poller', async () => {
-              const timeout = 30000
-              sinon.stub(util, 'timer')
-              sinon.stub(login, 'do')
-                .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
-                .returns(new Promise(resolve => {
-                  resolve({ access: accessToken, refresh: refreshToken })
-                }))
-              sinon.stub(requester, 'do')
-                .withArgs({ data, timeout }, accessToken, parsedApiUrl)
-                .returns(new Promise(resolve => {
-                  resolve({ uuid })
-                }))
-              sinon.stub(poller, 'do')
-                .withArgs(uuid, accessToken, parsedApiUrl, 1000, 3000)
-                .returns(new Promise(resolve => {
-                  resolve({ issues })
-                }))
-              await this.instance.analyze({ data, timeout }).should.eventually.deep.equal({ issues, uuid })
-              util.timer.getCall(0).args[0].should.equal(27000)
-            })
-
             it('should pass default initial delay option to poller', async () => {
               const timeout = 40000
               sinon.stub(util, 'timer')
