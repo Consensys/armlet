@@ -10,57 +10,66 @@ describe('requester', () => {
   describe('#do', () => {
     const defaultApiUrl = new url.URL('https://api.mythx.io')
     const httpApiUrl = new url.URL('http://localhost:3100')
-    // const httpsApiUrl = new url.URL('https://localhost:3100')
+    const httpsApiUrl = new url.URL('https://localhost:3100')
 
     const validApiKey = 'valid-api-key'
-    // const uuid = 'my-uuid'
+    const uuid = 'my-uuid'
     const basePath = '/v1/analyses'
     const data = { bytecode: '00' }
 
-    // it('should request analysis for http API', async () => {
-    //   nock(httpApiUrl.href, {
-    //     reqheaders: {
-    //       authorization: `Bearer ${validApiKey}`
-    //     }
-    //   })
-    //     .post(basePath, data)
-    //     .reply(200, {
-    //       result: 'Queued',
-    //       uuid: uuid
-    //     })
+    it('should request analysis for http API', async () => {
+      nock(httpApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .post(basePath, data)
+        .reply(200, {
+          result: 'Queued',
+          uuid: uuid
+        })
 
-    //   await requester.do(data, validApiKey, httpApiUrl).should.eventually.equal(uuid)
-    // })
+      await requester.do(data, validApiKey, httpApiUrl).should.eventually.deep.equal({
+        result: 'Queued',
+        uuid
+      })
+    })
 
-    // it('should request analysis for https API', async () => {
-    //   nock(httpsApiUrl.href, {
-    //     reqheaders: {
-    //       authorization: `Bearer ${validApiKey}`
-    //     }
-    //   })
-    //     .post(basePath, data)
-    //     .reply(200, {
-    //       result: 'Queued',
-    //       uuid: uuid
-    //     })
+    it('should request analysis for https API', async () => {
+      nock(httpsApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .post(basePath, data)
+        .reply(200, {
+          result: 'Queued',
+          uuid: uuid
+        })
 
-    //   await requester.do(data, validApiKey, httpsApiUrl).should.eventually.equal(uuid)
-    // })
+      await requester.do(data, validApiKey, httpsApiUrl).should.eventually.deep.equal({
+        result: 'Queued',
+        uuid
+      })
+    })
 
-    // it('should default to official API endpoint', async () => {
-    //   nock(defaultApiUrl.href, {
-    //     reqheaders: {
-    //       authorization: `Bearer ${validApiKey}`
-    //     }
-    //   })
-    //     .post(basePath, data)
-    //     .reply(200, {
-    //       result: 'Queued',
-    //       uuid: uuid
-    //     })
+    it('should default to official API endpoint', async () => {
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .post(basePath, data)
+        .reply(200, {
+          result: 'Queued',
+          uuid: uuid
+        })
 
-    //   await requester.do(data, validApiKey, defaultApiUrl).should.eventually.equal(uuid)
-    // })
+      await requester.do(data, validApiKey, defaultApiUrl).should.eventually.deep.equal({
+        result: 'Queued',
+        uuid
+      })
+    })
 
     it('should reject on api server connection failure', async () => {
       const invalidApiHostname = new url.URL('http://not-a-valid-hostname')
