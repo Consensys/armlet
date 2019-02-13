@@ -124,8 +124,6 @@ class Client {
     // make one more additional request of status only to find out
     // that it is still finished.
     if (requestResponse.status !== 'Finished') {
-      // console.log(Math.trunc(Date.now() / 1000))
-
       // Compute the initial delay as the larger of the default value
       // and what is passed in.
 
@@ -153,7 +151,7 @@ class Client {
       this.accessToken = tokens.access
       this.refreshToken = tokens.refresh
 
-      result = await poller.do(uuid, this.accessToken, this.apiUrl, this.delayPollingInterval, options.timeout)
+      result = await poller.do(uuid, this.accessToken, this.apiUrl, this.delayPollingInterval, timeout)
     }
     result.uuid = uuid
     return result
@@ -279,3 +277,4 @@ module.exports.defaultApiUrl = new url.URL(defaultApiUrl)
 module.exports.defaultApiHost = defaultApiUrl
 module.exports.defaultApiVersion = defaultApiVersion
 module.exports.trialUserId = trialUserId
+module.exports.defaultInitialDelay = defaultInitialDelay
