@@ -14,7 +14,6 @@ const login = require('../lib/login')
 const refresh = require('../lib/refresh')
 const util = require('../lib/util')
 
-const email = 'user@example.com'
 const ethAddress = '0x74B904af705Eb2D5a6CDc174c08147bED478a60d'
 const password = 'my-password'
 
@@ -53,10 +52,6 @@ describe('main module', () => {
             instance.userId.should.be.deep.equal(armlet.trialUserId)
           })
 
-          it('require a password auth option if email is provided', () => {
-            (() => new Client({ email })).should.throw(TypeError)
-          })
-
           it('require a password auth option if ethAddress is provided', () => {
             (() => new Client({ ethAddress })).should.throw(TypeError)
           })
@@ -66,17 +61,17 @@ describe('main module', () => {
           })
 
           it('require a valid apiUrl if given', () => {
-            (() => new Client({ email, password }, 'not-a-valid-url')).should.throw(TypeError)
+            (() => new Client({ ethAddress, password }, 'not-a-valid-url')).should.throw(TypeError)
           })
 
           it('initialize apiUrl to a default value if not given', () => {
-            const instance = new Client({ email, password })
+            const instance = new Client({ ethAddress, password })
 
             instance.apiUrl.should.be.deep.equal(armlet.defaultApiUrl)
           })
 
           it('initialize apiUrl to the given value', () => {
-            const instance = new Client({ email, password }, apiUrl)
+            const instance = new Client({ ethAddress, password }, apiUrl)
 
             instance.apiUrl.should.be.deep.equal(new url.URL(apiUrl))
           })
@@ -89,7 +84,7 @@ describe('main module', () => {
 
           describe('instances should', () => {
             beforeEach(() => {
-              this.instance = new Client({ email, password })
+              this.instance = new Client({ ethAddress, password })
             })
 
             it('be created with a constructor', () => {
@@ -180,7 +175,7 @@ describe('main module', () => {
     describe('Client', () => {
       describe('as authenticated user', () => {
         beforeEach(() => {
-          this.instance = new Client({ email, ethAddress, password }, apiUrl)
+          this.instance = new Client({ ethAddress, password }, apiUrl)
         })
 
         describe('getStatus', () => {
@@ -192,7 +187,7 @@ describe('main module', () => {
           it('should login and chain simpleRequester', async () => {
             const uuid = '1234'
             sinon.stub(login, 'do')
-              .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
+              .withArgs(ethAddress, undefined, password, parsedApiUrl)
               .returns(new Promise(resolve => {
                 resolve({ access: accessToken, refresh: refreshToken })
               }))
@@ -219,7 +214,7 @@ describe('main module', () => {
             it('should login and chain requester and poller', async () => {
               sinon.stub(util, 'timer')
               sinon.stub(login, 'do')
-                .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
+                .withArgs(ethAddress, undefined, password, parsedApiUrl)
                 .returns(new Promise(resolve => {
                   resolve({ access: accessToken, refresh: refreshToken })
                 }))
@@ -238,10 +233,9 @@ describe('main module', () => {
             })
 
             it('should reject with login failures', async () => {
-              const errorMsg = 'Invalid MythX credentials for email address user@example.com given.'
-              sinon.stub(util, 'timer')
+              const errorMsg = 'Invalid MythX credentials for ethereum address 0x74B904af705Eb2D5a6CDc174c08147bED478a60d given.'
               sinon.stub(login, 'do')
-                .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
+                .withArgs(ethAddress, undefined, password, parsedApiUrl)
                 .returns(new Promise((resolve, reject) => {
                   reject(new Error(errorMsg))
                 }))
@@ -263,7 +257,7 @@ describe('main module', () => {
               sinon.stub(util, 'timer')
               const errorMsg = 'Booom! from requester'
               sinon.stub(login, 'do')
-                .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
+                .withArgs(ethAddress, undefined, password, parsedApiUrl)
                 .returns(new Promise(resolve => {
                   resolve({ access: accessToken, refresh: refreshToken })
                 }))
@@ -285,7 +279,7 @@ describe('main module', () => {
               sinon.stub(util, 'timer')
               const errorMsg = 'Booom! from poller'
               sinon.stub(login, 'do')
-                .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
+                .withArgs(ethAddress, undefined, password, parsedApiUrl)
                 .returns(new Promise(resolve => {
                   resolve({ access: accessToken, refresh: refreshToken })
                 }))
@@ -307,7 +301,7 @@ describe('main module', () => {
               const timeout = 10
               sinon.stub(util, 'timer')
               sinon.stub(login, 'do')
-                .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
+                .withArgs(ethAddress, undefined, password, parsedApiUrl)
                 .returns(new Promise(resolve => {
                   resolve({ access: accessToken, refresh: refreshToken })
                 }))
@@ -478,7 +472,7 @@ describe('main module', () => {
 
             it('should login and call simpleRequester', async () => {
               sinon.stub(login, 'do')
-                .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
+                .withArgs(ethAddress, undefined, password, parsedApiUrl)
                 .returns(new Promise(resolve => {
                   resolve({ access: accessToken, refresh: refreshToken })
                 }))
@@ -494,7 +488,7 @@ describe('main module', () => {
             it('should reject with login failures', async () => {
               const errorMsg = 'Booom! from login'
               sinon.stub(login, 'do')
-                .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
+                .withArgs(ethAddress, undefined, password, parsedApiUrl)
                 .returns(new Promise((resolve, reject) => {
                   reject(new Error(errorMsg))
                 }))
@@ -510,7 +504,7 @@ describe('main module', () => {
             it('should reject with simpleRequester failures', async () => {
               const errorMsg = 'Booom! from simpleRequester'
               sinon.stub(login, 'do')
-                .withArgs(email, ethAddress, undefined, password, parsedApiUrl)
+                .withArgs(ethAddress, undefined, password, parsedApiUrl)
                 .returns(new Promise(resolve => {
                   resolve({ access: accessToken, refresh: refreshToken })
                 }))
@@ -587,7 +581,7 @@ describe('main module', () => {
           it('should login and chain requester and poller', async () => {
             sinon.stub(util, 'timer')
             sinon.stub(login, 'do')
-              .withArgs(undefined, undefined, armlet.trialUserId, undefined, parsedApiUrl)
+              .withArgs(undefined, armlet.trialUserId, undefined, parsedApiUrl)
               .returns(new Promise(resolve => {
                 resolve({ access: accessToken, refresh: refreshToken })
               }))

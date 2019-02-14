@@ -23,25 +23,25 @@ class Client {
    *  periodically.
    *
    *  @param {auth} object         - login or authentication information which contains
-   *                               (email | ethAddress) and a password or...
+   *                               ethAddress and a password or...
    *                                apiKey
    *  @param {inputApiUrl} string  - Optional. A URL of a MythX API server we want to contect
    *                                 to.
    *
    */
   constructor (auth, inputApiUrl = defaultApiUrl) {
-    const { email, ethAddress, apiKey, password } = auth || {}
+    const { ethAddress, apiKey, password } = auth || {}
 
     let userId
-    if (!password && !email && !ethAddress && !apiKey) {
+    if (!password && !ethAddress && !apiKey) {
       userId = trialUserId
     }
 
-    if (password && !email && !ethAddress && !apiKey) {
+    if (password && !ethAddress && !apiKey) {
       throw new TypeError('Please provide an user id auth option.')
     }
 
-    if (!apiKey && !userId && (!password && (email || ethAddress))) {
+    if (!apiKey && !userId && (!password && ethAddress)) {
       throw new TypeError('Please provide a password auth option.')
     }
 
@@ -51,7 +51,6 @@ class Client {
     }
 
     this.userId = userId
-    this.email = email
     this.ethAddress = ethAddress
     this.password = password
     this.accessToken = apiKey
@@ -90,12 +89,10 @@ minimum value for how long a non-cached analyses will take
     if (!this.accessToken) {
       let tokens
       try {
-        tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
+        tokens = await login.do(this.ethAddress, this.userId, this.password, this.apiUrl)
       } catch (e) {
         let authType = ''
-        if (this.email) {
-          authType = ` for email address ${this.email}`
-        } else if (this.ethAddress) {
+        if (this.ethAddress) {
           authType = ` for ethereum address ${this.ethAddress}`
         }
         // eslint-disable-next-line no-throw-literal
@@ -168,7 +165,7 @@ minimum value for how long a non-cached analyses will take
     }
 
     if (!this.accessToken) {
-      const tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
+      const tokens = await login.do(this.ethAddress, this.userId, this.password, this.apiUrl)
       this.accessToken = tokens.access
       this.refreshToken = tokens.refresh
     }
@@ -216,7 +213,7 @@ minimum value for how long a non-cached analyses will take
   async getStatusOrIssues (uuid, url, inputApiUrl) {
     let accessToken = this.accessToken
     if (!accessToken) {
-      const tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
+      const tokens = await login.do(this.ethAddress, this.userId, this.password, this.apiUrl)
       accessToken = tokens.access
     }
     let promise
@@ -249,7 +246,7 @@ minimum value for how long a non-cached analyses will take
   async listAnalyses (inputApiUrl = defaultApiUrl) {
     let accessToken = this.accessToken
     if (!accessToken) {
-      const tokens = await login.do(this.email, this.ethAddress, this.userId, this.password, this.apiUrl)
+      const tokens = await login.do(this.ethAddress, this.userId, this.password, this.apiUrl)
       accessToken = tokens.access
     }
     const url = util.joinUrl(inputApiUrl, `${defaultApiVersion}/analyses`)
