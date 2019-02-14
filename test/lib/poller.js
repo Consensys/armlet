@@ -191,8 +191,9 @@ describe('poller', () => {
           status: 'In progress'
         })
       await poller.do(uuid, validApiKey, defaultApiUrl, pollStep, timeout).should.be
-        .rejectedWith('User-specified or default time out reached after 0.015 seconds.\n' +
-                      'Analysis continues on server and may have completed; so run again?')
+        .rejectedWith(`Client timeout reached after 0.015 seconds. ` +
+          `The analysis job is still running on the server and the ` +
+          `result may become available later. UUID: ${uuid}\n`)
     })
   })
 })
