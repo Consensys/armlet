@@ -11,9 +11,8 @@ describe('login', () => {
     const apiUrl = 'https://localhost:3100'
     const parsedApiUrl = new url.URL(apiUrl)
     const ethAddress = '0x74B904af705Eb2D5a6CDc174c08147bED478a60d'
-    const userId = '123456'
     const password = 'password'
-    const auth = { ethAddress, userId, password }
+    const auth = { ethAddress, password }
     const loginPath = '/v1/auth/login'
     const refresh = 'refresh-token'
     const access = 'access-token'
@@ -24,7 +23,7 @@ describe('login', () => {
         .post(loginPath, auth)
         .reply(200, jsonTokens)
 
-      await login.do(ethAddress, userId, password, parsedApiUrl).should.eventually.deep.equal(jsonTokens)
+      await login.do(ethAddress, password, parsedApiUrl).should.eventually.deep.equal(jsonTokens)
     })
 
     it('should redirect refresh and access tokens', async () => {
@@ -33,14 +32,14 @@ describe('login', () => {
         .reply(200, jsonTokens)
 
       const parsedApiUrlHttp = new url.URL('http://localhost:3100')
-      await login.do(ethAddress, userId, password, parsedApiUrlHttp)
+      await login.do(ethAddress, password, parsedApiUrlHttp)
         .should.eventually.deep.equal(jsonTokens)
     })
 
     it('should reject on api server connection failure', async () => {
       const invalidUrlObject = 'not-an-url-object'
 
-      await login.do(ethAddress, userId, password, invalidUrlObject).should.be.rejectedWith(Error)
+      await login.do(ethAddress, password, invalidUrlObject).should.be.rejectedWith(Error)
     })
 
     it('should reject on api server status code != 200', async () => {
@@ -48,7 +47,7 @@ describe('login', () => {
         .post(loginPath, auth)
         .reply(500)
 
-      await login.do(ethAddress, userId, password, parsedApiUrl).should.be.rejectedWith('HTTP status 500')
+      await login.do(ethAddress, password, parsedApiUrl).should.be.rejectedWith('HTTP status 500')
     })
 
     it('should reject on non-JSON data', async () => {
@@ -56,7 +55,7 @@ describe('login', () => {
         .post(loginPath, auth)
         .reply(200, 'jsonTextTokens')
 
-      await login.do(ethAddress, userId, password, parsedApiUrl).should.be.rejectedWith(Error, 'JSON parse error')
+      await login.do(ethAddress, password, parsedApiUrl).should.be.rejectedWith(Error, 'JSON parse error')
     })
 
     it('should reject if refreshToken is not present', async () => {
@@ -64,7 +63,7 @@ describe('login', () => {
         .post(loginPath, auth)
         .reply(200, { access })
 
-      await login.do(ethAddress, userId, password, parsedApiUrl).should.be.rejectedWith(Error, 'Refresh Token missing')
+      await login.do(ethAddress, password, parsedApiUrl).should.be.rejectedWith(Error, 'Refresh Token missing')
     })
 
     it('should reject if accessToken is not present', async () => {
@@ -72,7 +71,7 @@ describe('login', () => {
         .post(loginPath, auth)
         .reply(200, { refresh })
 
-      await login.do(ethAddress, userId, password, parsedApiUrl).should.be.rejectedWith(Error, 'Access Token missing')
+      await login.do(ethAddress, password, parsedApiUrl).should.be.rejectedWith(Error, 'Access Token missing')
     })
   })
 })
