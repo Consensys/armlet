@@ -48,11 +48,11 @@ describe('main module', () => {
           })
 
           it('require a password auth option if ethAddress is provided', () => {
-            (() => new Client({ ethAddress })).should.throw(TypeError, /Please provide a password auth option./)
+            (() => new Client({ ethAddress })).should.throw(TypeError, /Please provide either ethAddress and password or apiKey./)
           })
 
           it('require an ethAddress auth option if password is provided', () => {
-            (() => new Client({ password })).should.throw(TypeError, /Please provide a password auth option./)
+            (() => new Client({ password })).should.throw(TypeError, /Please provide either ethAddress and password or apiKey./)
           })
 
           it('require a valid apiUrl if given', () => {

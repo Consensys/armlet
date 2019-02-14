@@ -31,7 +31,7 @@ class Client {
     }
 
     if (!apiKey && (!password || !ethAddress)) {
-      throw new TypeError('Please provide a password auth option.')
+      throw new TypeError('Please provide either ethAddress and password or apiKey.')
     }
 
     const apiUrl = new url.URL(inputApiUrl)
