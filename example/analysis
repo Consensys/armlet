@@ -28,9 +28,10 @@ if (argLen === 3 &&
     usage()
 }
 
-// 60 seconds is a reasonable minimum timeout; For a "quick" analysis
-// the backend uses a value of 30 seconds.
-let timeout = 60
+// A "quick" analysis usually finishes within 90 seconds after the job starts.
+// A "full" analysis may run for 2 hours or more.
+
+let timeout = 86400
 if (argLen >= 3 &&
     process.argv[argLen-1].match(/^\d+$/)) {
     timeout = parseInt(process.argv[argLen-1])
