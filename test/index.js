@@ -207,7 +207,7 @@ describe('main module', () => {
             util.timer.restore()
           })
 
-          describe('when the client logs in for the first time', () => {
+          describe.skip('when the client logs in for the first time', () => {
             afterEach(() => {
               login.do.restore()
             })

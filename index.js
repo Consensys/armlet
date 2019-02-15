@@ -55,9 +55,6 @@ class Client {
     this.password = password
     this.accessToken = apiKey
     this.apiUrl = apiUrl
-
-    // FIXME: This will get adjusted exponentially soon.
-    this.delayPollingInterval = 1000 // 1 second for now.
   }
 
   /**
@@ -119,6 +116,9 @@ minimum value for how long a non-cached analyses will take
     const uuid = requestResponse.uuid
     let timeout = options.timeout
 
+    // debug -
+    // console.log(`now: ${Math.trunc(Date.now() / 1000)}`)
+
     // FIXME: this might not be optimal. The test should be negated
     // and then do the *only* subset of poller that needs to be done,
     // given that we know this is finished. Instead, I think we'll
@@ -134,7 +134,7 @@ minimum value for how long a non-cached analyses will take
 
     let result
     try {
-      result = await poller.do(uuid, this.accessToken, this.apiUrl, this.delayPollingInterval, timeout)
+      result = await poller.do(uuid, this.accessToken, this.apiUrl, timeout)
     } catch (e) {
       if (e.statusCode !== 401) {
         throw e
@@ -143,7 +143,7 @@ minimum value for how long a non-cached analyses will take
       this.accessToken = tokens.access
       this.refreshToken = tokens.refresh
 
-      result = await poller.do(uuid, this.accessToken, this.apiUrl, this.delayPollingInterval, timeout)
+      result = await poller.do(uuid, this.accessToken, this.apiUrl, timeout)
     }
     result.uuid = uuid
     return result
