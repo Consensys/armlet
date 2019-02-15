@@ -207,7 +207,7 @@ describe('main module', () => {
             util.timer.restore()
           })
 
-          describe.skip('when the client logs in for the first time', () => {
+          describe('when the client logs in for the first time', () => {
             afterEach(() => {
               login.do.restore()
             })
@@ -312,7 +312,7 @@ describe('main module', () => {
                   resolve({ uuid, status: 'Finished' })
                 }))
               sinon.stub(poller, 'do')
-                .withArgs(uuid, accessToken, parsedApiUrl, 1000, timeout)
+                .withArgs(uuid, accessToken, parsedApiUrl, timeout)
                 .returns(new Promise(resolve => {
                   resolve({ issues })
                 }))
@@ -333,7 +333,7 @@ describe('main module', () => {
                   resolve({ uuid })
                 }))
               sinon.stub(poller, 'do')
-                .withArgs(uuid, accessToken, parsedApiUrl, 1000, timeout, timeout - armlet.defaultInitialDelay)
+                .withArgs(uuid, accessToken, parsedApiUrl, timeout, timeout - armlet.defaultInitialDelay)
                 .returns(new Promise(resolve => {
                   resolve({ issues })
                 }))
@@ -356,7 +356,7 @@ describe('main module', () => {
                   resolve({ uuid })
                 }))
               sinon.stub(poller, 'do')
-                .withArgs(uuid, accessToken, parsedApiUrl, 1000, 40000, 9000)
+                .withArgs(uuid, accessToken, parsedApiUrl, 40000, 9000)
                 .returns(new Promise(resolve => {
                   resolve({ issues })
                 }))
@@ -604,6 +604,7 @@ describe('main module', () => {
             requester.do.restore()
             poller.do.restore()
             login.do.restore()
+            util.timer.restore()
           })
         })
       })
