@@ -333,7 +333,7 @@ describe('main module', () => {
                   resolve({ uuid })
                 }))
               sinon.stub(poller, 'do')
-                .withArgs(uuid, accessToken, parsedApiUrl, 1000, timeout - armlet.defaultInitialDelay)
+                .withArgs(uuid, accessToken, parsedApiUrl, 1000, timeout, timeout - armlet.defaultInitialDelay)
                 .returns(new Promise(resolve => {
                   resolve({ issues })
                 }))
@@ -356,7 +356,7 @@ describe('main module', () => {
                   resolve({ uuid })
                 }))
               sinon.stub(poller, 'do')
-                .withArgs(uuid, accessToken, parsedApiUrl, 1000, 9000)
+                .withArgs(uuid, accessToken, parsedApiUrl, 1000, 40000, 9000)
                 .returns(new Promise(resolve => {
                   resolve({ issues })
                 }))
