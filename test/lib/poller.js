@@ -252,7 +252,10 @@ describe('poller', () => {
           status: 'In progress'
         })
       await poller.do(uuid, validApiKey, defaultApiUrl).should.be
-        .rejectedWith(`Polling failed after ${poller.maxPolls} retries.`)
+        .rejectedWith(
+          'Time out reached after 30 seconds.\n' +
+          'Analysis continues on server and may have completed; so run again?'
+        )
     })
   })
 })
