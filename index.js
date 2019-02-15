@@ -71,21 +71,7 @@ class Client {
       throw new TypeError('Please provide a data option.')
     }
 
-    if (!this.accessToken) {
-      let tokens
-      try {
-        tokens = await login.do(this.ethAddress, this.userId, this.password, this.apiUrl)
-      } catch (e) {
-        let authType = ''
-        if (this.ethAddress) {
-          authType = ` for ethereum address ${this.ethAddress}`
-        }
-        // eslint-disable-next-line no-throw-literal
-        throw (`Invalid MythX credentials${authType} given.`)
-      }
-      this.accessToken = tokens.access
-      this.refreshToken = tokens.refresh
-    }
+    await this.login()
 
     let uuid
     try {
@@ -176,6 +162,27 @@ class Client {
     return {
       issues,
       status
+    }
+  }
+
+  /**
+    * Runs MythX auth/login.
+    **/
+  async login () {
+    if (!this.accessToken) {
+      let tokens
+      try {
+        tokens = await login.do(this.ethAddress, this.userId, this.password, this.apiUrl)
+      } catch (e) {
+        let authType = ''
+        if (this.ethAddress) {
+          authType = ` for ethereum address ${this.ethAddress}`
+        }
+        // eslint-disable-next-line no-throw-literal
+        throw (`Invalid MythX credentials${authType} given.`)
+      }
+      this.accessToken = tokens.access
+      this.refreshToken = tokens.refresh
     }
   }
 
