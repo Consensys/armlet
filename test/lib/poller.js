@@ -1,12 +1,14 @@
 const nock = require('nock')
 const url = require('url')
+const sinon = require('sinon')
 require('chai')
   .use(require('chai-as-promised'))
   .should()
 
 const poller = require('../../lib/poller')
+const util = require('../../lib/util')
 
-describe.skip('poller', () => {
+describe('poller', () => {
   describe('#do', () => {
     const defaultApiUrl = new url.URL('https://api.mythx.io')
     const httpApiUrl = new url.URL('http://localhost:3100')
@@ -24,6 +26,14 @@ describe.skip('poller', () => {
         debug: 'SOLVER OUTPUT:\ncalldata_MAIN_0: 0xcbf0b0c000000000000000000000000000000000000000000000000000000000\ncalldatasize_MAIN: 0x4\ncallvalue: 0x0\n'
       }
     ]
+
+    afterEach(() => {
+      util.timer.restore()
+    })
+
+    beforeEach(() => {
+      sinon.stub(util, 'timer')
+    })
 
     it('should poll issues with empty results', async () => {
       const emptyResult = []
@@ -192,6 +202,60 @@ describe.skip('poller', () => {
       await poller.do(uuid, validApiKey, defaultApiUrl, timeout).should.be
         .rejectedWith('User-specified or default time out reached after 0.015 seconds.\n' +
                       'Analysis continues on server and may have completed; so run again?')
+    })
+
+    it('should wait for polling longer each time', async () => {
+      const emptyResult = []
+
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(statusUrl)
+        .times(3)
+        .reply(200, {
+          status: 'In progress'
+        })
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(statusUrl)
+        .reply(200, {
+          status: 'Finished'
+        })
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(issuesUrl)
+        .reply(200, emptyResult)
+
+      await poller.do(uuid, validApiKey, defaultApiUrl).should.eventually.deep.equal(emptyResult)
+      util.timer.getCall(0).args[0].should.equal(77.9220779220779)
+      util.timer.getCall(1).args[0].should.equal(311.6883116883116)
+      util.timer.getCall(2).args[0].should.equal(701.2987012987013)
+    })
+
+    it('should reject after maximum polling reached', async () => {
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(statusUrl)
+        .times(11)
+        .reply(200, {
+          status: 'In progress'
+        })
+      await poller.do(uuid, validApiKey, defaultApiUrl).should.be
+        .rejectedWith(
+          'Time out reached after 30 seconds.\n' +
+          'Analysis continues on server and may have completed; so run again?'
+        )
     })
   })
 })

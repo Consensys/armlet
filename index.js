@@ -114,7 +114,8 @@ minimum value for how long a non-cached analyses will take
     }
 
     const uuid = requestResponse.uuid
-    let timeout = options.timeout
+    const timeout = options.timeout
+    let initialTimeout
 
     // debug -
     // console.log(`now: ${Math.trunc(Date.now() / 1000)}`)
@@ -128,13 +129,13 @@ minimum value for how long a non-cached analyses will take
       // Compute the initial delay as the larger of the default value
       // and what is passed in.
       const initialDelay = Math.max(options.initialDelay || 0, defaultInitialDelay)
+      initialTimeout = timeout - initialDelay
       await util.timer(initialDelay)
-      timeout -= initialDelay
     }
 
     let result
     try {
-      result = await poller.do(uuid, this.accessToken, this.apiUrl, timeout)
+      result = await poller.do(uuid, this.accessToken, this.apiUrl, timeout, initialTimeout)
     } catch (e) {
       if (e.statusCode !== 401) {
         throw e
@@ -143,7 +144,7 @@ minimum value for how long a non-cached analyses will take
       this.accessToken = tokens.access
       this.refreshToken = tokens.refresh
 
-      result = await poller.do(uuid, this.accessToken, this.apiUrl, timeout)
+      result = await poller.do(uuid, this.accessToken, this.apiUrl, timeout, initialTimeout)
     }
     result.uuid = uuid
     return result
