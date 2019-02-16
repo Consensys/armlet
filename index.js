@@ -2,7 +2,7 @@ const url = require('url')
 
 const requester = require('./lib/requester')
 const simpleRequester = require('./lib/simpleRequester')
-const poller = require('./lib/poller')
+const analysisPoller = require('./lib/analysisPoller')
 const login = require('./lib/login')
 const refresh = require('./lib/refresh')
 const libUtil = require('./lib/util')
@@ -142,7 +142,7 @@ minimum value for how long a non-cached analyses will take
 
     let result
     if (requestResponse.status === 'Finished') {
-      result = await poller.getIssues(uuid, this.accessToken, this.apiUrl)
+      result = await analysisPoller.getIssues(uuid, this.accessToken, this.apiUrl)
       if (options.debug) {
         const util = require('util')
         let depth = (options.debug > 1) ? 10 : 2
@@ -151,7 +151,7 @@ minimum value for how long a non-cached analyses will take
     } else {
       const initialDelay = Math.max(options.initialDelay || 0, defaultInitialDelay)
       try {
-        result = await poller.do(uuid, this.accessToken, this.apiUrl, timeout,
+        result = await analysisPoller.do(uuid, this.accessToken, this.apiUrl, timeout,
           initialDelay, options.debug)
       } catch (e) {
         if (e.statusCode !== 401) {
@@ -160,7 +160,7 @@ minimum value for how long a non-cached analyses will take
         const tokens = await refresh.do(this.accessToken, this.refreshToken, this.apiUrl)
         this.accessToken = tokens.access
         this.refreshToken = tokens.refresh
-        result = await poller.do(uuid, this.accessToken, this.apiUrl, timeout,
+        result = await analysisPoller.do(uuid, this.accessToken, this.apiUrl, timeout,
           initialDelay, options.debug)
       }
     }

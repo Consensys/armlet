@@ -1,6 +1,6 @@
 var assert = require('chai').assert
 
-const poller = require('../../lib/poller')
+const poller = require('../../lib/analysisPoller')
 describe('geometric poller', () => {
   it('should compute gemometric delays', async () => {
     for (const timeout of [

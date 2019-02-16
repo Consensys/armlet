@@ -9,7 +9,7 @@ require('chai')
 
 const requester = require('../lib/requester')
 const simpleRequester = require('../lib/simpleRequester')
-const poller = require('../lib/poller')
+const poller = require('../lib/analysisPoller')
 const login = require('../lib/login')
 const refresh = require('../lib/refresh')
 const util = require('../lib/util')
