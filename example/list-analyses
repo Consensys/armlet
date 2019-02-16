@@ -8,12 +8,7 @@ function usage() {
 List prior previously-submitted MythX analyses.
 
 This command requires an account to use, so set environment
-MYTHX_PASSWORD and one of the following:
-
-* MYTHX_ETH_ADDRESS or
-* MYTHX_EMAIL_ADDRESS
-
-before using.
+MYTHX_PASSWORD and MYTHX_ETH_ADDRESS before using.
 `)
     process.exit(1)
 }
@@ -37,8 +32,6 @@ const uuid = process.argv[2]
 ***********************************/
 
 let armletOptions = {
-    apiKey: process.env.MYTHX_API_KEY,
-    email: process.env.MYTHX_EMAIL,
     ethAddress: process.env.MYTHX_ETH_ADDRESS,
     password: process.env.MYTHX_PASSWORD,
 }
