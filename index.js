@@ -31,7 +31,7 @@ class Client {
     const { ethAddress, password } = auth || {}
 
     if (!password || !ethAddress) {
-      throw new TypeError('Please provide an ethernet address and a password.')
+      throw new TypeError('Please provide an Ethereum address and a password.')
     }
 
     const apiUrl = new url.URL(inputApiUrl)
