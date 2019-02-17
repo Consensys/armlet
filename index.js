@@ -9,7 +9,6 @@ const util = require('./lib/util')
 
 const defaultApiUrl = process.env['MYTHX_API_URL'] || 'https://api.mythx.io'
 const defaultApiVersion = 'v1'
-const trialUserId = '123456789012345678901234'
 
 class Client {
   /**
@@ -27,17 +26,12 @@ class Client {
   constructor (auth, inputApiUrl = defaultApiUrl) {
     const { ethAddress, apiKey, password } = auth || {}
 
-    let userId
-    if (!password && !ethAddress && !apiKey) {
-      userId = trialUserId
+    if (!apiKey && !password && !ethAddress) {
+      throw new TypeError('Please provide auth options.')
     }
 
-    if (password && !ethAddress && !apiKey) {
-      throw new TypeError('Please provide an user id auth option.')
-    }
-
-    if (!apiKey && !userId && (!password && ethAddress)) {
-      throw new TypeError('Please provide a password auth option.')
+    if (!apiKey && (!password || !ethAddress)) {
+      throw new TypeError('Please provide either ethAddress and password or apiKey.')
     }
 
     const apiUrl = new url.URL(inputApiUrl)
@@ -45,7 +39,6 @@ class Client {
       throw new TypeError(`${inputApiUrl} is not a valid URL`)
     }
 
-    this.userId = userId
     this.ethAddress = ethAddress
     this.password = password
     this.accessToken = apiKey
@@ -74,7 +67,7 @@ class Client {
     if (!this.accessToken) {
       let tokens
       try {
-        tokens = await login.do(this.ethAddress, this.userId, this.password, this.apiUrl)
+        tokens = await login.do(this.ethAddress, this.password, this.apiUrl)
       } catch (e) {
         let authType = ''
         if (this.ethAddress) {
@@ -134,7 +127,7 @@ class Client {
     }
 
     if (!this.accessToken) {
-      const tokens = await login.do(this.ethAddress, this.userId, this.password, this.apiUrl)
+      const tokens = await login.do(this.ethAddress, this.password, this.apiUrl)
       this.accessToken = tokens.access
       this.refreshToken = tokens.refresh
     }
@@ -182,7 +175,7 @@ class Client {
   async getStatusOrIssues (uuid, url, inputApiUrl) {
     let accessToken = this.accessToken
     if (!accessToken) {
-      const tokens = await login.do(this.ethAddress, this.userId, this.password, this.apiUrl)
+      const tokens = await login.do(this.ethAddress, this.password, this.apiUrl)
       accessToken = tokens.access
     }
     let promise
@@ -215,7 +208,7 @@ class Client {
   async listAnalyses (inputApiUrl = defaultApiUrl) {
     let accessToken = this.accessToken
     if (!accessToken) {
-      const tokens = await login.do(this.ethAddress, this.userId, this.password, this.apiUrl)
+      const tokens = await login.do(this.ethAddress, this.password, this.apiUrl)
       accessToken = tokens.access
     }
     const url = util.joinUrl(inputApiUrl, `${defaultApiVersion}/analyses`)
@@ -237,4 +230,3 @@ module.exports.Client = Client
 module.exports.defaultApiUrl = new url.URL(defaultApiUrl)
 module.exports.defaultApiHost = defaultApiUrl
 module.exports.defaultApiVersion = defaultApiVersion
-module.exports.trialUserId = trialUserId
