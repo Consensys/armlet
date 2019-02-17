@@ -5,7 +5,8 @@
 
 Armlet is a thin wrapper around the MythX API written in Javascript
 which simplifies interaction with MythX. For example, the library
-wraps API analysis requests into a promise.
+wraps API analysis requests into a promise, merges status information
+with analysis-result information, and judiciously polls for results.
 
 # Installation
 
@@ -36,7 +37,7 @@ the exposed function:
 const armlet = require('armlet')
 const client = new armlet.Client(
   {
-      password: process.env.MYTHX_PASSWORD,  // adjust this
+      password: process.env.MYTHX_PASSWORD,
       ethAddress: process.env.MYTHX_ETH_ADDRESS,
   })
 
@@ -44,7 +45,12 @@ const data = {
     "bytecode": "0x608060405234801561001057600080fd5b5060d48061001f6000396000f3fe608060405260043610603f576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806338d94193146044575b600080fd5b348015604f57600080fd5b50607960048036036020811015606457600080fd5b8101908080359060200190929190505050608f565b6040518082815260200191505060405180910390f35b600081600881101515609d57fe5b01600091509050548156fea165627a7a723058206f554b09240c9771a583534d72575fcfb4623ab4df3ddc139442047795fd383b0029",
 };
 
-client.analyzeWithStatus({data})
+client.analyzeWithStatus(
+    {
+	"data": data,    // required
+	"timeout": 2 * 60 * 1000,  // optional, but can improve response time
+	"debug": false,            // optional: set to true if you want to see what's going on
+    })
     .then(result => {
 	const util = require('util');
 	console.log(`${util.inspect(result.status, {depth: null})}`);
@@ -53,14 +59,16 @@ client.analyzeWithStatus({data})
     console.log(err)
   })
 ```
-You can also specify the timeout in milliseconds to wait for the analysis to be
-done (the default is 40 seconds). Also, for statistical tracking you can tag the type of tool making the request using `clientToolName`.
 
-
-As an example, to wait up to 50 seconds, and log analysis request as as use of `armlet-readme`, run:
+For statistical tracking you can tag the type of tool making the request using `clientToolName`.
+For example, to log analysis request as a use of `armlet-readme`, run:
 
 ```javascript
-client.analyzeWithStatus({data, timeout: 50000, clientToolName: 'armlet-readme'})
+client.analyzeWithStatus(
+    {
+	"data": data,
+	"clientToolName": "armlet-readme"
+    })
   .then(result => {
     console.log(result.status, {depth: null})
     console.log(result.issues, {depth: null})
@@ -68,6 +76,88 @@ client.analyzeWithStatus({data, timeout: 50000, clientToolName: 'armlet-readme'}
     console.log(err)
   })
 ```
+
+# Improving Polling Response
+
+There are two time parameters, given in milliseconds, that change how quickly a analysis result is reported back:
+
+* initial delay
+* maximum delay
+
+The initial delay is the minimum amount of time that this library
+waits before attempting its first status poll. Note however that if a
+request has been cached, then results come back immediately and no
+status polling is needed.  (The server caches previous analysis runs;
+it takes into account the data passed to it, the analysis mode, and the
+back-end versions of components used to provide the analysis.)
+
+The maximum delay is the maximum amount of time we will wait for an
+analysis to complete. Note however that if the processing has not
+finished when this timeout is reached, it may still be running on the
+server side. Therefore you when a timeout occurs, you will get back a
+UUID which can subsequently be used to get status and results.
+
+The closer these two parameters are to the actual time range that is
+needed by analysis, the faster the response will get reported back
+after completion on the server end. Below we explain
+
+* why we have these two parameters,
+* why giving good guesses helps response in reporting results,
+* how you can get good guesses.
+
+Until we have a websocket interface whereby the server can directly
+pass back results without any additional action required on the server
+side, your REST API requires the client to poll for status. We have
+seen that this polling can cause a lot of overhead, if not done
+judiciously.
+
+Therefore, each request is allowed up to 10 status probes.
+
+We have seen that _no_ analysis request will finish less than a
+certain period of time. So given that the probes-per analysis are
+limited, it doesn't make sense to probe before the fastest
+analysis-completion time.
+
+The 10 status probes are done in geometrically increasing time
+intervals. The first interval is the shortest and the last interval
+is the longest. The response rate at the beginning is better than
+the response rate at the end, in terms of how much additional time is
+waited before the analysis completion is noticed.
+
+However this progression is not fixed. Instead, it takes into account
+the maximum amount of time you are willing to wait on a result.
+
+In other words, the shorter the short period of time you give in the
+maximum timeout, the shorter the 10 probes allotted to an analysis
+request will will be in its geometric succession.
+
+To make this clear, if you only want to wait two minutes at tops, then
+the first delay will be 0.3 seconds, while the delay before last poll
+will be about half a minute. If on the other hand you want to wait up
+to 2 hours, then the first delay will be 9 seconds, and the one will
+be about 15 minutes.
+
+Good guessing of these two parameters, therefore reduces the
+unnecessary probe time, while providing good response around the
+period of time around that was declared.
+
+But how can you guess decent values? We have reasonable defaults built
+in. But there are two factors that you can use to get better estimates.
+
+The first is the kind of analysis mode used: a "quick" analysis
+usually be under two minutes, while a "full" analysis will usually be
+under two hours.
+
+When an analysis request finishes, we provide the amount of time used
+broken into two components: the amount of time spent in analysis, and
+the amount of time spent in queuing. The queuing time can vary
+depending on what else is going on at the time the analysis request
+was sent, so that's why it is separated out. In addition to this, the
+library provides its own elapsed time in the response.
+
+If you are using the library from a project-oriented system such as
+truffle, or VSCode, then results of prior runs for the project and of
+individual files in the project for guidance.
 
 # See Also
 
