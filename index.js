@@ -272,7 +272,10 @@ minimum value for how long a non-cached analyses will take
       accessToken = tokens.access
     }
     const url = libUtil.joinUrl(inputApiUrl, `${defaultApiVersion}/analyses`)
-    return simpleRequester.do({ url, accessToken: accessToken, json: true })
+    return simpleRequester.do({ url,
+      accessToken: accessToken,
+      json: true,
+      ethAddress: this.ethAddress })
   }
 }
 
