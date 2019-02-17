@@ -22,21 +22,16 @@ class Client {
    *  periodically.
    *
    *  @param {auth} object         - login or authentication information which contains
-   *                               ethAddress and a password or...
-   *                                apiKey
+   *                                 an ethAddress and a password
    *  @param {inputApiUrl} string  - Optional. A URL of a MythX API server we want to contect
    *                                 to.
    *
    */
   constructor (auth, inputApiUrl = defaultApiUrl) {
-    const { ethAddress, apiKey, password } = auth || {}
+    const { ethAddress, password } = auth || {}
 
-    if (!apiKey && !password && !ethAddress) {
-      throw new TypeError('Please provide auth options.')
-    }
-
-    if (!apiKey && (!password || !ethAddress)) {
-      throw new TypeError('Please provide either ethAddress and password or apiKey.')
+    if (!password || !ethAddress) {
+      throw new TypeError('Please provide an ethernet address and a password.')
     }
 
     const apiUrl = new url.URL(inputApiUrl)
@@ -46,7 +41,6 @@ class Client {
 
     this.ethAddress = ethAddress
     this.password = password
-    this.accessToken = apiKey
     this.apiUrl = apiUrl
   }
 
