@@ -14,7 +14,7 @@ const trialUserId = '123456789012345678901234'
 // No MythX job we've seen is faster than this value.  So if an
 // analysis request isn't cached, then the *first* poll for status
 // will be delayed by this amount of time.
-const defaultInitialDelay = 40000 // 40 seconds
+const defaultInitialDelay = 45000 // 45 seconds
 
 class Client {
   /**
@@ -164,6 +164,12 @@ minimum value for how long a non-cached analyses will take
           initialDelay, options.debug)
       }
     }
+    if (Object.prototype.toString.call(result) === '[object Array]') {
+      if (result.length > 1) {
+        console.log(`Warning: expecting reslt to have only one entry; got ${result.length}; Taking first item`)
+      }
+      result = result[0]
+    }
     result.uuid = uuid
     return result
   }
@@ -208,22 +214,26 @@ minimum value for how long a non-cached analyses will take
   /**
     * Runs MythX analysis return issue information and metadata regarding the run
     *
-    * @param {options} object - structure which must contain:
+    * @param {object} options - structure which must contain:
     *      {data} object       - information containing Smart Contract information to be analyzed
-    *      {timeout} number    - optional timeout value in milliseconds
-    *      {clientToolName} string - optional; sets up for client tool usage tracking
+    *      {Number} timeout    - optional timeout value in milliseconds
+    *      {String} clientToolName - optional; sets up for client tool usage tracking
     *
     * @returns object which contains:
-    *      (issues}  object - an like object which of issues is grouped by (file) input container.
-    *      {status}  object - status information as returned in each object of analyses().
+    *      (Number}  elsped - elaped milliseconds that we recorded
+    *      (Object}  issues - an like object which of issues is grouped by (file) input container.
+    *      {Object} status - status information as returned in each object of analyses().
     *
     **/
   async analyzeWithStatus (options) {
+    const start = Date.now()
     const issues = await this.analyze(options)
     const uuid = issues.uuid
     delete issues.uuid
     const status = await this.getStatus(uuid)
+    const elapsed = Date.now() - start
     return {
+      elapsed,
       issues,
       status
     }

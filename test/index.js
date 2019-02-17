@@ -122,7 +122,9 @@ describe('main module', () => {
                   .resolves('stubbed')
 
                 await this.instance.analyzeWithStatus(input)
-                  .should.eventually.deep.equal({ issues: { issues: 'issues' }, status: 'stubbed' })
+                  .should.eventually.deep.include({
+                    issues: { issues: 'issues' }, status: 'stubbed'
+                  })
                 analyzeStub.calledWith(input).should.be.equal(true)
                 getStatusStub.calledWith('uuid').should.be.equal(true)
 
@@ -229,7 +231,9 @@ describe('main module', () => {
                   resolve({ issues })
                 }))
 
-              await this.instance.analyze({ data }).should.eventually.deep.equal({ issues, uuid })
+              await this.instance.analyze({ data }).should.eventually.deep.include({
+                issues, uuid
+              })
             })
 
             it('should reject with login failures', async () => {

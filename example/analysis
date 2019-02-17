@@ -63,8 +63,14 @@ const analyzeOptions = {
 
     // If you want debug output, uncomment the below
     // debug: true,
+
     data: JSON.parse(fs.readFileSync(jsonPath, 'utf8')),
-    timeout: timeout * 1000,  // convert secs to millisecs
+
+    // How long to wait initially before polling for results
+    initialDelay: 50 * 1000,
+
+    // The maximum time allowed before returning
+    timeout: timeout * 1000,
 }
 
 client.analyzeWithStatus(analyzeOptions)
