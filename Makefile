@@ -4,13 +4,6 @@
 check:
 	npm run lint-fix && npm test
 
-#: Rebuild all
-rebuild:
-	rm -fr node_modules && npm install --no-progress
-
-#: Rebuild all
-distcheck: rebuild check
-
 #: same thing as "make check"
 test: check
 

@@ -1,6 +1,6 @@
 {
   "name": "armlet",
-  "version": "2.0.0",
+  "version": "2.0.0-git",
   "description": "A MythX API client.",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,6 @@
     "type": "git",
     "url": "git+https://github.com/consensys/armlet.git"
   },
-  "author": "Federico Gimenez <federico.gimenez@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/consensys/armlet/issues"
@@ -37,8 +36,8 @@
   },
   "dependencies": {
     "http-errors": "^1.7.1",
+    "humanize-duration": "^3.17.0",
     "isomorphic-fetch": "^2.2.1",
-    "moment": "^2.24.0",
     "omni-fetch": "^0.2.3",
     "request": "^2.88.0"
   }

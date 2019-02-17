@@ -1,12 +1,14 @@
 const nock = require('nock')
 const url = require('url')
+const sinon = require('sinon')
 require('chai')
   .use(require('chai-as-promised'))
   .should()
 
-const poller = require('../../lib/poller')
+const poller = require('../../lib/analysisPoller')
+const util = require('../../lib/util')
 
-describe('poller', () => {
+describe('analysisPoller', () => {
   describe('#do', () => {
     const defaultApiUrl = new url.URL('https://api.mythx.io')
     const httpApiUrl = new url.URL('http://localhost:3100')
@@ -14,7 +16,6 @@ describe('poller', () => {
     const uuid = 'my-uuid'
     const statusUrl = `/v1/analyses/${uuid}`
     const issuesUrl = `/v1/analyses/${uuid}/issues`
-    const pollStep = 10
     const expectedIssues = [
       {
         title: 'Unchecked SUICIDE',
@@ -25,6 +26,14 @@ describe('poller', () => {
         debug: 'SOLVER OUTPUT:\ncalldata_MAIN_0: 0xcbf0b0c000000000000000000000000000000000000000000000000000000000\ncalldatasize_MAIN: 0x4\ncallvalue: 0x0\n'
       }
     ]
+
+    afterEach(() => {
+      util.timer.restore()
+    })
+
+    beforeEach(() => {
+      sinon.stub(util, 'timer')
+    })
 
     it('should poll issues with empty results', async () => {
       const emptyResult = []
@@ -56,7 +65,7 @@ describe('poller', () => {
         .get(issuesUrl)
         .reply(200, emptyResult)
 
-      await poller.do(uuid, validApiKey, defaultApiUrl, pollStep).should.eventually.deep.equal(emptyResult)
+      await poller.do(uuid, validApiKey, defaultApiUrl, 10000, 5000).should.eventually.deep.equal(emptyResult)
     })
 
     it('should poll issues with non-empty results', async () => {
@@ -87,7 +96,7 @@ describe('poller', () => {
         .get(issuesUrl)
         .reply(200, expectedIssues)
 
-      await poller.do(uuid, validApiKey, defaultApiUrl, pollStep).should.eventually.deep.equal(expectedIssues)
+      await poller.do(uuid, validApiKey, defaultApiUrl, 10000, 5000).should.eventually.deep.equal(expectedIssues)
     })
 
     it('should be able to query http API', async () => {
@@ -118,7 +127,7 @@ describe('poller', () => {
         .get(issuesUrl)
         .reply(200, expectedIssues)
 
-      await poller.do(uuid, validApiKey, httpApiUrl, pollStep).should.eventually.deep.equal(expectedIssues)
+      await poller.do(uuid, validApiKey, httpApiUrl, 10000, 5000).should.eventually.deep.equal(expectedIssues)
     })
 
     it('should reject on server error', async () => {
@@ -130,21 +139,7 @@ describe('poller', () => {
         .get(statusUrl)
         .reply(500)
 
-      await poller.do(uuid, validApiKey, defaultApiUrl, pollStep).should.be.rejectedWith(Error)
-    })
-
-    it('should reject on authentication error', async () => {
-      const inValidApiKey = 'invalid-api-key'
-
-      nock(defaultApiUrl.href, {
-        reqheaders: {
-          authorization: `Bearer ${inValidApiKey}`
-        }
-      })
-        .get(statusUrl)
-        .reply(401, 'Unauthorized')
-
-      await poller.do(uuid, inValidApiKey, defaultApiUrl, pollStep).should.be.rejectedWith(Error)
+      await poller.do(uuid, validApiKey, defaultApiUrl, 10000, 5000).should.be.rejectedWith(Error)
     })
 
     it('should reject on non-JSON data', async () => {
@@ -175,7 +170,7 @@ describe('poller', () => {
         .get(issuesUrl)
         .reply(200, 'non-json-data')
 
-      await poller.do(uuid, validApiKey, defaultApiUrl, pollStep).should.be.rejected
+      await poller.do(uuid, validApiKey, defaultApiUrl, 10000, 5000).should.be.rejected
     })
 
     it('should reject after a timeout', async () => {
@@ -186,14 +181,65 @@ describe('poller', () => {
         }
       })
         .get(statusUrl)
-        .delay(timeout + pollStep)
+        .delay(timeout + 10)
         .reply(200, {
           status: 'In progress'
         })
-      await poller.do(uuid, validApiKey, defaultApiUrl, pollStep, timeout).should.be
-        .rejectedWith(`Client timeout reached after 0.015 seconds. ` +
-          `The analysis job is still running on the server and the ` +
-          `result may become available later. UUID: ${uuid}\n`)
+      await poller.do(uuid, validApiKey, defaultApiUrl, timeout, 5000).should.be
+        .rejected
+    })
+
+    it('should wait for polling longer each time', async () => {
+      const emptyResult = []
+
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(statusUrl)
+        .times(3)
+        .reply(200, {
+          status: 'In progress'
+        })
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(statusUrl)
+        .reply(200, {
+          status: 'Finished'
+        })
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(issuesUrl)
+        .reply(200, emptyResult)
+
+      let lastDelay = 0
+      await poller.do(uuid, validApiKey, defaultApiUrl, 10000, 5000).should.eventually.deep.equal(emptyResult)
+      for (const i of [0, 1, 2]) {
+        const nextDelay = util.timer.getCall(i).args[0]
+        nextDelay.should.be.above(lastDelay)
+        lastDelay = nextDelay
+      }
+    })
+
+    it('should reject after maximum polling reached', async () => {
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(statusUrl)
+        .times(11)
+        .reply(200, {
+          status: 'In progress'
+        })
+      await poller.do(uuid, validApiKey, defaultApiUrl).should.be.rejected
     })
   })
 })

@@ -29,7 +29,10 @@ describe('requester', () => {
           uuid: uuid
         })
 
-      await requester.do(data, validApiKey, httpApiUrl).should.eventually.equal(uuid)
+      await requester.do(data, validApiKey, httpApiUrl).should.eventually.deep.equal({
+        result: 'Queued',
+        uuid
+      })
     })
 
     it('should request analysis for https API', async () => {
@@ -44,7 +47,10 @@ describe('requester', () => {
           uuid: uuid
         })
 
-      await requester.do(data, validApiKey, httpsApiUrl).should.eventually.equal(uuid)
+      await requester.do(data, validApiKey, httpsApiUrl).should.eventually.deep.equal({
+        result: 'Queued',
+        uuid
+      })
     })
 
     it('should default to official API endpoint', async () => {
@@ -59,7 +65,10 @@ describe('requester', () => {
           uuid: uuid
         })
 
-      await requester.do(data, validApiKey, defaultApiUrl).should.eventually.equal(uuid)
+      await requester.do(data, validApiKey, defaultApiUrl).should.eventually.deep.equal({
+        result: 'Queued',
+        uuid
+      })
     })
 
     it('should reject on api server connection failure', async () => {
