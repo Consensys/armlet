@@ -47,15 +47,11 @@ describe('main module', () => {
 
         describe('should have a constructor which should', () => {
           it('throw error when initialize with no auth parameters', () => {
-            (() => new Client()).should.throw(TypeError, /Please provide auth options./)
+            (() => new Client()).should.throw(TypeError, /Please provide/)
           })
 
-          it('require a password auth option if ethAddress is provided', () => {
-            (() => new Client({ ethAddress })).should.throw(TypeError, /Please provide either ethAddress and password or apiKey./)
-          })
-
-          it('require an ethAddress auth option if password is provided', () => {
-            (() => new Client({ password })).should.throw(TypeError, /Please provide either ethAddress and password or apiKey./)
+          it('require an ethAddress and password ', () => {
+            (() => new Client({ ethAddress })).should.throw(TypeError, /Please provide/)
           })
 
           it('require a valid apiUrl if given', () => {
@@ -72,12 +68,6 @@ describe('main module', () => {
             const instance = new Client({ ethAddress, password }, apiUrl)
 
             instance.apiUrl.should.be.deep.equal(new url.URL(apiUrl))
-          })
-
-          it('accept an apiKey auth and store it as accessToken', () => {
-            const instance = new Client({ apiKey: 'my-apikey' })
-
-            instance.accessToken.should.be.equal('my-apikey')
           })
 
           describe('instances should', () => {
