@@ -92,9 +92,9 @@ it takes into account the data passed to it, the analysis mode, and the
 back-end versions of components used to provide the analysis.)
 
 The maximum delay is the maximum amount of time we will wait for an
-analysis to complete. Note however that if the processing has not
+analysis to complete. Note, however, that if the processing has not
 finished when this timeout is reached, it may still be running on the
-server side. Therefore you when a timeout occurs, you will get back a
+server side. Therefore when a timeout occurs, you will get back a
 UUID which can subsequently be used to get status and results.
 
 The closer these two parameters are to the actual time range that is
@@ -105,59 +105,57 @@ after completion on the server end. Below we explain
 * why giving good guesses helps response in reporting results,
 * how you can get good guesses.
 
-Until we have a websocket interface whereby the server can directly
+Until we have a websocket interface so the server can directly
 pass back results without any additional action required on the server
 side, your REST API requires the client to poll for status. We have
 seen that this polling can cause a lot of overhead, if not done
-judiciously.
+judiciously. So, each request is allowed up to 10 status probes.
 
-Therefore, each request is allowed up to 10 status probes.
-
-We have seen that _no_ analysis request will finish less than a
-certain period of time. So given that the probes-per analysis are
+We have seen that _no_ analysis request will finish in less than a
+certain period of time. Since the number of probe per analysis is
 limited, it doesn't make sense to probe before the fastest
 analysis-completion time.
 
 The 10 status probes are done in geometrically increasing time
-intervals. The first interval is the shortest and the last interval
-is the longest. The response rate at the beginning is better than
-the response rate at the end, in terms of how much additional time is
-waited before the analysis completion is noticed.
+intervals. The first interval is the shortest and the last interval is
+the longest. The response rate at the beginning is better than the
+response rate at the end, in terms of how much additional time it
+takes before the analysis completion is noticed.
 
 However this progression is not fixed. Instead, it takes into account
-the maximum amount of time you are willing to wait on a result.
+the maximum amount of time you are willing to wait for a result.
 
-In other words, the shorter the short period of time you give in the
-maximum timeout, the shorter the 10 probes allotted to an analysis
-request will will be in its geometric succession.
+In other words, the shorter the short period of time you give for the
+maximum timeout, the shorter the geometric succession of the 10 probes
+allotted to an analysis request will be.
 
-To make this clear, if you only want to wait two minutes at tops, then
+To make this clear, if you only want to wait a; maximum of two minutes, then
 the first delay will be 0.3 seconds, while the delay before last poll
 will be about half a minute. If on the other hand you want to wait up
-to 2 hours, then the first delay will be 9 seconds, and the one will
+to 2 hours, then the first delay will be 9 seconds, and the last one will
 be about 15 minutes.
 
-Good guessing of these two parameters, therefore reduces the
-unnecessary probe time, while providing good response around the
+Good guessing of these two parameters reduces the
+unnecessary probe time while providing good response around the declared
 period of time around that was declared.
 
-But how can you guess decent values? We have reasonable defaults built
+So, how can you guess decent values? We have reasonable defaults built
 in. But there are two factors that you can use to get better estimates.
 
-The first is the kind of analysis mode used: a "quick" analysis
+The first is the kind of analysis mode used: a "quick" analysis will
 usually be under two minutes, while a "full" analysis will usually be
 under two hours.
 
 When an analysis request finishes, we provide the amount of time used
 broken into two components: the amount of time spent in analysis, and
 the amount of time spent in queuing. The queuing time can vary
-depending on what else is going on at the time the analysis request
-was sent, so that's why it is separated out. In addition to this, the
+depending on what else is going on when the analysis request
+was sent, so that's why it is separated out. In addition, the
 library provides its own elapsed time in the response.
 
-If you are using the library from a project-oriented system such as
-truffle, or VSCode, then results of prior runs for the project and of
-individual files in the project for guidance.
+If you are making an analysis within an IDE which saves reports of
+past runs, such as truffle or VSCode, the timings can be used for
+estimates.
 
 # See Also
 
