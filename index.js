@@ -60,12 +60,13 @@ minimum value for how long a non-cached analyses will take
     *                              this must be larger than defaultInitialDelay which we believe to be
     *                              the smallest reasonable value.
     *
+    * @param {boolean} uuid        - optional, when set true includes uuid of analysis in results.
     * @returns an array-like object of issues, and a uuid attribute which can
     *          be subsequently used to retrieve the information from our stored
     *          database using getIssues().
     *
     **/
-  async analyze (options) {
+  async analyze (options, uuid = false) {
     if (options === undefined || options.data === undefined) {
       throw new TypeError('Please provide analysis request JSON in a "data" attribute.')
     }
@@ -100,8 +101,6 @@ minimum value for how long a non-cached analyses will take
       requestResponse = await requester.do(options, this.accessToken, this.apiUrl)
     }
 
-    const uuid = requestResponse.uuid
-
     /*
        Set "timeout" - the maximum amount of time we want to wait on
        a request before giving up.
@@ -129,7 +128,7 @@ minimum value for how long a non-cached analyses will take
 
     let result
     if (requestResponse.status === 'Finished') {
-      result = await analysisPoller.getIssues(uuid, this.accessToken, this.apiUrl)
+      result = await analysisPoller.getIssues(requestResponse.uuid, this.accessToken, this.apiUrl)
       if (options.debug) {
         const util = require('util')
         let depth = (options.debug > 1) ? 10 : 2
@@ -138,8 +137,7 @@ minimum value for how long a non-cached analyses will take
     } else {
       const initialDelay = Math.max(options.initialDelay || 0, defaultInitialDelay)
       try {
-        result = await analysisPoller.do(uuid, this.accessToken, this.apiUrl, timeout,
-          initialDelay, options.debug)
+        result = await analysisPoller.do(requestResponse.uuid, this.accessToken, this.apiUrl, timeout, initialDelay, options.debug)
       } catch (e) {
         if (e.statusCode !== 401) {
           throw e
@@ -147,17 +145,17 @@ minimum value for how long a non-cached analyses will take
         const tokens = await refresh.do(this.accessToken, this.refreshToken, this.apiUrl)
         this.accessToken = tokens.access
         this.refreshToken = tokens.refresh
-        result = await analysisPoller.do(uuid, this.accessToken, this.apiUrl, timeout,
+        result = await analysisPoller.do(requestResponse.uuid, this.accessToken, this.apiUrl, timeout,
           initialDelay, options.debug)
       }
     }
-    if (Object.prototype.toString.call(result) === '[object Array]') {
-      if (result.length > 1) {
-        console.log(`Warning: expecting reslt to have only one entry; got ${result.length}; Taking first item`)
+
+    if (uuid) {
+      return {
+        issues: result,
+        uuid: requestResponse.uuid
       }
-      result = result[0]
     }
-    result.uuid = uuid
     return result
   }
 
@@ -214,9 +212,7 @@ minimum value for how long a non-cached analyses will take
     **/
   async analyzeWithStatus (options) {
     const start = Date.now()
-    const issues = await this.analyze(options)
-    const uuid = issues.uuid
-    delete issues.uuid
+    const { issues, uuid } = await this.analyze(options, true)
     const status = await this.getStatus(uuid)
     const elapsed = Date.now() - start
     return {
