@@ -13,11 +13,21 @@ It can be used to run MythX analyses on a single Solidity smart-contract text fi
 
 # Installation
 
-Just as with any nodejs package, install with:
+To install the latest stable version from NPM:
 
 ```
-$ npm install armlet
+$ npm -g install armlet
 ```
+
+If you're feeling adventurous, you can also install the from the master branch:
+
+```
+$ npm install -g git+https://git@github.com/ConsenSys/armlet.git
+```
+
+The `-g` or `--global` option above may not be needed depending on how
+you work. It my ensuring `mythx-analysis` is in your path where it might not
+otherwise be there.
 
 # Example
 
