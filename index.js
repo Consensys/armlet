@@ -60,13 +60,12 @@ minimum value for how long a non-cached analyses will take
     *                              this must be larger than defaultInitialDelay which we believe to be
     *                              the smallest reasonable value.
     *
-    * @param {boolean} uuid        - optional, when set true includes uuid of analysis in results.
     * @returns an array-like object of issues, and a uuid attribute which can
     *          be subsequently used to retrieve the information from our stored
     *          database using getIssues().
     *
     **/
-  async analyze (options, uuid = false) {
+  async analyze (options) {
     if (options === undefined || options.data === undefined) {
       throw new TypeError('Please provide analysis request JSON in a "data" attribute.')
     }
@@ -150,13 +149,10 @@ minimum value for how long a non-cached analyses will take
       }
     }
 
-    if (uuid) {
-      return {
-        issues: result,
-        uuid: requestResponse.uuid
-      }
+    return {
+      issues: result,
+      uuid: requestResponse.uuid
     }
-    return result
   }
 
   /**

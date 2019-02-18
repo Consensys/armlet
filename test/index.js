@@ -222,7 +222,7 @@ describe('main module', () => {
                   resolve(issues)
                 }))
 
-              await this.instance.analyze({ data }).should.eventually.deep.equal(issues)
+              await this.instance.analyze({ data }).should.eventually.deep.equal({ issues, uuid })
             })
 
             it('should reject with login failures', async () => {
@@ -308,7 +308,7 @@ describe('main module', () => {
                 .returns(new Promise(resolve => {
                   resolve(issues)
                 }))
-              await this.instance.analyze({ data, timeout }).should.eventually.deep.equal(issues)
+              await this.instance.analyze({ data, timeout }).should.eventually.deep.equal({ issues, uuid })
               poller.getIssues.restore()
             })
 
@@ -327,7 +327,7 @@ describe('main module', () => {
               sinon.stub(poller, 'do')
                 .withArgs(uuid, accessToken, parsedApiUrl, timeout, armlet.defaultInitialDelay, undefined)
                 .resolves(issues)
-              await this.instance.analyze({ data, timeout }).should.eventually.deep.equal(issues)
+              await this.instance.analyze({ data, timeout }).should.eventually.deep.equal({ issues, uuid })
             })
 
             it('should pass initial delay option to poller', async () => {
@@ -348,7 +348,7 @@ describe('main module', () => {
                 .returns(new Promise(resolve => {
                   resolve(issues)
                 }))
-              await this.instance.analyze({ data, timeout, initialDelay }).should.eventually.deep.equal(issues)
+              await this.instance.analyze({ data, timeout, initialDelay }).should.eventually.deep.equal({ issues, uuid })
             })
           })
 
@@ -367,32 +367,7 @@ describe('main module', () => {
                   resolve(issues)
                 }))
 
-              await this.instance.analyze({ data }).should.eventually.deep.equal(issues)
-            })
-          })
-
-          describe('when optional uuid parameter is passed', () => {
-            afterEach(() => {
-              login.do.restore()
-            })
-            it('should login and chain requester and poller and return object with issues and uuid', async () => {
-              sinon.stub(login, 'do')
-                .withArgs(ethAddress, password, parsedApiUrl)
-                .returns(new Promise(resolve => {
-                  resolve({ access: accessToken, refresh: refreshToken })
-                }))
-              sinon.stub(requester, 'do')
-                .withArgs({ data }, accessToken, parsedApiUrl)
-                .returns(new Promise(resolve => {
-                  resolve({ uuid })
-                }))
-              sinon.stub(poller, 'do')
-                .withArgs(uuid, accessToken, parsedApiUrl)
-                .returns(new Promise(resolve => {
-                  resolve(issues)
-                }))
-
-              await this.instance.analyze({ data }, true).should.eventually.deep.equal({ issues, uuid })
+              await this.instance.analyze({ data }).should.eventually.deep.equal({ issues, uuid })
             })
           })
         })
@@ -435,7 +410,7 @@ describe('main module', () => {
                 resolve(issues)
               }))
 
-            await this.instance.analyze({ data }).should.eventually.deep.equal(issues)
+            await this.instance.analyze({ data }).should.eventually.deep.equal({ issues, uuid })
           })
 
           it('should refresh expired tokens when poller fails', async () => {
@@ -461,7 +436,7 @@ describe('main module', () => {
                 resolve({ access: newAccessToken, refresh: newRefreshToken })
               }))
 
-            await this.instance.analyze({ data }).should.eventually.deep.equal(issues)
+            await this.instance.analyze({ data }).should.eventually.deep.equal({ issues, uuid })
           })
         })
 
