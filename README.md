@@ -9,7 +9,7 @@ wraps API analysis requests into a promise, merges status information
 with analysis-result information, and judiciously polls for results.
 
 A simple command-line tool, `mythx-analysis`, is provided to show how to use the API.
-It can be used to run MythX analyses on a single Solidity smart-contract text file.",
+It can be used to run MythX analyses on a single Solidity smart-contract text file.
 
 # Installation
 
@@ -26,7 +26,7 @@ $ npm install -g git+https://git@github.com/ConsenSys/armlet.git
 ```
 
 The `-g` or `--global` option above may not be needed depending on how
-you work. It my ensuring `mythx-analysis` is in your path where it might not
+you work. It may ensure `mythx-analysis` is in your path where it might not
 otherwise be there.
 
 # Example
