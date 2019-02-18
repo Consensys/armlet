@@ -3,10 +3,13 @@
 
 # Armlet, a MythX API client wrapper
 
-Armlet is a thin wrapper around the MythX API written in Javascript
-which simplifies interaction with MythX. For example, the library
+Armlet is a thin wrapper around the MythX API written in Javascript.
+It simplifies interaction with MythX. For example, the library
 wraps API analysis requests into a promise, merges status information
 with analysis-result information, and judiciously polls for results.
+
+A simple command-line tool, `mythx-analysis`, is provided to show how to use the API.
+It can be used to run MythX analyses on a single Solidity smart-contract text file.",
 
 # Installation
 
