@@ -12,7 +12,6 @@ const simpleRequester = require('../lib/simpleRequester')
 const poller = require('../lib/analysisPoller')
 const login = require('../lib/login')
 const refresh = require('../lib/refresh')
-const util = require('../lib/util')
 
 const ethAddress = '0x74B904af705Eb2D5a6CDc174c08147bED478a60d'
 const password = 'my-password'
@@ -27,11 +26,9 @@ describe('main module', () => {
         requester.do.restore()
         poller.do.restore()
         simpleRequester.do.restore()
-        util.timer.restore()
       })
 
       beforeEach(() => {
-        sinon.stub(util, 'timer')
         sinon.stub(requester, 'do')
           .returns(new Promise((resolve, reject) => resolve(true)))
         sinon.stub(poller, 'do')
@@ -104,20 +101,28 @@ describe('main module', () => {
 
               it('should call analyze and getStatus methods', async () => {
                 const input = { data: 'content' }
-                const analyzeStub = sinon.stub(this.instance, 'analyze')
+
+                sinon.stub(Date, 'now')
+                  .returns(1)
+
+                sinon.stub(this.instance, 'analyze')
+                  .withArgs(input, true)
                   .resolves({ issues: 'issues', uuid: 'uuid' })
-                const getStatusStub = sinon.stub(this.instance, 'getStatus')
+
+                sinon.stub(this.instance, 'getStatus')
+                  .withArgs('uuid')
                   .resolves('stubbed')
 
                 await this.instance.analyzeWithStatus(input)
-                  .should.eventually.deep.include({
-                    issues: { issues: 'issues' }, status: 'stubbed'
+                  .should.eventually.deep.equal({
+                    elapsed: 0,
+                    issues: 'issues',
+                    status: 'stubbed'
                   })
-                analyzeStub.calledWith(input).should.be.equal(true)
-                getStatusStub.calledWith('uuid').should.be.equal(true)
 
-                analyzeStub.restore()
-                getStatusStub.restore()
+                this.instance.analyze.restore()
+                this.instance.getStatus.restore()
+                Date.now.restore()
               })
             })
             describe('have a getStatus method which', () => {
@@ -194,15 +199,13 @@ describe('main module', () => {
           afterEach(() => {
             requester.do.restore()
             poller.do.restore()
-            util.timer.restore()
           })
 
-          describe.skip('when the client logs in for the first time', () => {
+          describe('when the client logs in for the first time', () => {
             afterEach(() => {
               login.do.restore()
             })
             it('should login and chain requester and poller', async () => {
-              sinon.stub(util, 'timer')
               sinon.stub(login, 'do')
                 .withArgs(ethAddress, password, parsedApiUrl)
                 .returns(new Promise(resolve => {
@@ -216,17 +219,14 @@ describe('main module', () => {
               sinon.stub(poller, 'do')
                 .withArgs(uuid, accessToken, parsedApiUrl)
                 .returns(new Promise(resolve => {
-                  resolve({ issues })
+                  resolve(issues)
                 }))
 
-              await this.instance.analyze({ data }).should.eventually.deep.include({
-                issues, uuid
-              })
+              await this.instance.analyze({ data }).should.eventually.deep.equal({ issues, uuid })
             })
 
             it('should reject with login failures', async () => {
               const errorMsg = 'Invalid MythX credentials for ethereum address 0x74B904af705Eb2D5a6CDc174c08147bED478a60d given.'
-              sinon.stub(util, 'timer')
               sinon.stub(login, 'do')
                 .withArgs(ethAddress, password, parsedApiUrl)
                 .returns(new Promise((resolve, reject) => {
@@ -247,7 +247,6 @@ describe('main module', () => {
             })
 
             it('should reject with requester failures', async () => {
-              sinon.stub(util, 'timer')
               const errorMsg = 'Booom! from requester'
               sinon.stub(login, 'do')
                 .withArgs(ethAddress, password, parsedApiUrl)
@@ -269,7 +268,6 @@ describe('main module', () => {
             })
 
             it('should reject with poller failures', async () => {
-              sinon.stub(util, 'timer')
               const errorMsg = 'Booom! from poller'
               sinon.stub(login, 'do')
                 .withArgs(ethAddress, password, parsedApiUrl)
@@ -292,9 +290,8 @@ describe('main module', () => {
 
             it('should pass timeout option to poller', async () => {
               const timeout = 10
-              sinon.stub(util, 'timer')
               sinon.stub(login, 'do')
-                .withArgs(ethAddress, undefined, password, parsedApiUrl)
+                .withArgs(ethAddress, password, parsedApiUrl)
                 .returns(new Promise(resolve => {
                   resolve({ access: accessToken, refresh: refreshToken })
                 }))
@@ -303,17 +300,20 @@ describe('main module', () => {
                 .returns(new Promise(resolve => {
                   resolve({ uuid, status: 'Finished' })
                 }))
+              sinon.stub(poller, 'getIssues')
+                .withArgs(uuid, accessToken, parsedApiUrl)
+                .returns(issues)
               sinon.stub(poller, 'do')
                 .withArgs(uuid, accessToken, parsedApiUrl, timeout)
                 .returns(new Promise(resolve => {
-                  resolve({ issues })
+                  resolve(issues)
                 }))
               await this.instance.analyze({ data, timeout }).should.eventually.deep.equal({ issues, uuid })
+              poller.getIssues.restore()
             })
 
             it('should pass default initial delay option to poller', async () => {
               const timeout = 40000
-              sinon.stub(util, 'timer')
               sinon.stub(login, 'do')
                 .withArgs(ethAddress, password, parsedApiUrl)
                 .returns(new Promise(resolve => {
@@ -325,20 +325,16 @@ describe('main module', () => {
                   resolve({ uuid })
                 }))
               sinon.stub(poller, 'do')
-                .withArgs(uuid, accessToken, parsedApiUrl, timeout, timeout - armlet.defaultInitialDelay)
-                .returns(new Promise(resolve => {
-                  resolve({ issues })
-                }))
+                .withArgs(uuid, accessToken, parsedApiUrl, timeout, armlet.defaultInitialDelay, undefined)
+                .resolves(issues)
               await this.instance.analyze({ data, timeout }).should.eventually.deep.equal({ issues, uuid })
-              util.timer.getCall(0).args[0].should.equal(armlet.defaultInitialDelay)
             })
 
             it('should pass initial delay option to poller', async () => {
               const timeout = 40000
-              const initialDelay = 31000
-              sinon.stub(util, 'timer')
+              const initialDelay = 50000
               sinon.stub(login, 'do')
-                .withArgs(ethAddress, undefined, password, parsedApiUrl)
+                .withArgs(ethAddress, password, parsedApiUrl)
                 .returns(new Promise(resolve => {
                   resolve({ access: accessToken, refresh: refreshToken })
                 }))
@@ -348,18 +344,16 @@ describe('main module', () => {
                   resolve({ uuid })
                 }))
               sinon.stub(poller, 'do')
-                .withArgs(uuid, accessToken, parsedApiUrl, 40000, 9000)
+                .withArgs(uuid, accessToken, parsedApiUrl, timeout, initialDelay, undefined)
                 .returns(new Promise(resolve => {
-                  resolve({ issues })
+                  resolve(issues)
                 }))
               await this.instance.analyze({ data, timeout, initialDelay }).should.eventually.deep.equal({ issues, uuid })
-              util.timer.getCall(0).args[0].should.equal(initialDelay)
             })
           })
 
           describe('when the client is already logged in', () => {
             it('should not call login again', async () => {
-              sinon.stub(util, 'timer')
               this.instance.accessToken = accessToken
 
               sinon.stub(requester, 'do')
@@ -370,7 +364,7 @@ describe('main module', () => {
               sinon.stub(poller, 'do')
                 .withArgs(uuid, accessToken, parsedApiUrl)
                 .returns(new Promise(resolve => {
-                  resolve({ issues })
+                  resolve(issues)
                 }))
 
               await this.instance.analyze({ data }).should.eventually.deep.equal({ issues, uuid })
@@ -391,11 +385,9 @@ describe('main module', () => {
             refresh.do.restore()
             requester.do.restore()
             poller.do.restore()
-            util.timer.restore()
           })
 
           it('should refresh expired tokens when requester fails', async () => {
-            sinon.stub(util, 'timer')
             const requesterStub = sinon.stub(requester, 'do')
             requesterStub.withArgs({ data }, accessToken, parsedApiUrl)
               .returns(new Promise((resolve, reject) => {
@@ -415,14 +407,13 @@ describe('main module', () => {
             sinon.stub(poller, 'do')
               .withArgs(uuid, newAccessToken, parsedApiUrl)
               .returns(new Promise(resolve => {
-                resolve({ issues })
+                resolve(issues)
               }))
 
             await this.instance.analyze({ data }).should.eventually.deep.equal({ issues, uuid })
           })
 
           it('should refresh expired tokens when poller fails', async () => {
-            sinon.stub(util, 'timer')
             const pollerStub = sinon.stub(poller, 'do')
             pollerStub.withArgs(uuid, accessToken, parsedApiUrl)
               .returns(new Promise((resolve, reject) => {
@@ -430,7 +421,7 @@ describe('main module', () => {
               }))
             pollerStub.withArgs(uuid, newAccessToken, parsedApiUrl)
               .returns(new Promise(resolve => {
-                resolve({ issues })
+                resolve(issues)
               }))
 
             sinon.stub(requester, 'do')
