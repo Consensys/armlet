@@ -2,6 +2,7 @@
 "use strict"
 
 const fs = require('fs')
+// const util = require('uitl')
 const armlet = require('../index')
 
 function requireOrExit(modName) {
@@ -18,10 +19,10 @@ function requireOrExit(modName) {
 function compileSolidity(solidityFile) {
   let solidityText
   try {
-    solidityText = fs.readFileSync(solidityFile, 'utf8');
+    solidityText = fs.readFileSync(solidityFile, 'utf8')
   } catch (err) {
-    console.log(`Error opening input file ${err.message}`);
-    process.exit(-1);
+    console.log(`Error opening input file ${err.message}`)
+    process.exit(-1)
   }
 
   const input = {
@@ -40,27 +41,34 @@ function compileSolidity(solidityFile) {
     }
   };
   let solc = requireOrExit('solc')
+  debugger
   const compiled = JSON.parse(solc.compile(JSON.stringify(input)))
+  for (const mess of compiled.errors) {
+  }
+
+  let errLen = 0
+  if (compiled.errors) {
+    errLen = compiled.errors.length;
+    for (const mess of compiled.errors) {
+      console.log(`${mess.formattedMessage}`)
+    }
+  }
 
   if (!compiled.contracts) {
-    if (compiled.errors) {
-        let len = compiled.errors.length;
-        for (const i = 0; i < len; i++) {
-            console.log(compiled.errors[i].formattedMessage);
-        }
-    }
     process.exit(-1);
   }
 
   let contract = null
   let contractName
   for (contractName in compiled.contracts.inputfile) {
-    contract = compiled.contracts.inputfile[contractName];
+    contract = compiled.contracts.inputfile[contractName]
     break;
   }
 
   if (!contract) {
-    console.log(`Didn't find a contract in ${solidityFile}`)
+    if (errLen === 0) {
+      console.log(`Didn't find a contract in ${solidityFile}`)
+    }
     process.exit(15)
   }
   /* Format data for MythX API */
