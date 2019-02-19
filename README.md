@@ -150,7 +150,7 @@ be about 15 minutes.
 
 Good guessing of these two parameters reduces the
 unnecessary probe time while providing good response around the declared
-period of time around that was declared.
+time interval.
 
 So, how can you guess decent values? We have reasonable defaults built
 in. But there are two factors that you can use to get better estimates.
