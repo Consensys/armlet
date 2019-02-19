@@ -142,7 +142,7 @@ In other words, the shorter the short period of time you give for the
 maximum timeout, the shorter the geometric succession of the 10 probes
 allotted to an analysis request will be.
 
-To make this clear, if you only want to wait a; maximum of two minutes, then
+To make this clear, if you only want to wait a maximum of two minutes, then
 the first delay will be 0.3 seconds, while the delay before last poll
 will be about half a minute. If on the other hand you want to wait up
 to 2 hours, then the first delay will be 9 seconds, and the last one will
