@@ -41,7 +41,6 @@ function compileSolidity(solidityFile) {
     }
   };
   let solc = requireOrExit('solc')
-  debugger
   const compiled = JSON.parse(solc.compile(JSON.stringify(input)))
   for (const mess of compiled.errors) {
   }
