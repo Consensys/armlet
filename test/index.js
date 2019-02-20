@@ -44,11 +44,11 @@ describe('main module', () => {
 
         describe('should have a constructor which should', () => {
           it('throw error when initialize with no auth parameters', () => {
-            (() => new Client()).should.throw(TypeError, /Please provide/)
+            (() => new Client()).should.throw(/Please provide/)
           })
 
           it('require an ethAddress and password ', () => {
-            (() => new Client({ ethAddress })).should.throw(TypeError, /Please provide/)
+            (() => new Client({ ethAddress })).should.throw(/Please provide/)
           })
 
           it('require a valid apiUrl if given', () => {
