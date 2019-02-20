@@ -554,6 +554,48 @@ describe('main module', () => {
             })
           })
         })
+
+        describe('getStatusOrIssues', () => {
+          afterEach(() => {
+            simpleRequester.do.restore()
+            login.do.restore()
+          })
+
+          it('should login and chain simpleRequester', async () => {
+            const uuid = 'uuid'
+            sinon.stub(login, 'do')
+              .withArgs(ethAddress, password, parsedApiUrl)
+              .resolves({ access: accessToken, refresh: refreshToken })
+            sinon.stub(simpleRequester, 'do')
+              .withArgs({ url: apiUrl, accessToken, json: true })
+              .resolves([])
+            await this.instance.getStatusOrIssues(uuid, apiUrl).should.eventually.deep.equal([])
+          })
+
+          it('should reject when analysis job not found', async () => {
+            const uuid = 'uuid'
+            sinon.stub(login, 'do')
+              .withArgs(ethAddress, password, parsedApiUrl)
+              .resolves({ access: accessToken, refresh: refreshToken })
+            sinon.stub(simpleRequester, 'do')
+              .withArgs({ url: apiUrl, accessToken, json: true })
+              .rejects(HttpErrors.NotFound())
+            await this.instance.getStatusOrIssues(uuid, apiUrl).should.be
+              .rejectedWith(`Analysis with UUID ${uuid} not found.`)
+          })
+
+          it('should reject when analysis job not found', async () => {
+            const uuid = 'uuid'
+            sinon.stub(login, 'do')
+              .withArgs(ethAddress, password, parsedApiUrl)
+              .resolves({ access: accessToken, refresh: refreshToken })
+            sinon.stub(simpleRequester, 'do')
+              .withArgs({ url: apiUrl, accessToken, json: true })
+              .rejects(HttpErrors.InternalServerError())
+            await this.instance.getStatusOrIssues(uuid, apiUrl).should.be
+              .rejectedWith(`Failed in retrieving analysis response, HTTP status code: 500. UUID: ${uuid}`)
+          })
+        })
       })
     })
 

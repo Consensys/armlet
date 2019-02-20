@@ -218,27 +218,23 @@ minimum value for how long a non-cached analyses will take
     }
   }
 
-  async getStatusOrIssues (uuid, url, inputApiUrl) {
+  async getStatusOrIssues (uuid, url) {
     let accessToken = this.accessToken
     if (!accessToken) {
       const tokens = await login.do(this.ethAddress, this.password, this.apiUrl)
       accessToken = tokens.access
     }
-    let promise
-    await simpleRequester.do({ url, accessToken: accessToken, json: true })
-      .then(result => {
-        promise = new Promise(function (resolve, reject) {
-          resolve(result)
-        })
-      }).catch(err => {
-        if (err.status === 404) {
-          err.error = `Analysis with UUID ${uuid} not found.`
-        }
-        promise = new Promise(function (resolve, reject) {
-          reject(err.error)
-        })
-      })
-    return promise
+    let result
+    try {
+      result = await simpleRequester.do({ url, accessToken: accessToken, json: true })
+    } catch (e) {
+      let msg = `Failed in retrieving analysis response, HTTP status code: ${e.statusCode}. UUID: ${uuid}`
+      if (e.statusCode === 404) {
+        msg = `Analysis with UUID ${uuid} not found.`
+      }
+      throw msg
+    }
+    return result
   }
 
   async getStatus (uuid, inputApiUrl = defaultApiUrl) {
