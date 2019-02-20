@@ -44,11 +44,11 @@ describe('main module', () => {
 
         describe('should have a constructor which should', () => {
           it('throw error when initialize with no auth parameters', () => {
-            (() => new Client()).should.throw(TypeError, /Please provide/)
+            (() => new Client()).should.throw(/Please provide/)
           })
 
           it('require an ethAddress and password ', () => {
-            (() => new Client({ ethAddress })).should.throw(TypeError, /Please provide/)
+            (() => new Client({ ethAddress })).should.throw(/Please provide/)
           })
 
           it('require a valid apiUrl if given', () => {
@@ -81,7 +81,7 @@ describe('main module', () => {
               })
 
               it('should require a data option', async () => {
-                await this.instance.analyze({ 'field': 'value' }).should.be.rejectedWith(TypeError)
+                await this.instance.analyze({ 'field': 'value' }).should.be.rejected
               })
             })
             describe('have an analyses method which', () => {
@@ -91,7 +91,7 @@ describe('main module', () => {
 
               it('should require a dataFrom option', async () => {
                 const options = { dataTo: '2018-12-04', offset: 15 }
-                await this.instance.analyses(options).should.be.rejectedWith(TypeError)
+                await this.instance.analyses(options).should.be.rejected
               })
             })
             describe('have an analyzeWithStatus method which', () => {

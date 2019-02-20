@@ -67,7 +67,8 @@ minimum value for how long a non-cached analyses will take
     **/
   async analyze (options) {
     if (options === undefined || options.data === undefined) {
-      throw new TypeError('Please provide analysis request JSON in a "data" attribute.')
+      // eslint-disable-next-line no-throw-literal
+      throw 'Please provide analysis request JSON in a "data" attribute.'
     }
 
     if (!this.accessToken) {
