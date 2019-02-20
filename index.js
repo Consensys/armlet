@@ -117,8 +117,8 @@ minimum value for how long a non-cached analyses will take
     let timeout = options.timeout
     if (!('timeout' in options)) {
       options.timeout = (60 * 1000) * (options.data.analysisMode === 'full')
-        ? 3 // 3 minutes
-        : (3 * 60) // 3 hours
+        ? 5 // 5 minutes
+        : (5 * 60) // 5 hours
     }
 
     if (options.debug) {
