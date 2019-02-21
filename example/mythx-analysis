@@ -108,12 +108,17 @@ trial user is more limited in the features it provides.
 Options:
   --debug    Provide additional debug output.
   --delay    Provide a minimum delay. The default is
-             40 seconds.
+             45 seconds.
   --full     Perform full (in-depth) analysis. The default is
              a quick analysis.
-  --timeout *s* ,
+  --timeout *s*
              Limit MythX analyses time to *s* seconds.
-             The default is 120 seconds (two minutes).
+             The default is 300 seconds (5 minutes) for
+             a quick analysis and 5 hours for a
+             full analysis
+  --no-cache-lookup
+             force a new analysis even if there is a cached
+             result which matches that passed data
 
   --help     Show this help and exit
   --version  show armlet version and exit
@@ -128,13 +133,16 @@ Options:
 
 const minimist = requireOrExit('minimist')
 let args = minimist(process.argv.slice(2), {
-  boolean: [ 'debug', 'full', 'quick', 'timeout', 'version' ],
+  boolean: [ 'debug', 'full', 'quick', 'timeout', 'version',
+             'cache-lookup'],
   alias: {
     h: 'help', '?': 'help',
     t: 'timeout',
     V: 'version'
     },
-  default: { debug: false, delay: 40, timeout: 120 },
+  default: { debug: false, delay: 45,
+             timeout: 300, 'cache-lookup': true
+           },
   '--': true,
   stopEarly: true, /* populate _ with first non-option */
   // unknown: function () { ... } /* invoked on unknown param */
@@ -200,10 +208,11 @@ if (inputPath.endsWith('.sol')) {
 data.analysisMode = (args.quick || !args.full) ? 'quick' : 'full'
 
 const analyzeOptions = {
-  // Setting client tool tracking so we can get stastics on tool use
+  // Setting client tool tracking so we can get counts on tool use
   clientToolName: 'mythx-analysis',
   debug: args.debug,
   data: data,
+  noCacheLookup: !args['cache-lookup'],
 
   // How long to wait initially before polling for results
   initialDelay: args.delay * 1000,
