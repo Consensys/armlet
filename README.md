@@ -112,41 +112,7 @@ UUID which can subsequently be used to get status and results.
 
 The closer these two parameters are to the actual time range that is
 needed by analysis, the faster the response will get reported back
-after completion on the server end. Below we explain
-
-* why we have these two parameters,
-* why giving good guesses helps response in reporting results,
-* how you can get good guesses.
-
-Until we have a websocket interface so the server can directly
-pass back results without any additional action required on the server
-side, your REST API requires the client to poll for status. We have
-seen that this polling can cause a lot of overhead, if not done
-judiciously. So, each request is allowed up to 10 status probes.
-
-We have seen that _no_ analysis request will finish in less than a
-certain period of time. Since the number of probe per analysis is
-limited, it doesn't make sense to probe before the fastest
-analysis-completion time.
-
-The 10 status probes are done in geometrically increasing time
-intervals. The first interval is the shortest and the last interval is
-the longest. The response rate at the beginning is better than the
-response rate at the end, in terms of how much additional time it
-takes before the analysis completion is noticed.
-
-However this progression is not fixed. Instead, it takes into account
-the maximum amount of time you are willing to wait for a result.
-
-In other words, the shorter the short period of time you give for the
-maximum timeout, the shorter the geometric succession of the 10 probes
-allotted to an analysis request will be.
-
-To make this clear, if you only want to wait a maximum of two minutes, then
-the first delay will be 0.3 seconds, while the delay before last poll
-will be about half a minute. If on the other hand you want to wait up
-to 2 hours, then the first delay will be 9 seconds, and the last one will
-be about 15 minutes.
+after completion on the server end.
 
 Good guessing of these two parameters reduces the
 unnecessary probe time while providing good response around the declared
@@ -169,6 +135,9 @@ library provides its own elapsed time in the response.
 If you are making an analysis within an IDE which saves reports of
 past runs, such as truffle or VSCode, the timings can be used for
 estimates.
+
+Read more about this [Polling the API to Obtain Job Status](https://docs.mythx.io/en/latest/main/building-security-tools-on-mythx.html?polling-the-api-to-obtain-job-status) in the [MythX API Developer Guide](https://docs.mythx.io/en/latest/main/building-security-tools-on-mythx.html).
+
 
 # See Also
 

@@ -31,7 +31,7 @@ class Client {
     const { ethAddress, password } = auth || {}
 
     if (!password || !ethAddress) {
-      throw new TypeError('Please provide an Ethereum address and a password.')
+      throw 'Please provide an Ethereum address and a password.'
     }
 
     const apiUrl = new url.URL(inputApiUrl)
@@ -67,7 +67,8 @@ minimum value for how long a non-cached analyses will take
     **/
   async analyze (options) {
     if (options === undefined || options.data === undefined) {
-      throw new TypeError('Please provide analysis request JSON in a "data" attribute.')
+      // eslint-disable-next-line no-throw-literal
+      throw 'Please provide analysis request JSON in a "data" attribute.'
     }
 
     if (!this.accessToken) {
@@ -218,27 +219,23 @@ minimum value for how long a non-cached analyses will take
     }
   }
 
-  async getStatusOrIssues (uuid, url, inputApiUrl) {
+  async getStatusOrIssues (uuid, url) {
     let accessToken = this.accessToken
     if (!accessToken) {
       const tokens = await login.do(this.ethAddress, this.password, this.apiUrl)
       accessToken = tokens.access
     }
-    let promise
-    await simpleRequester.do({ url, accessToken: accessToken, json: true })
-      .then(result => {
-        promise = new Promise(function (resolve, reject) {
-          resolve(result)
-        })
-      }).catch(err => {
-        if (err.status === 404) {
-          err.error = `Analysis with UUID ${uuid} not found.`
-        }
-        promise = new Promise(function (resolve, reject) {
-          reject(err.error)
-        })
-      })
-    return promise
+    let result
+    try {
+      result = await simpleRequester.do({ url, accessToken: accessToken, json: true })
+    } catch (e) {
+      let msg = `Failed in retrieving analysis response, HTTP status code: ${e.statusCode}. UUID: ${uuid}`
+      if (e.statusCode === 404) {
+        msg = `Analysis with UUID ${uuid} not found.`
+      }
+      throw msg
+    }
+    return result
   }
 
   async getStatus (uuid, inputApiUrl = defaultApiUrl) {
