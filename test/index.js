@@ -44,11 +44,11 @@ describe('main module', () => {
 
         describe('should have a constructor which should', () => {
           it('throw error when initialize with no auth parameters', () => {
-            (() => new Client()).should.throw(TypeError, /Please provide/)
+            (() => new Client()).should.throw(/Please provide/)
           })
 
           it('require an ethAddress and password ', () => {
-            (() => new Client({ ethAddress })).should.throw(TypeError, /Please provide/)
+            (() => new Client({ ethAddress })).should.throw(/Please provide/)
           })
 
           it('require a valid apiUrl if given', () => {
@@ -81,7 +81,7 @@ describe('main module', () => {
               })
 
               it('should require a data option', async () => {
-                await this.instance.analyze({ 'field': 'value' }).should.be.rejectedWith(TypeError)
+                await this.instance.analyze({ 'field': 'value' }).should.be.rejected
               })
             })
             describe('have an analyses method which', () => {
@@ -91,7 +91,7 @@ describe('main module', () => {
 
               it('should require a dataFrom option', async () => {
                 const options = { dataTo: '2018-12-04', offset: 15 }
-                await this.instance.analyses(options).should.be.rejectedWith(TypeError)
+                await this.instance.analyses(options).should.be.rejected
               })
             })
             describe('have an analyzeWithStatus method which', () => {
@@ -552,6 +552,48 @@ describe('main module', () => {
 
               await this.instance.analyses({ dateFrom, dateTo, offset }).should.eventually.equal(analyses)
             })
+          })
+        })
+
+        describe('getStatusOrIssues', () => {
+          afterEach(() => {
+            simpleRequester.do.restore()
+            login.do.restore()
+          })
+
+          it('should login and chain simpleRequester', async () => {
+            const uuid = 'uuid'
+            sinon.stub(login, 'do')
+              .withArgs(ethAddress, password, parsedApiUrl)
+              .resolves({ access: accessToken, refresh: refreshToken })
+            sinon.stub(simpleRequester, 'do')
+              .withArgs({ url: apiUrl, accessToken, json: true })
+              .resolves([])
+            await this.instance.getStatusOrIssues(uuid, apiUrl).should.eventually.deep.equal([])
+          })
+
+          it('should reject when analysis job not found', async () => {
+            const uuid = 'uuid'
+            sinon.stub(login, 'do')
+              .withArgs(ethAddress, password, parsedApiUrl)
+              .resolves({ access: accessToken, refresh: refreshToken })
+            sinon.stub(simpleRequester, 'do')
+              .withArgs({ url: apiUrl, accessToken, json: true })
+              .rejects(HttpErrors.NotFound())
+            await this.instance.getStatusOrIssues(uuid, apiUrl).should.be
+              .rejectedWith(`Analysis with UUID ${uuid} not found.`)
+          })
+
+          it('should reject when analysis job not found', async () => {
+            const uuid = 'uuid'
+            sinon.stub(login, 'do')
+              .withArgs(ethAddress, password, parsedApiUrl)
+              .resolves({ access: accessToken, refresh: refreshToken })
+            sinon.stub(simpleRequester, 'do')
+              .withArgs({ url: apiUrl, accessToken, json: true })
+              .rejects(HttpErrors.InternalServerError())
+            await this.instance.getStatusOrIssues(uuid, apiUrl).should.be
+              .rejectedWith(`Failed in retrieving analysis response, HTTP status code: 500. UUID: ${uuid}`)
           })
         })
       })

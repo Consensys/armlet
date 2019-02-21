@@ -4,5 +4,8 @@
         "es6": true,
         "mocha": true,
         "node": true
+    },
+    "rules": {
+        "no-throw-literal": 0
     }
 }
