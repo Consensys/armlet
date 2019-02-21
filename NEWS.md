@@ -1,14 +1,53 @@
+Release 2.0.1
+=================
+
+Overall, slight improvements have been made.
+
+Polling Performance values have been tweaked to give better performance
+-----------------------------------------------------------------------------------------
+
+The recommended default initial delay is now 45 seconds, while the quick-mode time out value is now
+5 minutes.
+
+Error messaging has been improved
+-----------------------------------------
+
+- distracting and not-helpful tracebacks have been removed
+- the UUID is given on those error messages where it can be useful
+
+
+mythx-analysis
+-----------------
+
+The standalone CLI program to run MythX Solidity or solc JSON output has a new option `--no-cache-lookup` disables cache lookup on the MythX side. Normally this isn't desired, but if you need to force a new analysis, this is one way to do it.
+
+
+Miscelleaneous
+------------------
+
+Documentation has been updated and improved.
+
 Release 2.0.0
 =================
 
 A lot has changed in the almost two weeks that have elapsed since the last release.
 
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
+
+- [Changes for Mythx API 1.4](#changes-for-mythx-api-14)
+- [Geometrically-increasing delays in polling](#geometrically-increasing-delays-in-polling)
+- [Introducing command-line utility "mythx-analysis"](#introducing-command-line-utility-mythx-analysis)
+- [Library changes not mentioned above](#library-changes-not-mentioned-above)
+
+<!-- markdown-toc end -->
+
 Changes for MythX API 1.4
 -------------------------------
 
-Perhaps the biggest change is that we now support version 1.4.0 of the MythX API. This means various authentication options involving an API key or an email address are no longer supported.
+Perhaps the biggest change is that we now support version [MythX API v1.4](https://docs.mythx.io/en/latest/main/release-notes.htm). This means various authentication options involving an API key or an email address are no longer supported.
 
-There were some smaller changes in the back end and the acceptable way to interact with the back-end protocol has been adjusted.
+There were some smaller changes in the back end; the acceptable way to interact with the back-end protocol has been adjusted.
 
 
 Geometrically-increasing delays in polling
@@ -51,9 +90,9 @@ Some small URL canonicalization is now done. In particular you can add a trailin
 Similarly `http` will be turned into `https` when appropriate.
 
 There is now proxy support via [`omni-fetch`](https://www.npmjs.com/package/omni-fetch) which is a wrapper to
-[`isomorphic-fetch`](https://www.npmjs.com/package/isomorphic-fetch). This work was kindly contributed by Teruhiro Tagomori at NRISecure.
+[`isomorphic-fetch`](https://www.npmjs.com/package/isomorphic-fetch). This work was kindly contributed by Teruhiro Tagomori at [NRI Secure Technologies](https://www.nri-secure.com/security-consulting/blockchain-assessment).
 
-Additional tests were added and test-code coverage has been increased. This is the work of Daniyar Chambylov at Maddevs.
+Additional tests were added and test-code coverage has been increased. This is the work of Daniyar Chambylov at Mad Devs.
 
 Some time units are shown in a more human-friendly way. There are numerous other small documentation and code improvements.
 
