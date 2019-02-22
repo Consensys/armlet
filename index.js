@@ -141,7 +141,7 @@ minimum value for how long a non-cached analyses will take
       try {
         result = await analysisPoller.do(requestResponse.uuid, this.accessToken, this.apiUrl, timeout, initialDelay, options.debug)
       } catch (e) {
-        if (e.statusCode !== 401) {
+        if (e.status !== 401) {
           throw e
         }
         const tokens = await refresh.do(this.accessToken, this.refreshToken, this.apiUrl)
