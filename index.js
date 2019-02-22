@@ -71,21 +71,7 @@ minimum value for how long a non-cached analyses will take
       throw 'Please provide analysis request JSON in a "data" attribute.'
     }
 
-    if (!this.accessToken) {
-      let tokens
-      try {
-        tokens = await login.do(this.ethAddress, this.password, this.apiUrl)
-      } catch (e) {
-        let authType = ''
-        if (this.ethAddress) {
-          authType = ` for ethereum address ${this.ethAddress}`
-        }
-        // eslint-disable-next-line no-throw-literal
-        throw (`Invalid MythX credentials${authType} given.`)
-      }
-      this.accessToken = tokens.access
-      this.refreshToken = tokens.refresh
-    }
+    await this.login()
 
     let requestResponse
     try {
@@ -238,6 +224,27 @@ minimum value for how long a non-cached analyses will take
       throw msg
     }
     return result
+  }
+
+  /**
+   * Runs MythX auth/login.
+   **/
+  async login () {
+    if (!this.accessToken) {
+      let tokens
+      try {
+        tokens = await login.do(this.ethAddress, this.password, this.apiUrl)
+      } catch (e) {
+        let authType = ''
+        if (this.ethAddress) {
+          authType = ` for ethereum address ${this.ethAddress}`
+        }
+        // eslint-disable-next-line no-throw-literal
+        throw (`Invalid MythX credentials${authType} given.`)
+      }
+      this.accessToken = tokens.access
+      this.refreshToken = tokens.refresh
+    }
   }
 
   async getStatus (uuid, inputApiUrl = defaultApiUrl) {

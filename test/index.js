@@ -130,6 +130,11 @@ describe('main module', () => {
                 this.instance.getStatus.should.be.a('function')
               })
             })
+            describe('have a login method which', () => {
+              it('should be a function', () => {
+                this.instance.login.should.be.a('function')
+              })
+            })
           })
         })
       })
@@ -594,6 +599,23 @@ describe('main module', () => {
               .rejects(HttpErrors.InternalServerError())
             await this.instance.getStatusOrIssues(uuid, apiUrl).should.be
               .rejectedWith(`Failed in retrieving analysis response, HTTP status code: 500. UUID: ${uuid}`)
+          })
+        })
+
+        describe('login', () => {
+          afterEach(() => {
+            login.do.restore()
+          })
+
+          it('should use login', async () => {
+            sinon.stub(login, 'do')
+              .withArgs(ethAddress, password, parsedApiUrl)
+              .returns(new Promise(resolve => {
+                resolve({ access: accessToken, refresh: refreshToken })
+              }))
+            await this.instance.login()
+            this.instance.accessToken.should.equal(accessToken)
+            this.instance.refreshToken.should.equal(refreshToken)
           })
         })
       })
