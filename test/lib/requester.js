@@ -131,7 +131,7 @@ describe('requester', () => {
       await requester.do(
         data,
         validApiKey,
-        httpApiUrl).should.be.rejectedWith(expectedErrorMsg1)
+        httpApiUrl).should.be.rejected
     })
 
     // it('should reject on authentication errors', async () => {
