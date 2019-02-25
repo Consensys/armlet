@@ -22,7 +22,7 @@ jobs:
           command: npm test
       - run:
           name: Send coverage report
-          command: npm run coverage
+          command: if [ $CIRCLE_REPOSITORY_URL == "https://github.com/ConsenSys/armlet" ]; then npm run coverage; fi
 
       - save_cache:
           paths:
