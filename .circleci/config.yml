@@ -22,7 +22,7 @@ jobs:
           command: npm test
       - run:
           name: Send coverage report
-          command: npm run coverage
+          command: if [ -z "$CIRCLE_PR_USERNAME" ]; then npm run coverage; fi
 
       - save_cache:
           paths:
