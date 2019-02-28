@@ -1,5 +1,5 @@
 {
-  "name": " ",
+  "name": "armlet",
   "version": "2.0.2-git",
   "description": [
     "Armlet is a thin wrapper around the MythX API written in Javascript.",
