@@ -96,10 +96,10 @@ describe('requester', () => {
         }
       })
         .post(basePath, data)
-        .reply(500)
+        .reply(500, { error: 'Something went wrong in the server' })
 
       await requester.do(data, validApiKey, httpApiUrl).should.be
-        .rejectedWith('Failed in retrieving analysis response, HTTP status code: 500')
+        .rejected
     })
 
     it('should reject on request limit errors', async () => {
@@ -115,7 +115,7 @@ describe('requester', () => {
         })
 
       await requester.do(data, validApiKey, httpApiUrl).should.be
-        .rejectedWith('Failed in retrieving analysis response, HTTP status code: 429\nnull')
+        .rejected
     })
 
     it('should reject on validation errors', async () => {
