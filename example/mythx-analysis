@@ -14,6 +14,23 @@ function requireOrExit(modName) {
   }
 }
 
+function getFileContent(filepath) {
+  const stats = fs.statSync(filepath);
+  if (stats.isFile()) {
+    return fs.readFileSync(filepath).toString();
+  } else {
+    throw new Error `File ${filepath} not found`;
+  }
+}
+
+function findImports(pathName) {
+  try {
+    return { contents: getFileContent(pathName) };
+  } catch (e) {
+    return { error: e.message };
+  }
+}
+
 // Compiles solidityFile returning JSON object.
 // Taken from b-mueller's sabre.
 function compileSolidity(solidityFile) {
@@ -41,7 +58,7 @@ function compileSolidity(solidityFile) {
     }
   };
   let solc = requireOrExit('solc')
-  const compiled = JSON.parse(solc.compile(JSON.stringify(input)))
+  const compiled = JSON.parse(solc.compile(JSON.stringify(input), findImports))
   for (const mess of compiled.errors) {
   }
 
@@ -115,14 +132,17 @@ Options:
              Limit MythX analyses time to *s* seconds.
              The default is 300 seconds (5 minutes) for
              a quick analysis and 5 hours for a
-             full analysis
-  --no-cache-lookup
-             force a new analysis even if there is a cached
-             result which matches that passed data
+             full analysis.
+  --cache-lookup, --no-cache-lookup
+             Force a new analysis even if there is a cached
+             result which matches that passed data. The default
+             is cached.
+  --yaml     Dump result in YAML format rather than JSON.
 
-  --help     Show this help and exit
-  --version  show armlet version and exit
+  --help     Show this help and exit.
+  --version  show armlet version and exit.
 
+See also sabre-mythx.
 `)
     process.exit(1)
 }
@@ -134,7 +154,7 @@ Options:
 const minimist = requireOrExit('minimist')
 let args = minimist(process.argv.slice(2), {
   boolean: [ 'debug', 'full', 'quick', 'timeout', 'version',
-             'cache-lookup'],
+             'cache-lookup', 'yaml'],
   alias: {
     h: 'help', '?': 'help',
     t: 'timeout',
@@ -224,7 +244,12 @@ const analyzeOptions = {
 client.analyzeWithStatus(analyzeOptions)
     .then(result => {
         const util = require('util')
-        console.log(`${util.inspect(result, {depth: null})}`)
+	if (args.yaml) {
+	    const yaml = requireOrExit('js-yaml')
+	    console.log(yaml.safeDump(result))
+	} else {
+            console.log(`${util.inspect(result, {depth: null})}`)
+	}
     }).catch(err => {
         console.log(err)
     })
