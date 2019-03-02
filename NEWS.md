@@ -1,3 +1,37 @@
+Release 2.1.0
+================
+
+Added login instance method to Client object
+------------------------------------------------------
+
+Added a new method login which can reduce the number of API login requests that are needed.
+
+For a client like `truffle-security` which can perform analysis
+of the contracts in a truffle project, rather than issue a login request for each contract, only a single
+login is required.
+
+This work was kindly contributed by Teruhiro Tagomori at [NRI Secure Technologies](https://www.nri-secure.com/security-consulting/blockchain-assessment).
+
+Improved Error Messaging
+-----------------------------
+
+Error-message text `Bad Gateway` should no longer appear.  A more meaningful description is given.
+
+Fixed some bugs.
+
+
+mythx-analysis
+------------------
+
+Added a `--yaml` option to show the results in YAML format rather than JSON.
+
+Information sent to MythX for contracts that use "imports" should contain more information inside the AST, since MythX will soon be able to use it.
+
+Miscellaneous
+----------------
+
+Fixed armlet handling of the JWT's token refresh.
+
 Release 2.0.1
 =================
 
