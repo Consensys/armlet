@@ -11,7 +11,7 @@ describe('geometric poller', () => {
       // console.log(pollC)
       let result = []
       let total = 0
-      for (let i = 1; i <= poller.maxPolls; i++) {
+      for (let i = 1; i <= poller.maxPolls - 1; i++) {
         const next = (pollC * i) ** 2
         total += next
         result.push(next)
@@ -19,7 +19,7 @@ describe('geometric poller', () => {
 
       // console.log(total)
       let lastDelay = result[0]
-      for (let i = 1; i < poller.maxPolls; i++) {
+      for (let i = 1; i < poller.maxPolls - 1; i++) {
         // Could get fancier than <
         assert.isBelow(lastDelay, result[i])
         lastDelay = result[i]

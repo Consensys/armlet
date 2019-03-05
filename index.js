@@ -92,8 +92,8 @@ minimum value for how long a non-cached analyses will take
        a request before giving up.
 
        Unless a timeout has been explicitly given (and we recommend it should be),
-       we will use a value of 3 minutes for a "quick" analysis and
-       3 hours for a "full" analysis.
+       we will use a value of 5 minutes for a "quick" analysis and
+       5 hours for a "full" analysis.
 
        Note:
          A "quick" analysis usually finishes within 90 seconds after the job starts.
