@@ -190,6 +190,42 @@ describe('analysisPoller', () => {
         .rejected
     })
 
+    it('should wait for initialDelay', async () => {
+      const emptyResult = []
+
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(statusUrl)
+        .times(3)
+        .reply(200, {
+          status: 'In progress'
+        })
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(statusUrl)
+        .reply(200, {
+          status: 'Finished'
+        })
+      nock(defaultApiUrl.href, {
+        reqheaders: {
+          authorization: `Bearer ${validApiKey}`
+        }
+      })
+        .get(issuesUrl)
+        .reply(200, emptyResult)
+
+      const initialDelay = 5000
+      await poller.do(uuid, validApiKey, defaultApiUrl, 10000, 5000).should.eventually.deep.equal(emptyResult)
+      const delay = util.timer.getCall(0).args[0]
+      delay.should.be.equal(initialDelay)
+    })
+
     it('should wait for polling longer each time', async () => {
       const emptyResult = []
 
@@ -222,7 +258,7 @@ describe('analysisPoller', () => {
 
       let lastDelay = 0
       await poller.do(uuid, validApiKey, defaultApiUrl, 10000, 5000).should.eventually.deep.equal(emptyResult)
-      for (const i of [0, 1, 2]) {
+      for (const i of [1, 2, 3]) {
         const nextDelay = util.timer.getCall(i).args[0]
         nextDelay.should.be.above(lastDelay)
         lastDelay = nextDelay
