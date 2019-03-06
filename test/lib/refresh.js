@@ -35,7 +35,7 @@ describe('refresh', () => {
         .post(refreshPath, expiredJsonTokens)
         .reply(500)
 
-      await refresh.do(expiredAccessToken, expiredRefreshToken, parsedApiUrl).should.be.rejectedWith(Error, 'Invalid status code')
+      await refresh.do(expiredAccessToken, expiredRefreshToken, parsedApiUrl).should.be.rejected
     })
 
     it('should reject on non-JSON data', async () => {
@@ -43,7 +43,7 @@ describe('refresh', () => {
         .post(refreshPath, expiredJsonTokens)
         .reply(200, 'newjsonTextTokens')
 
-      await refresh.do(expiredAccessToken, expiredRefreshToken, parsedApiUrl).should.be.rejectedWith(Error, 'JSON parse error')
+      await refresh.do(expiredAccessToken, expiredRefreshToken, parsedApiUrl).should.be.rejected
     })
 
     it('should reject if refreshToken is not present in response', async () => {
@@ -51,7 +51,7 @@ describe('refresh', () => {
         .post(refreshPath, expiredJsonTokens)
         .reply(200, { access: 'access' })
 
-      await refresh.do(expiredAccessToken, expiredRefreshToken, parsedApiUrl).should.be.rejectedWith(Error, 'Refresh Token missing')
+      await refresh.do(expiredAccessToken, expiredRefreshToken, parsedApiUrl).should.be.rejected
     })
 
     it('should reject if accessToken is not present', async () => {
@@ -59,7 +59,7 @@ describe('refresh', () => {
         .post(refreshPath, expiredJsonTokens)
         .reply(200, { refresh: 'refresh' })
 
-      await refresh.do(expiredAccessToken, expiredRefreshToken, parsedApiUrl).should.be.rejectedWith(Error, 'Access Token missing')
+      await refresh.do(expiredAccessToken, expiredRefreshToken, parsedApiUrl).should.be.rejected
     })
   })
 })
