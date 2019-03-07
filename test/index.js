@@ -589,7 +589,7 @@ describe('main module', () => {
               .rejectedWith(`Analysis with UUID ${uuid} not found.`)
           })
 
-          it('should reject when analysis job not found', async () => {
+          it('should reject internal server error is caught', async () => {
             const uuid = 'uuid'
             sinon.stub(login, 'do')
               .withArgs(ethAddress, password, parsedApiUrl)

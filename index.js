@@ -83,8 +83,7 @@ class Client {
         Normally requester passes back strings. However there is a spcial case for
         HTTP 401 JWT access token has expired and we need to refresh it.
       */
-      // console.log('\n\n\nXXX1\n\n');
-      if (e.hasOwnProperty('statusCode') && e.statusCode !== 401) {
+      if (e.statusCode !== 401) {
         throw e
       }
       const tokens = await refresh.do(this.accessToken, this.refreshToken, this.apiUrl)
@@ -138,8 +137,7 @@ class Client {
           Normally requester passes back strings. However there is a spcial case for
           HTTP 401 JWT access token has expired and we need to refresh it.
         */
-        // console.log('\n\n\nXXX3\n\n');
-        if (e.hasOwnProperty('statusCode') && e.statusCode !== 401) {
+        if (e.status !== 401) {
           throw e
         }
         const tokens = await refresh.do(this.accessToken, this.refreshToken, this.apiUrl)
@@ -181,7 +179,7 @@ class Client {
     try {
       analyses = await simpleRequester.do({ url, accessToken: this.accessToken, json: true })
     } catch (e) {
-      if (e.hasOwnProperty('statusCode') && e.statusCode !== 401) {
+      if (e.status !== 401) {
         throw e
       }
       const tokens = await refresh.do(this.accessToken, this.refreshToken, this.apiUrl)
@@ -229,8 +227,9 @@ class Client {
     try {
       result = await simpleRequester.do({ url, accessToken: accessToken, json: true })
     } catch (e) {
-      let msg = `Failed in retrieving analysis response, HTTP status code: ${e.statusCode}. UUID: ${uuid}`
-      if (e.statusCode === 404) {
+      let msg = `Failed in retrieving analysis response, HTTP status code: ${e.status}. UUID: ${uuid}`
+      console.log('EE-status', e.status)
+      if (e.status === 404) {
         msg = `Analysis with UUID ${uuid} not found.`
       }
       throw msg
