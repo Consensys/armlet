@@ -269,7 +269,7 @@ describe('main module', () => {
                   resolve({ issues })
                 }))
 
-              await this.instance.analyze({ data }).should.be.rejectedWith(Error, errorMsg)
+              await this.instance.analyze({ data }).should.be.rejected
             })
 
             it('should reject with poller failures', async () => {
@@ -290,7 +290,7 @@ describe('main module', () => {
                   reject(new Error(errorMsg))
                 }))
 
-              await this.instance.analyze({ data }).should.be.rejectedWith(Error, errorMsg)
+              await this.instance.analyze({ data }).should.be.rejected
             })
 
             it('should pass timeout option to poller', async () => {
@@ -503,7 +503,7 @@ describe('main module', () => {
                   reject(new Error(errorMsg))
                 }))
 
-              await this.instance.analyses({ dateFrom, dateTo, offset }).should.be.rejectedWith(Error, errorMsg)
+              await this.instance.analyses({ dateFrom, dateTo, offset }).should.be.rejected
             })
           })
 
@@ -589,7 +589,7 @@ describe('main module', () => {
               .rejectedWith(`Analysis with UUID ${uuid} not found.`)
           })
 
-          it('should reject when analysis job not found', async () => {
+          it('should reject internal server error is caught', async () => {
             const uuid = 'uuid'
             sinon.stub(login, 'do')
               .withArgs(ethAddress, password, parsedApiUrl)

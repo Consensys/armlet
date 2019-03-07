@@ -55,7 +55,7 @@ describe('login', () => {
         .post(loginPath, auth)
         .reply(200, 'jsonTextTokens')
 
-      await login.do(ethAddress, password, parsedApiUrl).should.be.rejectedWith('JSON parse error')
+      await login.do(ethAddress, password, parsedApiUrl).should.be.rejected
     })
 
     it('should reject if refreshToken is not present', async () => {
@@ -63,7 +63,7 @@ describe('login', () => {
         .post(loginPath, auth)
         .reply(200, { access })
 
-      await login.do(ethAddress, password, parsedApiUrl).should.be.rejectedWith('Refresh Token missing')
+      await login.do(ethAddress, password, parsedApiUrl).should.be.rejected
     })
 
     it('should reject if accessToken is not present', async () => {
@@ -71,7 +71,7 @@ describe('login', () => {
         .post(loginPath, auth)
         .reply(200, { refresh })
 
-      await login.do(ethAddress, password, parsedApiUrl).should.be.rejectedWith('Access Token missing')
+      await login.do(ethAddress, password, parsedApiUrl).should.be.rejected
     })
   })
 })
