@@ -122,7 +122,7 @@ class Client {
 
     let result
     if (requestResponse.status === 'Finished') {
-      result = await analysisPoller.getIssues(requestResponse.uuid, this.accessToken, this.apiUrl)
+      result = await analysisPoller.getIssues(requestResponse.uuid, this)
       if (options.debug) {
         const util = require('util')
         let depth = (options.debug > 1) ? 10 : 2
@@ -131,7 +131,7 @@ class Client {
     } else {
       const initialDelay = Math.max(options.initialDelay || 0, defaultInitialDelay)
       try {
-        result = await analysisPoller.do(requestResponse.uuid, this.accessToken, this.apiUrl, timeout, initialDelay, options.debug)
+        result = await analysisPoller.do(requestResponse.uuid, this, timeout, initialDelay, options.debug)
       } catch (e) {
         /*
           Normally requester passes back strings. However there is a spcial case for
@@ -143,7 +143,7 @@ class Client {
         const tokens = await refresh.do(this.accessToken, this.refreshToken, this.apiUrl)
         this.accessToken = tokens.access
         this.refreshToken = tokens.refresh
-        result = await analysisPoller.do(requestResponse.uuid, this.accessToken, this.apiUrl, timeout,
+        result = await analysisPoller.do(requestResponse.uuid, this, timeout,
           initialDelay, options.debug)
       }
     }
