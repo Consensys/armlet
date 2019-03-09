@@ -139,8 +139,7 @@ describe('analysisPoller', () => {
         .get(statusUrl)
         .reply(500)
 
-      await poller.do(uuid, validApiKey, defaultApiUrl, 10000, 5000).should.be
-        .rejectedWith(`Failed in retrieving analysis response, HTTP status code: 500. UUID: ${uuid}`)
+      await poller.do(uuid, validApiKey, defaultApiUrl, 10000, 5000).should.be.rejected
     })
 
     it('should reject on non-JSON data', async () => {
