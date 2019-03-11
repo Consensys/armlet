@@ -222,7 +222,7 @@ describe('main module', () => {
                   resolve({ uuid })
                 }))
               sinon.stub(poller, 'do')
-                .withArgs(uuid, accessToken, parsedApiUrl)
+                .withArgs(uuid, this.instance)
                 .returns(new Promise(resolve => {
                   resolve(issues)
                 }))
@@ -285,7 +285,7 @@ describe('main module', () => {
                   resolve({ uuid })
                 }))
               sinon.stub(poller, 'do')
-                .withArgs(uuid, accessToken, parsedApiUrl)
+                .withArgs(uuid, this.instance)
                 .returns(new Promise((resolve, reject) => {
                   reject(new Error(errorMsg))
                 }))
@@ -306,10 +306,10 @@ describe('main module', () => {
                   resolve({ uuid, status: 'Finished' })
                 }))
               sinon.stub(poller, 'getIssues')
-                .withArgs(uuid, accessToken, parsedApiUrl)
-                .returns(issues)
+                .withArgs(uuid, this.instance)
+                .resolves(issues)
               sinon.stub(poller, 'do')
-                .withArgs(uuid, accessToken, parsedApiUrl, timeout)
+                .withArgs(uuid, this.instance, timeout)
                 .returns(new Promise(resolve => {
                   resolve(issues)
                 }))
@@ -330,7 +330,7 @@ describe('main module', () => {
                   resolve({ uuid })
                 }))
               sinon.stub(poller, 'do')
-                .withArgs(uuid, accessToken, parsedApiUrl, timeout, armlet.defaultInitialDelay, undefined)
+                .withArgs(uuid, this.instance, timeout, armlet.defaultInitialDelay, undefined)
                 .resolves(issues)
               await this.instance.analyze({ data, timeout }).should.eventually.deep.equal({ issues, uuid })
             })
@@ -349,7 +349,7 @@ describe('main module', () => {
                   resolve({ uuid })
                 }))
               sinon.stub(poller, 'do')
-                .withArgs(uuid, accessToken, parsedApiUrl, timeout, initialDelay, undefined)
+                .withArgs(uuid, this.instance, timeout, initialDelay, undefined)
                 .returns(new Promise(resolve => {
                   resolve(issues)
                 }))
@@ -367,7 +367,7 @@ describe('main module', () => {
                   resolve({ uuid })
                 }))
               sinon.stub(poller, 'do')
-                .withArgs(uuid, accessToken, parsedApiUrl)
+                .withArgs(uuid, this.instance)
                 .returns(new Promise(resolve => {
                   resolve(issues)
                 }))
@@ -410,7 +410,7 @@ describe('main module', () => {
               }))
 
             sinon.stub(poller, 'do')
-              .withArgs(uuid, newAccessToken, parsedApiUrl)
+              .withArgs(uuid, this.instance)
               .returns(new Promise(resolve => {
                 resolve(issues)
               }))
@@ -419,12 +419,13 @@ describe('main module', () => {
           })
 
           it('should refresh expired tokens when poller fails', async () => {
-            const pollerStub = sinon.stub(poller, 'do')
-            pollerStub.withArgs(uuid, accessToken, parsedApiUrl)
+            sinon.stub(poller, 'do')
+              .withArgs(uuid, this.instance)
+              .onFirstCall()
               .returns(new Promise((resolve, reject) => {
                 reject(HttpErrors.Unauthorized())
               }))
-            pollerStub.withArgs(uuid, newAccessToken, parsedApiUrl)
+              .onSecondCall()
               .returns(new Promise(resolve => {
                 resolve(issues)
               }))
