@@ -3,13 +3,9 @@
 
 # Armlet, a MythX API client wrapper
 
-Armlet is a thin wrapper around the MythX API written in Javascript.
-It simplifies interaction with MythX. For example, the library
-wraps API analysis requests into a promise, merges status information
-with analysis-result information, and judiciously polls for results.
+Armlet is a thin wrapper around the MythX API written in Javascript. It simplifies interaction with MythX and [JWT authentication](https://jwt.io/introduction/). For example, the library wraps API analysis requests into a promise, merges status information with analysis-result information, and judiciously polls for results.
 
-A simple command-line tool, `mythx-analysis`, is provided to show how to use the API.
-It can be used to run MythX analyses on a single Solidity smart-contract text file.
+A simple command-line tool, `mythx-analysis`, is provided to show how to use the API. It can be used to run MythX analyses on a single Solidity smart-contract text file.
 
 # Installation
 
@@ -25,17 +21,12 @@ If you're feeling adventurous, you can also install the from the master branch:
 $ npm install -g git+https://git@github.com/ConsenSys/armlet.git
 ```
 
-The `-g` or `--global` option above may not be needed depending on how
-you work. It may ensure `mythx-analysis` is in your path where it might not
-otherwise be there.
+The `-g` or `--global` option above may not be needed depending on how you work. It may ensure `mythx-analysis` is in your path where it might not otherwise be there.
 
 # Example
 
-Here is a small example of how you might use this client. For
-demonstration purposes, we’ll set the credentials created on the
-MythX, you can use either the Ethereum address or email used during
-[registration](https://docs.mythx.io/en/latest/main/getting-started.html#how-do-i-sign-up)
-and the password you created:
+Here is a small example of how you might use this client. For demonstration purposes, we’ll set the credentials created on the MythX, you can use either the Ethereum address or email used during
+[registration](https://docs.mythx.io/en/latest/main/getting-started.html#how-do-i-sign-up) and the password you created:
 
 
 ```console
