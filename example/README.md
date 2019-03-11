@@ -7,7 +7,7 @@ Input parameter handling is minimal and command options are lacking so
 we can focus on how to set up and call the client.
 
 
-* [mythx-analysis](https://github.com/ConsenSys/armlet/blob/master/example/mythx-analysis): Submit a JSON with Solidity source and EVM bytecode information to the MythX and retrieve results. For fancier clients see [sabre](https://github.com/b-mueller/sabre) or [mythos](https://github.com/cleanunicorn/mythos)
+* [mythx-analysis](https://github.com/ConsenSys/armlet/blob/master/example/mythx-analysis): Submit a JSON with Solidity source and EVM bytecode information to the MythX and retrieve results. For fancier clients see [sabre](https://github.com/b-mueller/sabre) or [mythos](https://github.com/cleanunicorn/mythos).
 * [analysis-status](https://github.com/ConsenSys/armlet/blob/master/example/analysis-status): Get status of a prior MythX analysis request.
 * [analysis-issues](https://github.com/ConsenSys/armlet/blob/master/example/analysis-issues): Get issues reported from a prior MythX analysis.
 * [list-analyses](https://github.com/ConsenSys/armlet/blob/master/example/list-analyses): Get issues reported from a prior MythX analysis.
