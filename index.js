@@ -72,8 +72,6 @@ class Client {
     }
 
     await this.login()
-    // console.log(`Access token: ${this.accessToken}`);
-    // console.log(`Refresh token: ${this.refreshToken}`);
 
     let requestResponse
     try {
@@ -228,7 +226,6 @@ class Client {
       result = await simpleRequester.do({ url, accessToken: accessToken, json: true })
     } catch (e) {
       let msg = `Failed in retrieving analysis response, HTTP status code: ${e.status}. UUID: ${uuid}`
-      console.log('EE-status', e.status)
       if (e.status === 404) {
         msg = `Analysis with UUID ${uuid} not found.`
       }
