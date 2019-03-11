@@ -133,7 +133,7 @@ Read more about this [Polling the API to Obtain Job Status](https://docs.mythx.i
 # Clients using armlet
 
 * [truffle-security](https://www.npmjs.com/package/truffle-security)
-* [sabre](https://www.npmjs.com/package/sabre)
+* [sabre](https://www.npmjs.com/package/sabre-mythx)
 * [mythos](https://www.npmjs.com/package/mythos)
 
 # See Also
