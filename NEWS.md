@@ -1,3 +1,16 @@
+Release 2.2.0
+================
+
+Fixed refreshing the JWT access token inside an analysis request. It was apparently incorrect since the beginning.
+
+Fixed the handling of the initialDelay parameter.
+This work was kindly contributed by Teruhiro Tagomori at [NRI Secure Technologies](https://www.nri-secure.com/security-consulting/blockchain-assessment).
+
+Improved error messages from the MythX yet again, specifcally where the access token was not refreshed,
+and also authentication errors.
+
+In more cases we return a string on MythX HTTP errors rather than more complex objects with useless tracebacks.
+
 Release 2.1.0
 ================
 

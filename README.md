@@ -139,6 +139,12 @@ estimates.
 Read more about this [Polling the API to Obtain Job Status](https://docs.mythx.io/en/latest/main/building-security-tools-on-mythx.html?polling-the-api-to-obtain-job-status) in the [MythX API Developer Guide](https://docs.mythx.io/en/latest/main/building-security-tools-on-mythx.html).
 
 
+# Clients using armlet
+
+* [truffle-security](https://www.npmjs.com/package/truffle-security)
+* [sabre](https://www.npmjs.com/package/sabre)
+* [mythos](https://www.npmjs.com/package/mythos)
+
 # See Also
 
 * [example directory](https://github.com/ConsenSys/armlet/tree/master/example)
