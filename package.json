@@ -1,18 +1,21 @@
 {
   "name": "armlet",
-  "version": "2.2.0",
+  "version": "2.3.0-git",
   "description": [
     "Armlet is a thin wrapper around the MythX API written in Javascript.",
     "It simplifies interaction with MythX. For example, the library",
     "wraps API analysis requests into a promise. A MythX API client.",
     "",
-    "A simple command-line tool, mythx-analysis, is provided to show how to",
-    "use the API. It can be used to run MythX analyses on a single Solidity",
-    "smart-contract text file."
+    "Simple command-line tools, mythx-analysis, mythx-api-version, and mythx-tool-use",
+    "are provided to show how to",
+    "use the API. mythx-analysis can be used to run MythX analyses on a single Solidity",
+    "smart-contract text file or the underlying JSON that is sent."
   ],
   "main": "index.js",
   "bin": {
-    "mythx-analysis": "./example/mythx-analysis"
+    "mythx-analysis": "./example/mythx-analysis",
+    "mythx-api-version": "./example/mythx-api-version",
+    "mythx-tool-use": "./example/mythx-tool-use"
   },
   "directories": {
     "example": "example",

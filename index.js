@@ -277,14 +277,47 @@ class Client {
   }
 }
 
+/*
+  Return a promise of MythX API information. For example,
+  after the promise is resolved we get:
+
+{
+  api: 'v1.4.3-45-g3a7a71f',
+  harvey: '0.0.13',
+  maestro: '1.2.3-2-g2d54a08',
+  maru: '0.4.1',
+  mythril: '0.20.0',
+  hash: 'd40ef2cdd30ccf134c0ae0fe2e90b247'
+  url: 'https://api.mythx.io'
+}
+*/
 module.exports.ApiVersion = (inputApiUrl = defaultApiUrl) => {
   const url = libUtil.joinUrl(inputApiUrl, `${defaultApiVersion}/version`)
-  return simpleRequester.do({ url, json: true })
+  return simpleRequester.do({ url, json: true }).then(result => {
+    result.url = inputApiUrl
+    return result
+  })
 }
 
+// Return a promise for the MythX openAPI spec in YAML format.
 module.exports.OpenApiSpec = (inputApiUrl = defaultApiUrl) => {
   const url = libUtil.joinUrl(inputApiUrl, `${defaultApiVersion}/openapi.yaml`)
   return simpleRequester.do({ url })
+}
+
+// Return an array of promises for the MythX tool use counts
+// The actual result is an object.
+module.exports.mythXToolUse = (toolNames, inputApiUrl = defaultApiUrl) => {
+  let promises = []
+  for (const toolName of toolNames) {
+    const url = libUtil.joinUrl(inputApiUrl, `${defaultApiVersion}/client-tool-stats/${toolName}`)
+    promises.push(simpleRequester.do({ url }).then(result => {
+      const jsonObj = JSON.parse(result)
+      jsonObj.name = toolName
+      return jsonObj
+    }))
+  }
+  return promises
 }
 
 module.exports.Client = Client
