@@ -1,3 +1,16 @@
+Release 2.3.0
+================
+
+Correct polling time in time-out consideration.
+This work was kindly contributed by Teruhiro Tagomori at [NRI Secure Technologies](https://www.nri-secure.com/security-consulting/blockchain-assessment).
+
+Added `armlet.mythXToolUse(toolNames, [inputApiUrl])` to report use counts for various MythX tools that run analysis. See example program `mythx-api-version` for how to use.
+
+Update extend, and install some example programs:
+
+* mythx-tool-use: gets counts on how many times a MythX tool was used. This is installed now.
+* mythx-api-version: "mythx" prefix added. This is installed now, where previously it was not.
+
 Release 2.2.0
 ================
 
@@ -16,7 +29,6 @@ Release 2.1.0
 
 Added login instance method to Client object
 ------------------------------------------------------
-
 Added a new method login which can reduce the number of API login requests that are needed.
 
 For a client like `truffle-security` which can perform analysis
