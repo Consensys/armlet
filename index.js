@@ -216,14 +216,11 @@ class Client {
   }
 
   async getStatusOrIssues (uuid, url) {
-    let accessToken = this.accessToken
-    if (!accessToken) {
-      const tokens = await login.do(this.ethAddress, this.password, this.apiUrl)
-      accessToken = tokens.access
-    }
+    await this.login()
+
     let result
     try {
-      result = await simpleRequester.do({ url, accessToken: accessToken, json: true })
+      result = await simpleRequester.do({ url, accessToken: this.accessToken, json: true })
     } catch (e) {
       let msg = `Failed in retrieving analysis response, HTTP status code: ${e.status}. UUID: ${uuid}`
       if (e.status === 404) {
