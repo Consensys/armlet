@@ -24,6 +24,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
+    "precommit": "npm run lint",
     "pretest": "npm run lint",
     "test": "nyc mocha --reporter spec --recursive",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
@@ -46,6 +47,7 @@
     "eslint-plugin-node": "^8.0.0",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
+    "husky": "^1.3.1",
     "mocha": "^5.2.0",
     "nock": "^9.6.1",
     "nyc": "^13.0.1",

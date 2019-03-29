@@ -1,4 +1,4 @@
-const url = require('url')
+const url = require('url');
 
 const requester = require('./lib/requester')
 const simpleRequester = require('./lib/simpleRequester')
