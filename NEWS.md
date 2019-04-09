@@ -1,3 +1,15 @@
+Release 2.4.0
+================
+
+Fix bugs with undefined data in requester.js.
+
+Fix a bug involving not setting the login access token.
+
+Fix a bug with `simpleRequester` error handling.
+
+Much of this work was kindly contributed by Teruhiro Tagomori at [NRI Secure Technologies](https://www.nri-secure.com/security-consulting/blockchain-assessment).
+
+
 Release 2.3.0
 ================
 
