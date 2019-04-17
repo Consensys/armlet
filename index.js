@@ -250,6 +250,31 @@ class Client {
     }
   }
 
+  /**
+    * Retrieves info about the current logged-in user
+    *
+    * @returns Object containing user info
+    **/
+  async getUserInfo () {
+    await this.login()
+
+    const url = libUtil.joinUrl(this.apiUrl.href, `${defaultApiVersion}/users`)
+    let userInfo
+    try {
+      userInfo = await simpleRequester.do({ url, accessToken: this.accessToken, json: true })
+    } catch (e) {
+      if (e.status !== 401) {
+        throw e
+      }
+      const tokens = await refresh.do(this.accessToken, this.refreshToken, this.apiUrl)
+      this.accessToken = tokens.access
+      this.refreshToken = tokens.refresh
+
+      userInfo = await simpleRequester.do({ url, accessToken: this.accessToken, json: true })
+    }
+    return userInfo
+  }
+
   async getStatus (uuid, inputApiUrl = defaultApiUrl) {
     const url = libUtil.joinUrl(this.apiUrl.href, `${defaultApiVersion}/analyses/${uuid}`)
     return this.getStatusOrIssues(uuid, url, inputApiUrl)
