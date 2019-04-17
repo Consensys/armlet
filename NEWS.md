@@ -1,3 +1,8 @@
+Release 2.5.0
+================
+
+Add the `getUserInfo` method to retrieve information about the logged-in user.
+
 Release 2.4.0
 ================
 

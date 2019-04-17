@@ -1,6 +1,6 @@
 {
   "name": "armlet",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": [
     "Armlet is a thin wrapper around the MythX API written in Javascript.",
     "It simplifies interaction with MythX. For example, the library",
