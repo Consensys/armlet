@@ -1,3 +1,6 @@
+var URL
+URL = URL || require('url').URL
+
 const nock = require('nock')
 const sinon = require('sinon')
 require('chai')

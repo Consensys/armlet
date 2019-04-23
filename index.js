@@ -1,3 +1,6 @@
+var URL
+URL = URL || require('url').URL
+
 const requester = require('./lib/requester')
 const simpleRequester = require('./lib/simpleRequester')
 const analysisPoller = require('./lib/analysisPoller')
