@@ -1,5 +1,4 @@
 const nock = require('nock')
-const url = require('url')
 require('chai')
   .use(require('chai-as-promised'))
   .should()
@@ -8,9 +7,9 @@ const requester = require('../../lib/requester')
 
 describe('requester', () => {
   describe('#do', () => {
-    const defaultApiUrl = new url.URL('https://api.mythx.io')
-    const httpApiUrl = new url.URL('http://localhost:3100')
-    const httpsApiUrl = new url.URL('https://localhost:3100')
+    const defaultApiUrl = new URL('https://api.mythx.io')
+    const httpApiUrl = new URL('http://localhost:3100')
+    const httpsApiUrl = new URL('https://localhost:3100')
 
     const validApiKey = 'valid-api-key'
     const uuid = 'my-uuid'
@@ -72,7 +71,7 @@ describe('requester', () => {
     })
 
     it('should reject on api server connection failure', async () => {
-      const invalidApiHostname = new url.URL('http://not-a-valid-hostname')
+      const invalidApiHostname = new URL('http://not-a-valid-hostname')
 
       await requester.do(data, validApiKey, invalidApiHostname).should.be.rejectedWith(Error)
     })

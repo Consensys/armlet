@@ -1,5 +1,4 @@
 const nock = require('nock')
-const url = require('url')
 const sinon = require('sinon')
 require('chai')
   .use(require('chai-as-promised'))
@@ -10,7 +9,7 @@ const util = require('../../lib/util')
 
 describe('analysisPoller', () => {
   describe('#do', () => {
-    const apiUrl = new url.URL('https://api.mythx.io')
+    const apiUrl = new URL('https://api.mythx.io')
     const validApiKey = 'valid-api-key'
     const uuid = 'my-uuid'
     const statusUrl = `/v1/analyses/${uuid}`

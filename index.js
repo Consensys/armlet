@@ -1,5 +1,3 @@
-const url = require('url')
-
 const requester = require('./lib/requester')
 const simpleRequester = require('./lib/simpleRequester')
 const analysisPoller = require('./lib/analysisPoller')
@@ -34,7 +32,7 @@ class Client {
       throw 'Please provide an Ethereum address and a password.'
     }
 
-    const apiUrl = new url.URL(inputApiUrl)
+    const apiUrl = new URL(inputApiUrl)
     if (!apiUrl.hostname) {
       throw new TypeError(`${inputApiUrl} is not a valid URL`)
     }
@@ -343,7 +341,7 @@ module.exports.mythXToolUse = (toolNames, inputApiUrl = defaultApiUrl) => {
 }
 
 module.exports.Client = Client
-module.exports.defaultApiUrl = new url.URL(defaultApiUrl)
+module.exports.defaultApiUrl = new URL(defaultApiUrl)
 module.exports.defaultApiHost = defaultApiUrl
 module.exports.defaultApiVersion = defaultApiVersion
 module.exports.defaultInitialDelay = defaultInitialDelay
