@@ -1,7 +1,9 @@
+var URL
+URL = URL || require('url').URL
+
 const armlet = require('../index')
 const Client = require('../index').Client
 const sinon = require('sinon')
-const url = require('url')
 const HttpErrors = require('http-errors')
 require('chai')
   .use(require('chai-as-promised'))
@@ -64,7 +66,7 @@ describe('main module', () => {
           it('initialize apiUrl to the given value', () => {
             const instance = new Client({ ethAddress, password }, apiUrl)
 
-            instance.apiUrl.should.be.deep.equal(new url.URL(apiUrl))
+            instance.apiUrl.should.be.deep.equal(new URL(apiUrl))
           })
 
           describe('instances should', () => {
@@ -168,7 +170,7 @@ describe('main module', () => {
   describe('functionality', () => {
     const uuid = 'analysis-uuid'
     const issues = ['issue1', 'issue2']
-    const parsedApiUrl = new url.URL(apiUrl)
+    const parsedApiUrl = new URL(apiUrl)
     const refreshToken = 'refresh-token'
     const accessToken = 'access-token'
 

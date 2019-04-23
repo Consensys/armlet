@@ -1,5 +1,7 @@
+var URL
+URL = URL || require('url').URL
+
 const nock = require('nock')
-const url = require('url')
 require('chai')
   .use(require('chai-as-promised'))
   .should()
@@ -9,7 +11,7 @@ const login = require('../../lib/login')
 describe('login', () => {
   describe('#do', () => {
     const apiUrl = 'https://localhost:3100'
-    const parsedApiUrl = new url.URL(apiUrl)
+    const parsedApiUrl = new URL(apiUrl)
     const ethAddress = '0x74B904af705Eb2D5a6CDc174c08147bED478a60d'
     const password = 'password'
     const auth = { ethAddress, password }
@@ -31,7 +33,7 @@ describe('login', () => {
         .post(loginPath, auth)
         .reply(200, jsonTokens)
 
-      const parsedApiUrlHttp = new url.URL('http://localhost:3100')
+      const parsedApiUrlHttp = new URL('http://localhost:3100')
       await login.do(ethAddress, password, parsedApiUrlHttp)
         .should.eventually.deep.equal(jsonTokens)
     })

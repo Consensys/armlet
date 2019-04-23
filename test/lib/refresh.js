@@ -1,5 +1,7 @@
+var URL
+URL = URL || require('url').URL
+
 const nock = require('nock')
-const url = require('url')
 require('chai')
   .use(require('chai-as-promised'))
   .should()
@@ -9,7 +11,7 @@ const refresh = require('../../lib/refresh')
 describe('refresh', () => {
   describe('#do', () => {
     const apiUrl = 'https://localhost:3100'
-    const parsedApiUrl = new url.URL(apiUrl)
+    const parsedApiUrl = new URL(apiUrl)
     const refreshPath = '/v1/auth/refresh'
     const expiredRefreshToken = 'expiredRefresh'
     const expiredAccessToken = 'expiredAccess'
