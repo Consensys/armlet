@@ -1,3 +1,8 @@
+Release 2.6.0
+================
+
+Fix handling of `URL` to enable correct functionality in a web browser.
+
 Release 2.5.0
 ================
 
