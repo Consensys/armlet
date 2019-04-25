@@ -1,5 +1,6 @@
 var URL
-URL = URL || require('url').URL
+URL = (typeof window !== 'undefined' && window.URL)
+  ? window.URL : require('url').URL
 
 const nock = require('nock')
 require('chai')
