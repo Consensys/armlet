@@ -1,5 +1,6 @@
 var URL
-URL = URL || require('url').URL
+URL = (typeof window !== 'undefined' && window.URL)
+  ? window.URL : require('url').URL
 
 const armlet = require('../index')
 const Client = require('../index').Client
