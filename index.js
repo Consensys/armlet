@@ -67,7 +67,7 @@ class Client {
     *          database using getIssues().
     *
     **/
-  async analyze (options) {
+  async analyze (options, timeout, initialDelay) {
     if (options === undefined || options.data === undefined) {
       // eslint-disable-next-line no-throw-literal
       throw 'Please provide analysis request JSON in a "data" attribute.'
@@ -107,8 +107,7 @@ class Client {
          There is also average queuing delay as well which on average may be at
          least 5 seconds.
     */
-    let timeout = options.timeout
-    if (!('timeout' in options)) {
+    if (!timeout) {
       timeout = (60 * 1000) * (
         (options.data.analysisMode !== 'full')
           ? 5 // 5 minutes
@@ -129,7 +128,7 @@ class Client {
         console.log(`Cached Result:\n${util.inspect(result, { depth: depth })}\n------`)
       }
     } else {
-      const initialDelay = Math.max(options.initialDelay || 0, defaultInitialDelay)
+      initialDelay = Math.max(initialDelay || 0, defaultInitialDelay)
       try {
         result = await analysisPoller.do(requestResponse.uuid, this, timeout, initialDelay, options.debug)
       } catch (e) {
@@ -205,9 +204,9 @@ class Client {
     *      {Object} status - status information as returned in each object of analyses().
     *
     **/
-  async analyzeWithStatus (options) {
+  async analyzeWithStatus (options, timeout, initialDelay) {
     const start = Date.now()
-    const { issues, uuid } = await this.analyze(options, true)
+    const { issues, uuid } = await this.analyze(options, timeout, initialDelay)
     const status = await this.getStatus(uuid)
     const elapsed = Date.now() - start
     return {

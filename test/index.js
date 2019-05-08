@@ -109,7 +109,7 @@ describe('main module', () => {
                   .returns(1)
 
                 sinon.stub(this.instance, 'analyze')
-                  .withArgs(input, true)
+                  .withArgs(input)
                   .resolves({ issues: 'issues', uuid: 'uuid' })
 
                 sinon.stub(this.instance, 'getStatus')
@@ -304,7 +304,7 @@ describe('main module', () => {
                   resolve({ access: accessToken, refresh: refreshToken })
                 }))
               sinon.stub(requester, 'do')
-                .withArgs({ data, timeout }, accessToken, parsedApiUrl)
+                .withArgs({ data }, accessToken, parsedApiUrl)
                 .returns(new Promise(resolve => {
                   resolve({ uuid, status: 'Finished' })
                 }))
@@ -316,7 +316,7 @@ describe('main module', () => {
                 .returns(new Promise(resolve => {
                   resolve(issues)
                 }))
-              await this.instance.analyze({ data, timeout }).should.eventually.deep.equal({ issues, uuid })
+              await this.instance.analyze({ data }, timeout).should.eventually.deep.equal({ issues, uuid })
               poller.getIssues.restore()
             })
 
@@ -328,14 +328,14 @@ describe('main module', () => {
                   resolve({ access: accessToken, refresh: refreshToken })
                 }))
               sinon.stub(requester, 'do')
-                .withArgs({ data, timeout }, accessToken, parsedApiUrl)
+                .withArgs({ data }, accessToken, parsedApiUrl)
                 .returns(new Promise(resolve => {
                   resolve({ uuid })
                 }))
               sinon.stub(poller, 'do')
                 .withArgs(uuid, this.instance, timeout, armlet.defaultInitialDelay, undefined)
                 .resolves(issues)
-              await this.instance.analyze({ data, timeout }).should.eventually.deep.equal({ issues, uuid })
+              await this.instance.analyze({ data }, timeout).should.eventually.deep.equal({ issues, uuid })
             })
 
             it('should pass initial delay option to poller', async () => {
@@ -347,7 +347,7 @@ describe('main module', () => {
                   resolve({ access: accessToken, refresh: refreshToken })
                 }))
               sinon.stub(requester, 'do')
-                .withArgs({ data, timeout, initialDelay }, accessToken, parsedApiUrl)
+                .withArgs({ data }, accessToken, parsedApiUrl)
                 .returns(new Promise(resolve => {
                   resolve({ uuid })
                 }))
@@ -356,7 +356,7 @@ describe('main module', () => {
                 .returns(new Promise(resolve => {
                   resolve(issues)
                 }))
-              await this.instance.analyze({ data, timeout, initialDelay }).should.eventually.deep.equal({ issues, uuid })
+              await this.instance.analyze({ data }, timeout, initialDelay).should.eventually.deep.equal({ issues, uuid })
             })
           })
 
