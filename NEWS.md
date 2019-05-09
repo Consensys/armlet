@@ -1,3 +1,8 @@
+Release 2.6.0
+================
+
+Implemented a fix to prevent sending bad data to the API.
+
 Release 2.5.2
 ================
 
