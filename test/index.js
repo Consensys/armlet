@@ -604,6 +604,23 @@ describe('main module', () => {
             await this.instance.getStatusOrIssues(uuid, apiUrl).should.be
               .rejectedWith(`Failed in retrieving analysis response, HTTP status code: 500. UUID: ${uuid}`)
           })
+
+          it('should retry when access token expires', async () => {
+            const uuid = 'uuid'
+            sinon.stub(login, 'do')
+              .withArgs(ethAddress, password, parsedApiUrl)
+              .resolves({ access: accessToken, refresh: refreshToken })
+            sinon.stub(refresh, 'do')
+              .withArgs(accessToken, refreshToken, parsedApiUrl)
+              .resolves({ access: 'newAccessToken', refresh: 'newRefreshToken' })
+            sinon.stub(simpleRequester, 'do')
+              .withArgs({ url: apiUrl, accessToken, json: true }).rejects(HttpErrors.Unauthorized())
+              .withArgs({ url: apiUrl, accessToken: 'newAccessToken', json: true }).resolves([])
+
+            await this.instance.getStatusOrIssues(uuid, apiUrl).should.eventually.deep.equal([])
+
+            refresh.do.restore()
+          })
         })
 
         describe('login', () => {
