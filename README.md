@@ -53,9 +53,8 @@ client.analyzeWithStatus(
     {
 	"data": data,    // required
 	"timeout": 2 * 60 * 1000,  
-	"debug": false,            // optional: set to true if you want to see what's going on
     },
-    2 * 60 * 1000 // timeout - optional, but can improve response time
+    3 * 60 * 1000 // timeout - optional
   ).then(result => {
 	  const util = require('util');
 	  console.log(`${util.inspect(result.status, {depth: null})}`);
