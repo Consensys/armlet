@@ -1,3 +1,15 @@
+Release 2.7.0
+================
+
+The parameters `timeout`, `initalDelay`, and `debug` are no longer set in the `options` parameter for `Client.analyze`. These are all now seperate (optional) arguments.
+```
+Client.analyze(options, timeout, initialDelay, debug)
+```
+
+Fixed a bug preventing token refresh when using the same Client for more than 10 minutes.
+
+Documentation updates 
+
 Release 2.6.0
 ================
 
