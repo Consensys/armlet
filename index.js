@@ -223,11 +223,18 @@ class Client {
     try {
       result = await simpleRequester.do({ url, accessToken: this.accessToken, json: true })
     } catch (e) {
-      let msg = `Failed in retrieving analysis response, HTTP status code: ${e.status}. UUID: ${uuid}`
-      if (e.status === 404) {
-        msg = `Analysis with UUID ${uuid} not found.`
+      if (e.status === 401) {
+        const tokens = await refresh.do(this.accessToken, this.refreshToken, this.apiUrl)
+        this.accessToken = tokens.access
+        this.refreshToken = tokens.refresh
+        result = await simpleRequester.do({ url, accessToken: this.accessToken, json: true })
+      } else {
+        let msg = `Failed in retrieving analysis response, HTTP status code: ${e.status}. UUID: ${uuid}`
+        if (e.status === 404) {
+          msg = `Analysis with UUID ${uuid} not found.`
+        }
+        throw msg
       }
-      throw msg
     }
     return result
   }
