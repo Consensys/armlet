@@ -50,10 +50,7 @@ const data = {
 };
 
 client.analyzeWithStatus(
-    {
-	"data": data,    // required
-	"timeout": 2 * 60 * 1000,  
-    },
+    { "data": data }, // required
     3 * 60 * 1000 // timeout - optional
   ).then(result => {
 	  const util = require('util');
