@@ -67,7 +67,7 @@ class Client {
     *          database using getIssues().
     *
     **/
-  async analyze (options, timeout, initialDelay) {
+  async analyze (options, timeout, initialDelay, debug) {
     if (options === undefined || options.data === undefined) {
       // eslint-disable-next-line no-throw-literal
       throw 'Please provide analysis request JSON in a "data" attribute.'
@@ -115,22 +115,22 @@ class Client {
       )
     }
 
-    if (options.debug) {
+    if (debug) {
       console.log(`now: ${Math.trunc(Date.now() / 1000)}`)
     }
 
     let result
     if (requestResponse.status === 'Finished') {
       result = await analysisPoller.getIssues(requestResponse.uuid, this)
-      if (options.debug) {
+      if (debug) {
         const util = require('util')
-        let depth = (options.debug > 1) ? 10 : 2
+        let depth = (debug > 1) ? 10 : 2
         console.log(`Cached Result:\n${util.inspect(result, { depth: depth })}\n------`)
       }
     } else {
       initialDelay = Math.max(initialDelay || 0, defaultInitialDelay)
       try {
-        result = await analysisPoller.do(requestResponse.uuid, this, timeout, initialDelay, options.debug)
+        result = await analysisPoller.do(requestResponse.uuid, this, timeout, initialDelay, debug)
       } catch (e) {
         /*
           Normally requester passes back strings. However there is a spcial case for
@@ -143,7 +143,7 @@ class Client {
         this.accessToken = tokens.access
         this.refreshToken = tokens.refresh
         result = await analysisPoller.do(requestResponse.uuid, this, timeout,
-          initialDelay, options.debug)
+          initialDelay, debug)
       }
     }
 
