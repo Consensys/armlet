@@ -50,15 +50,12 @@ const data = {
 };
 
 client.analyzeWithStatus(
-    {
-	"data": data,    // required
-	"timeout": 2 * 60 * 1000,  // optional, but can improve response time
-	"debug": false,            // optional: set to true if you want to see what's going on
-    })
-    .then(result => {
-	const util = require('util');
-	console.log(`${util.inspect(result.status, {depth: null})}`);
-	console.log(`${util.inspect(result.issues, {depth: null})}`);
+    { "data": data }, // required
+    3 * 60 * 1000 // timeout - optional
+  ).then(result => {
+	  const util = require('util');
+	  console.log(`${util.inspect(result.status, {depth: null})}`);
+	  console.log(`${util.inspect(result.issues, {depth: null})}`);
   }).catch(err => {
     console.log(err)
   })
