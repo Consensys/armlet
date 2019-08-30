@@ -1,6 +1,8 @@
 [![CircleCI](https://circleci.com/gh/ConsenSys/armlet.svg?style=svg)](https://circleci.com/gh/ConsenSys/armlet)
 [![Coverage Status](https://coveralls.io/repos/github/ConsenSys/armlet/badge.svg?branch=master)](https://coveralls.io/github/ConsenSys/armlet?branch=master)
 
+**Please note that Armlet has now been deprecated. Please use [MythXJS](https://github.com/ConsenSys/mythxjs) instead.**
+
 # Armlet, a MythX API client wrapper
 
 Armlet is a thin wrapper around the [MythX API](https://api.mythx.io/v1/openapi) written in Javascript. It simplifies interaction with [MythX](https://mythx.io/) and [JWT authentication](https://jwt.io/introduction/). For example, the library wraps API analysis requests into a promise, merges status information with analysis-result information, and judiciously polls for results.
